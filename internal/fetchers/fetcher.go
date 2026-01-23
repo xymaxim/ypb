@@ -1,7 +1,7 @@
 package fetchers
 
 import (
-	"github.com/xymaxim/ypb/internal/info"
+	"github.com/xymaxim/ypb/internal/playback/info"
 )
 
 type Additionals any

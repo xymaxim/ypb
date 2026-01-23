@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/fetchers"
-	"github.com/xymaxim/ypb/internal/info"
+	"github.com/xymaxim/ypb/internal/playback/info"
 )
 
 type MockFetcher struct {

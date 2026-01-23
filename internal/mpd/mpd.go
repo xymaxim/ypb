@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/info"
+	"github.com/xymaxim/ypb/internal/playback/info"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
