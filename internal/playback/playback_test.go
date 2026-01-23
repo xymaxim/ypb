@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/xymaxim/ypb/internal/playback"
-	"github.com/xymaxim/ypb/internal/segment"
+	"github.com/xymaxim/ypb/internal/playback/segment"
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 

@@ -29,7 +29,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/segment"
+	"github.com/xymaxim/ypb/internal/playback/segment"
 )
 
 // timeDiffTolerance is the absolute time difference tolerance. See
