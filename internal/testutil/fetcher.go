@@ -3,7 +3,7 @@ package testutil
 import (
 	"time"
 
-	"github.com/xymaxim/ypb/internal/fetchers"
+	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/internal/playback/info"
 )
 

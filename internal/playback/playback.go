@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/xymaxim/ypb/internal/fetchers"
+	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/internal/playback/info"
 	"github.com/xymaxim/ypb/internal/segment"
 	"github.com/xymaxim/ypb/internal/urlutil"
