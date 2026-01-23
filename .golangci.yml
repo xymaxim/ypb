@@ -1,0 +1,57 @@
+version: "2"
+
+run:
+  tests: true
+  
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+    - golines
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/xymaxim/ypb
+    golines:
+      max-len: 100
+      tab-len: 8
+
+linters:
+  default: all
+  disable:
+    - cyclop
+    - depguard
+    - embeddedstructfieldcheck
+    - err113
+    - exhaustruct
+    - forcetypeassert    
+    - funlen
+    - gosec
+    - mnd
+    - nlreturn
+    - noinlineerr
+    - noctx
+    - varnamelen
+    - tagliatelle
+    - wsl
+    - wsl_v5
+
+  settings:
+    gocritic:
+      enabled-checks:
+        - commentedOutCode
+    gosec:
+      excludes:
+        # Duplicates errcheck
+        - G104
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - disableChecksOnConstants
+            - disableChecksOnFunctions
+            - disableChecksOnVariables
+            - disableChecksOnMethods
+            - disableChecksOnTypes
