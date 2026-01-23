@@ -8,7 +8,6 @@
 // found in the previous step; (3) check whether a target time falls inside a
 // gap or not.
 //
-//
 // Three steps are required for accurate results since a stream timeline due
 // to instability may contain numerous gaps, which leads to under- or
 // overestimation of rewind timings.
