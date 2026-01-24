@@ -16,12 +16,13 @@ func ComposeStatic(
 ) ([]byte, error) {
 	segmentDuration := strconv.FormatInt(pb.Info.SegmentDuration.Milliseconds(), 10)
 	mpdInfo := mpd.Information{
-		AvailabilityStartTime:     interval.Start.Time,
-		MediaPresentationDuration: interval.End.Time.Sub(interval.Start.Time),
-		RepresentationBaseURL:     baseURL,
+		AvailabilityStartTime: interval.Start.Metadata.Time(),
+		MediaPresentationDuration: interval.End.Metadata.Time().
+			Sub(interval.Start.Metadata.Time()),
+		RepresentationBaseURL: baseURL,
 		SegmentTemplate: &mpd.SegmentTemplate{
 			Media:       segmentMediaURL,
-			StartNumber: interval.Start.SequenceNumber,
+			StartNumber: interval.Start.Metadata.SequenceNumber,
 			Duration:    segmentDuration,
 			Timescale:   "1000",
 		},

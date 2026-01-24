@@ -91,9 +91,28 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	referenceSeqNum, err := a.Playback.RequestHeadSeqNum()
+	if err != nil {
+		writeError(
+			w,
+			"Error requesting reference sequence number",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	reference, err := a.Playback.FetchSegmentMetadata(
+		a.Playback.GetReferenceItag(),
+		referenceSeqNum,
+	)
+	if err != nil {
+		writeError(w, "Error fetching segment metadata", http.StatusInternalServerError)
+		return
+	}
+
 	startTime := time.Now().Add(-time.Duration(78+2) * time.Hour)
 	endTime := startTime.Add(time.Duration(12) * time.Hour)
-	interval, _, err := actions.Locate(a.Playback, startTime, endTime)
+
+	interval, _, err := actions.Locate(a.Playback, startTime, endTime, *reference)
 	if err != nil {
 		slog.Error("locating interval", "err", err)
 		writeError(w, "Error locating rewind interval", http.StatusInternalServerError)

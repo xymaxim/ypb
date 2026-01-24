@@ -38,16 +38,20 @@ const timeDiffTolerance = 50 * time.Millisecond
 
 // RewindMoment describes a specific point in time mapped to a segment-locate result.
 type RewindMoment struct {
-	SequenceNumber SequenceNumber
-	Time           time.Time
-	TimeDifference time.Duration
-	InGap          bool
+	Metadata   *segment.Metadata
+	ActualTime time.Time
+	TargetTime time.Time
+	InGap      bool
+}
+
+func (m *RewindMoment) TimeDifference() time.Duration {
+	return m.TargetTime.Sub(m.ActualTime)
 }
 
 // RewindInterval holds start and end rewind moments.
 type RewindInterval struct {
-	Start RewindMoment
-	End   RewindMoment
+	Start *RewindMoment
+	End   *RewindMoment
 }
 
 // LocateMoment finds the RewindMoment corresponding to a target time.
@@ -100,10 +104,11 @@ func (pb *Playback) LocateMoment(
 			slog.Time("time", candidateMetadata.Time().In(time.UTC)),
 		)
 
-		if currentTimeDiff >= 0 &&
-			currentTimeDiff <= pb.Info.SegmentDuration+timeDiffTolerance {
-			hasSegmentFound = true
-			break
+		if currentTimeDiff >= 0 {
+			if currentTimeDiff <= pb.Info.SegmentDuration+timeDiffTolerance {
+				hasSegmentFound = true
+				break
+			}
 		}
 
 		direction := math.Copysign(1, currentTimeDiff.Seconds())
@@ -134,11 +139,20 @@ func (pb *Playback) LocateMoment(
 	// Step 2
 	var result *RewindMoment
 	if hasSegmentFound {
+		var actualTime time.Time
+		if isEnd {
+			actualTime = candidateMetadata.Time().Add(pb.Info.SegmentDuration)
+		} else {
+			actualTime = candidateMetadata.Time()
+		}
 		result = &RewindMoment{
-			SequenceNumber: candidateSeqNum,
-			Time:           candidateMetadata.Time(),
-			TimeDifference: currentTimeDiff,
-			InGap:          false,
+			Metadata: &segment.Metadata{
+				SequenceNumber:    candidateSeqNum,
+				IngestionWalltime: candidateMetadata.Time(),
+			},
+			ActualTime: actualTime,
+			TargetTime: targetTime,
+			InGap:      false,
 		}
 	} else {
 		startSeqNum, endSeqNum := track[len(track)-2], track[len(track)-1]
@@ -153,38 +167,6 @@ func (pb *Playback) LocateMoment(
 	)
 
 	return result, err
-}
-
-// LocateInterval finds start and end moments corresponding to the target times.
-func (pb *Playback) LocateInterval(
-	startTime time.Time,
-	endTime time.Time,
-	reference segment.Metadata,
-) (*RewindInterval, error) {
-	slog.Info(
-		"locating interval",
-		slog.Time("start", startTime.In(time.UTC)),
-		slog.Time("end", endTime.In(time.UTC)),
-	)
-
-	startMoment, err := pb.LocateMoment(startTime, reference, false)
-	if err != nil {
-		return nil, fmt.Errorf("locating start moment: %w", err)
-	}
-
-	endMoment, err := pb.LocateMoment(endTime, reference, true)
-	if err != nil {
-		return nil, fmt.Errorf("locating end moment: %w", err)
-	}
-
-	result := &RewindInterval{Start: *startMoment, End: *endMoment}
-	slog.Info(
-		"interval located",
-		"start", result.Start.SequenceNumber,
-		"end", result.End.SequenceNumber,
-	)
-
-	return result, nil
 }
 
 // searchinRange performs a binary search within a search domain.
@@ -231,13 +213,15 @@ func (pb *Playback) searchInRange(
 
 	// After the previous step the time difference is always positive
 	timeDiff := targetTime.Sub(candidateMetadata.Time())
-
 	if timeDiff == 0 {
 		return &RewindMoment{
-			SequenceNumber: candidateSeqNum,
-			Time:           candidateMetadata.Time(),
-			TimeDifference: timeDiff,
-			InGap:          false,
+			Metadata: &segment.Metadata{
+				SequenceNumber:    candidateSeqNum,
+				IngestionWalltime: candidateMetadata.Time(),
+			},
+			ActualTime: targetTime,
+			TargetTime: targetTime,
+			InGap:      false,
 		}, nil
 	}
 
@@ -269,10 +253,19 @@ func (pb *Playback) searchInRange(
 		}
 	}
 
+	var actualTime time.Time
+	if isEnd {
+		actualTime = candidateMetadata.Time().Add(pb.Info.SegmentDuration)
+	} else {
+		actualTime = candidateMetadata.Time()
+	}
 	return &RewindMoment{
-		SequenceNumber: candidateSeqNum,
-		Time:           candidateMetadata.Time(),
-		TimeDifference: timeDiff,
-		InGap:          isInGap,
+		Metadata: &segment.Metadata{
+			SequenceNumber:    candidateSeqNum,
+			IngestionWalltime: candidateMetadata.Time(),
+		},
+		ActualTime: actualTime,
+		TargetTime: targetTime,
+		InGap:      isInGap,
 	}, nil
 }

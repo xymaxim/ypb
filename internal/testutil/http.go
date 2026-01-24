@@ -3,6 +3,7 @@ package testutil
 import (
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type rewriteTransport struct {
@@ -20,6 +21,7 @@ func (rt *rewriteTransport) RoundTrip(req *http.Request) (*http.Response, error)
 func NewClient(addr string) *http.Client {
 	u, _ := url.Parse(addr)
 	return &http.Client{
+		Timeout: 1 * time.Second,
 		Transport: &rewriteTransport{
 			host:     u.Host,
 			underlay: http.DefaultTransport,

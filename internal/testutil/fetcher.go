@@ -23,7 +23,7 @@ var (
 func (f *MockFetcher) FetchInfo() (*info.VideoInformation, fetchers.Additionals, error) {
 	return &info.VideoInformation{
 		ID:              TestVideoID,
-		Title:           "Test tile",
+		Title:           "Test title",
 		Channel:         "Test channel",
 		SegmentDuration: 2 * time.Second,
 		AudioStreams: []info.AudioStream{

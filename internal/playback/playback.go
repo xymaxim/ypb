@@ -104,10 +104,6 @@ func (pb *Playback) FetchSegmentMetadata(
 	return sm, nil
 }
 
-// func (pb *Playback) ResolveInterval(start, end MomentValue) {
-
-// }
-
 func (pb *Playback) GetReferenceItag() string {
 	return pb.Info.VideoStreams[0].Itag
 }

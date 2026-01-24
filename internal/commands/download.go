@@ -59,17 +59,31 @@ func NewDownloadCommand(a *app.App) *cli.Command {
 
 func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	intervalInput := cmd.String("interval")
-	startTime, endTime, err := input.ParseInterval(intervalInput)
+	start, end, err := input.ParseInterval(intervalInput)
 	if err != nil {
 		slog.Error("parsing input interval", "value", intervalInput, "err", err)
 		return err
 	}
 
 	fmt.Println("(<<) Locating start and end moments...")
+
+	referenceSeqNum, err := a.Playback.RequestHeadSeqNum()
+	if err != nil {
+		return cli.Exit(err, 1)
+	}
+	reference, err := a.Playback.FetchSegmentMetadata(
+		a.Playback.GetReferenceItag(),
+		referenceSeqNum,
+	)
+	if err != nil {
+		return cli.Exit(err, 1)
+	}
+
 	interval, actionContext, err := actions.Locate(
 		a.Playback,
-		startTime.(time.Time),
-		endTime.(time.Time),
+		start,
+		end,
+		*reference,
 	)
 	if err != nil {
 		return cli.Exit(err, 1)
@@ -77,13 +91,13 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 
 	fmt.Printf(
 		"Actual start: %s, sq=%d\n",
-		interval.Start.Time.Format(time.RFC1123Z),
-		interval.Start.SequenceNumber,
+		interval.Start.ActualTime.Format(time.RFC1123Z),
+		interval.Start.Metadata.SequenceNumber,
 	)
 	fmt.Printf(
 		"  Actual end: %s, sq=%d\n",
-		interval.End.Time.Format(time.RFC1123Z),
-		interval.End.SequenceNumber,
+		interval.End.ActualTime.Format(time.RFC1123Z),
+		interval.End.Metadata.SequenceNumber,
 	)
 
 	http.HandleFunc("/mpd", func(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +139,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func buildOutputName(ctx *actions.LocateActionContext) string {
+func buildOutputName(ctx *actions.LocateOutputContext) string {
 	return fmt.Sprintf(
 		"%s_%s_%s_%s.%%(ext)s",
 		pathutil.AdjustForFilename(ctx.Title, 0),
