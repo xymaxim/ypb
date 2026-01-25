@@ -17,67 +17,68 @@ type Metadata struct {
 	Duration          time.Duration
 }
 
+type parser[T any] func(string) (T, error)
+
 // Time returns a timestamp associated with a segment.
 func (m *Metadata) Time() time.Time {
 	return m.IngestionWalltime
 }
 
-// ParseMetadata parses metadata bytes to a Metadata.
 func ParseMetadata(b []byte) (*Metadata, error) {
-	rawSequenceNumber, err := extractMetadataField(b, "Sequence-Number")
+	var m Metadata
+	var err error
+
+	m.SequenceNumber, err = extractAndParse(b, "Sequence-Number",
+		func(s string) (int, error) { return strconv.Atoi(s) })
 	if err != nil {
 		return nil, err
 	}
-	sequenceNumber, err := strconv.Atoi(rawSequenceNumber)
-	if err != nil {
-		return nil, fmt.Errorf("converting 'Sequence-Number': %w", err)
-	}
 
-	rawIngestionWalltimeUs, err := extractMetadataField(b, "Ingestion-Walltime-Us")
+	ingestionWalltimeUs, err := extractAndParse(b, "Ingestion-Walltime-Us",
+		func(s string) (int64, error) { return strconv.ParseInt(s, 10, 64) })
 	if err != nil {
 		return nil, err
 	}
-	ingestionWalltimeUs, err := strconv.ParseInt(rawIngestionWalltimeUs, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"converting 'Ingestion-Walltime-Us': %w",
-			err,
-		)
-	}
+	m.IngestionWalltime = time.Unix(0, ingestionWalltimeUs*1e3).In(time.UTC)
 
-	rawDurationUs, err := extractMetadataField(b, "Target-Duration-Us")
+	durationUs, err := extractAndParse(b, "Target-Duration-Us",
+		func(s string) (int64, error) { return strconv.ParseInt(s, 10, 64) })
 	if err != nil {
 		return nil, err
 	}
-	durationUs, err := strconv.ParseInt(rawDurationUs, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"converting 'Target-Duration-Us': %w",
-			err,
-		)
-	}
+	m.Duration = time.Duration(durationUs) * time.Microsecond
 
-	return &Metadata{
-		SequenceNumber:    sequenceNumber,
-		IngestionWalltime: time.Unix(0, ingestionWalltimeUs*1e3).In(time.UTC),
-		Duration:          time.Duration(durationUs) * time.Microsecond,
-	}, nil
+	return &m, nil
 }
 
-func extractMetadataField(b []byte, key string) (string, error) {
-	index := bytes.Index(b, []byte(key))
+func extractAndParse[T any](b []byte, field string, parse parser[T]) (T, error) {
+	var zero T
+	raw, err := extractMetadataField(b, field)
+	if err != nil {
+		return zero, err
+	}
+	value, err := parse(raw)
+	if err != nil {
+		return zero, fmt.Errorf("converting '%s': %w", field, err)
+	}
+	return value, nil
+}
+
+func extractMetadataField(b []byte, field string) (string, error) {
+	token := []byte(field + ": ")
+	index := bytes.Index(b, token)
 	if index == -1 {
-		return "", fmt.Errorf("field '%s' not present", key)
+		return "", fmt.Errorf("field '%s' not present", field)
 	}
 
-	valueStart := index + len(key) + 2
+	valueStart := index + len(token)
 	lineEndRel := bytes.IndexAny(b[valueStart:], "\r\n")
-
 	var valueBytes []byte
 	if lineEndRel == -1 {
 		valueBytes = b[valueStart:]
 	} else {
 		valueBytes = b[valueStart : valueStart+lineEndRel]
 	}
+
 	return string(valueBytes), nil
 }
