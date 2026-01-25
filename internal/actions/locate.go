@@ -23,6 +23,29 @@ type LocateOutputContext struct {
 	InputDuration       time.Duration
 }
 
+func LocateMoment(
+	pb *playback.Playback,
+	value input.MomentValue,
+	reference segment.Metadata,
+) (*playback.RewindMoment, error) {
+	switch v := value.(type) {
+	case time.Time:
+		out, err := pb.LocateMoment(v, reference, false)
+		if err != nil {
+			return nil, fmt.Errorf("locating moment: %w", err)
+		}
+		return out, nil
+	case playback.SequenceNumber:
+		sm, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), v)
+		if err != nil {
+			return nil, fmt.Errorf("fetching segment metadata, sq=%d: %w", v, err)
+		}
+		return playback.NewRewindMoment(sm.Time(), sm, false, false), nil
+	default:
+		return nil, fmt.Errorf("got unallowed type %T: %v", v, v)
+	}
+}
+
 func LocateInterval(
 	pb *playback.Playback,
 	start, end input.MomentValue,

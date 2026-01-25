@@ -16,10 +16,90 @@ import (
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 
-//nolint:tparallel
-func TestLocateInterval(t *testing.T) {
-	t.Parallel()
+//nolint:paralleltest
+func TestLocateMoment(t *testing.T) {
+	// Test data
+	metadataMapping := map[playback.SequenceNumber]*segment.Metadata{
+		0: {
+			SequenceNumber:    0,
+			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+			Duration:          2 * time.Second,
+		},
+		1: {
+			SequenceNumber:    1,
+			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
+			Duration:          2 * time.Second,
+		},
+	}
 
+	// Setup
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			testutil.MakeSegmentMetadataHandler(
+				t,
+				metadataMapping,
+			),
+		),
+	)
+	defer ts.Close()
+
+	pb, err := playback.NewPlayback(
+		testutil.TestVideoID,
+		&testutil.MockFetcher{
+			VideoID: testutil.TestVideoID,
+		},
+		testutil.NewClient(ts.URL),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Test cases
+	testCases := []struct {
+		name     string
+		value    input.MomentValue
+		expected *playback.RewindMoment
+	}{
+		{
+			name:  "time",
+			value: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
+			expected: &playback.RewindMoment{
+				Metadata:   metadataMapping[0],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
+				InGap:      false,
+			},
+		},
+		{
+			name:  "sequence number",
+			value: 0,
+			expected: &playback.RewindMoment{
+				Metadata:   metadataMapping[0],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+				InGap:      false,
+			},
+		},
+	}
+
+	reference := *metadataMapping[1]
+	for _, tc := range testCases { //nolint:paralleltest
+		t.Run(tc.name, func(t *testing.T) {
+			moment, err := actions.LocateMoment(
+				pb,
+				tc.value,
+				reference,
+			)
+			require.NoError(t, err)
+			if diff := cmp.Diff(tc.expected, moment); diff != "" {
+				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
+			}
+		})
+	}
+}
+
+//nolint:paralleltest
+func TestLocateInterval(t *testing.T) {
 	// Test data
 	metadataMapping := map[playback.SequenceNumber]*segment.Metadata{
 		0: {
