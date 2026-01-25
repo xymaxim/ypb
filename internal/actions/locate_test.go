@@ -25,10 +25,12 @@ func TestLocate(t *testing.T) {
 		0: {
 			SequenceNumber:    0,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+			Duration:          2 * time.Second,
 		},
 		1: {
 			SequenceNumber:    1,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
+			Duration:          2 * time.Second,
 		},
 	}
 

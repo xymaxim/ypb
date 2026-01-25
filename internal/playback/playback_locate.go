@@ -44,6 +44,25 @@ type RewindMoment struct {
 	InGap      bool
 }
 
+func NewRewindMoment(
+	target time.Time,
+	metadata *segment.Metadata,
+	isEnd, inGap bool,
+) *RewindMoment {
+	var actual time.Time
+	if isEnd {
+		actual = metadata.Time().Add(metadata.Duration)
+	} else {
+		actual = metadata.Time()
+	}
+	return &RewindMoment{
+		Metadata:   metadata,
+		ActualTime: actual,
+		TargetTime: target,
+		InGap:      inGap,
+	}
+}
+
 func (m *RewindMoment) TimeDifference() time.Duration {
 	return m.TargetTime.Sub(m.ActualTime)
 }
@@ -139,21 +158,7 @@ func (pb *Playback) LocateMoment(
 	// Step 2
 	var result *RewindMoment
 	if hasSegmentFound {
-		var actualTime time.Time
-		if isEnd {
-			actualTime = candidateMetadata.Time().Add(pb.Info.SegmentDuration)
-		} else {
-			actualTime = candidateMetadata.Time()
-		}
-		result = &RewindMoment{
-			Metadata: &segment.Metadata{
-				SequenceNumber:    candidateSeqNum,
-				IngestionWalltime: candidateMetadata.Time(),
-			},
-			ActualTime: actualTime,
-			TargetTime: targetTime,
-			InGap:      false,
-		}
+		result = NewRewindMoment(targetTime, candidateMetadata, isEnd, false)
 	} else {
 		startSeqNum, endSeqNum := track[len(track)-2], track[len(track)-1]
 		result, err = pb.searchInRange(targetTime, startSeqNum, endSeqNum, isEnd)
@@ -253,19 +258,7 @@ func (pb *Playback) searchInRange(
 		}
 	}
 
-	var actualTime time.Time
-	if isEnd {
-		actualTime = candidateMetadata.Time().Add(pb.Info.SegmentDuration)
-	} else {
-		actualTime = candidateMetadata.Time()
-	}
-	return &RewindMoment{
-		Metadata: &segment.Metadata{
-			SequenceNumber:    candidateSeqNum,
-			IngestionWalltime: candidateMetadata.Time(),
-		},
-		ActualTime: actualTime,
-		TargetTime: targetTime,
-		InGap:      isInGap,
-	}, nil
+	moment := NewRewindMoment(targetTime, candidateMetadata, isEnd, isInGap)
+
+	return moment, nil
 }

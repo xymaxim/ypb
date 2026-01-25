@@ -41,7 +41,8 @@ func GenerateSegmentMetadataBytes(t *testing.T, sq int, ingestionWalltime time.T
 	return fmt.Appendf(
 		nil,
 		`Sequence-Number: %d
-Ingestion-Walltime-Us: %d`,
+Ingestion-Walltime-Us: %d
+Target-Duration-Us: 2000000`,
 		sq,
 		ingestionWalltime.UnixMicro(),
 	)

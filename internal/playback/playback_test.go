@@ -115,7 +115,8 @@ func TestPlayback_FetchSegmentMetadata(t *testing.T) {
 
 	metadataBytes := `Sequence-Number: 7959120
 Ingestion-Walltime-Us: 1679787234491176
-Ingestion-Uncertainty-Us: 71`
+Ingestion-Uncertainty-Us: 71
+Target-Duration-Us: 2000000`
 	ts := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
@@ -144,6 +145,7 @@ Ingestion-Uncertainty-Us: 71`
 		&segment.Metadata{
 			SequenceNumber:    7959120,
 			IngestionWalltime: time.Unix(0, 1679787234491176*1e3).In(time.UTC),
+			Duration:          2 * time.Second,
 		},
 		data,
 	)

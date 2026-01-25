@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -80,10 +81,12 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 		0: {
 			SequenceNumber:    0,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+			Duration:          2 * time.Second,
 		},
 		1: {
 			SequenceNumber:    1,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
+			Duration:          2 * time.Second,
 		},
 	}
 
@@ -172,9 +175,11 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 	reference := *metadataMapping[1]
 	for _, tc := range testCases { //nolint:paralleltest
 		t.Run(tc.name, func(t *testing.T) {
-			rm, err := pb.LocateMoment(tc.target, reference, tc.isEnd)
+			moment, err := pb.LocateMoment(tc.target, reference, tc.isEnd)
 			require.NoError(t, err)
-			assert.Equal(t, tc.expected, rm)
+			if diff := cmp.Diff(tc.expected, moment); diff != "" {
+				t.Fatal("Mismatch (- expected, + actual")
+			}
 		})
 	}
 }

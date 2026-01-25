@@ -14,6 +14,7 @@ const MetadataLength int64 = 2000
 type Metadata struct {
 	SequenceNumber    int
 	IngestionWalltime time.Time
+	Duration          time.Duration
 }
 
 // Time returns a timestamp associated with a segment.
@@ -44,9 +45,22 @@ func ParseMetadata(b []byte) (*Metadata, error) {
 		)
 	}
 
+	rawDurationUs, err := extractMetadataField(b, "Target-Duration-Us")
+	if err != nil {
+		return nil, err
+	}
+	durationUs, err := strconv.ParseInt(rawDurationUs, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"converting 'Target-Duration-Us': %w",
+			err,
+		)
+	}
+
 	return &Metadata{
 		SequenceNumber:    sequenceNumber,
 		IngestionWalltime: time.Unix(0, ingestionWalltimeUs*1e3).In(time.UTC),
+		Duration:          time.Duration(durationUs) * time.Microsecond,
 	}, nil
 }
 
