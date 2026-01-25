@@ -64,6 +64,8 @@ func extractAndParse[T any](b []byte, field string, parse parser[T]) (T, error) 
 	return value, nil
 }
 
+// extractMetadataField extracts the value of a metadata field from b. Accepts
+// both CRLF (\r\n) and LF (\n) line endings.
 func extractMetadataField(b []byte, field string) (string, error) {
 	token := []byte(field + ": ")
 	index := bytes.Index(b, token)
@@ -71,14 +73,14 @@ func extractMetadataField(b []byte, field string) (string, error) {
 		return "", fmt.Errorf("field '%s' not present", field)
 	}
 
-	valueStart := index + len(token)
-	lineEndRel := bytes.IndexAny(b[valueStart:], "\r\n")
 	var valueBytes []byte
+	valueStart := index + len(token)
+	lineEndRel := bytes.IndexByte(b[valueStart:], '\n')
 	if lineEndRel == -1 {
 		valueBytes = b[valueStart:]
 	} else {
 		valueBytes = b[valueStart : valueStart+lineEndRel]
 	}
 
-	return string(valueBytes), nil
+	return string(bytes.TrimRight(valueBytes, "\r")), nil
 }
