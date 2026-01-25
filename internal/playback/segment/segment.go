@@ -28,8 +28,7 @@ func ParseMetadata(b []byte) (*Metadata, error) {
 	var m Metadata
 	var err error
 
-	m.SequenceNumber, err = extractAndParse(b, "Sequence-Number",
-		func(s string) (int, error) { return strconv.Atoi(s) })
+	m.SequenceNumber, err = extractAndParse(b, "Sequence-Number", strconv.Atoi)
 	if err != nil {
 		return nil, err
 	}
