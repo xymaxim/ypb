@@ -112,7 +112,7 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now().Add(-time.Duration(78+2) * time.Hour)
 	endTime := startTime.Add(time.Duration(12) * time.Hour)
 
-	interval, _, err := actions.Locate(a.Playback, startTime, endTime, *reference)
+	interval, _, err := actions.LocateInterval(a.Playback, startTime, endTime, *reference)
 	if err != nil {
 		slog.Error("locating interval", "err", err)
 		writeError(w, "Error locating rewind interval", http.StatusInternalServerError)

@@ -17,7 +17,7 @@ import (
 )
 
 //nolint:tparallel
-func TestLocate(t *testing.T) {
+func TestLocateInterval(t *testing.T) {
 	t.Parallel()
 
 	// Test data
@@ -169,7 +169,12 @@ func TestLocate(t *testing.T) {
 	reference := *metadataMapping[1]
 	for _, tc := range testCases { //nolint:paralleltest
 		t.Run(tc.name, func(t *testing.T) {
-			interval, context, err := actions.Locate(pb, tc.start, tc.end, reference)
+			interval, context, err := actions.LocateInterval(
+				pb,
+				tc.start,
+				tc.end,
+				reference,
+			)
 			require.NoError(t, err)
 
 			if diff := cmp.Diff(tc.expectedInterval, interval); diff != "" {

@@ -79,7 +79,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		return cli.Exit(err, 1)
 	}
 
-	interval, actionContext, err := actions.Locate(
+	interval, actionContext, err := actions.LocateInterval(
 		a.Playback,
 		start,
 		end,

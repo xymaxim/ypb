@@ -23,7 +23,7 @@ type LocateOutputContext struct {
 	InputDuration       time.Duration
 }
 
-func Locate(
+func LocateInterval(
 	pb *playback.Playback,
 	start, end input.MomentValue,
 	reference segment.Metadata,
