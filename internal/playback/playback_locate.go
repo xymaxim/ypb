@@ -216,19 +216,8 @@ func (pb *Playback) searchInRange(
 		)
 	}
 
-	// After the previous step the time difference is always positive
+	// After Step 2 the time difference is always positive
 	timeDiff := targetTime.Sub(candidateMetadata.Time())
-	if timeDiff == 0 {
-		return &RewindMoment{
-			Metadata: &segment.Metadata{
-				SequenceNumber:    candidateSeqNum,
-				IngestionWalltime: candidateMetadata.Time(),
-			},
-			ActualTime: targetTime,
-			TargetTime: targetTime,
-			InGap:      false,
-		}, nil
-	}
 
 	// Step 3
 	isInGap := false
