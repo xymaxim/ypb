@@ -51,7 +51,7 @@ func NewRewindMoment(
 ) *RewindMoment {
 	var actual time.Time
 	if isEnd {
-		actual = metadata.Time().Add(metadata.Duration)
+		actual = metadata.EndTime()
 	} else {
 		actual = metadata.Time()
 	}

@@ -46,6 +46,10 @@ func (pb *fakePlayback) LocateMoment(
 	return playback.NewRewindMoment(t, pb.fakeMetadata[0], false, false), nil
 }
 
+func (pb *fakePlayback) RequestHeadSeqNum() (int, error) {
+	return 1, nil
+}
+
 func TestLocateMoment(t *testing.T) {
 	t.Parallel()
 	fakeMetadata := testutil.MetadataMap{
@@ -83,6 +87,16 @@ func TestLocateMoment(t *testing.T) {
 				Metadata:   fakeMetadata[0],
 				ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				TargetTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+				InGap:      false,
+			},
+		},
+		{
+			name:  "now",
+			value: "now",
+			expected: &playback.RewindMoment{
+				Metadata:   fakeMetadata[1],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
 				InGap:      false,
 			},
 		},

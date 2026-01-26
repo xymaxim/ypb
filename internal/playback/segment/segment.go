@@ -24,6 +24,11 @@ func (m *Metadata) Time() time.Time {
 	return m.IngestionWalltime
 }
 
+// EndTime returns the end time of a segment.
+func (m *Metadata) EndTime() time.Time {
+	return m.Time().Add(m.Duration)
+}
+
 func ParseMetadata(b []byte) (*Metadata, error) {
 	var m Metadata
 	var err error

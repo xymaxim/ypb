@@ -41,6 +41,29 @@ func LocateMoment(
 			return nil, fmt.Errorf("fetching segment metadata, sq=%d: %w", v, err)
 		}
 		return playback.NewRewindMoment(sm.Time(), sm, false, false), nil
+	case string:
+		switch v {
+		case "now":
+			sq, err := pb.RequestHeadSeqNum()
+			if err != nil {
+				return nil, fmt.Errorf(
+					"requesting head sequence number, sq=%d: %w",
+					sq,
+					err,
+				)
+			}
+			now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"fetching segment metadata, sq=%d: %w",
+					sq,
+					err,
+				)
+			}
+			return playback.NewRewindMoment(now.Time(), now, false, false), nil
+		default:
+			return nil, fmt.Errorf("got unknown keyword '%s'", v)
+		}
 	default:
 		return nil, fmt.Errorf("got unallowed type %T: %v", v, v)
 	}
@@ -146,18 +169,15 @@ func resolveMoment(
 		if err != nil {
 			return nil, fmt.Errorf("fetching segment metadata: %w", err)
 		}
-		var actualTime time.Time
+
+		var targetTime time.Time
 		if isEnd {
-			actualTime = sm.Time().Add(pb.Info().SegmentDuration)
+			targetTime = sm.EndTime()
 		} else {
-			actualTime = sm.Time()
+			targetTime = sm.Time()
 		}
-		return &playback.RewindMoment{
-			Metadata:   sm,
-			ActualTime: actualTime,
-			TargetTime: actualTime,
-			InGap:      false,
-		}, nil
+
+		return playback.NewRewindMoment(targetTime, sm, isEnd, false), nil
 	default:
 		return nil, fmt.Errorf("got unexpected type %T: %v", v, v)
 	}
