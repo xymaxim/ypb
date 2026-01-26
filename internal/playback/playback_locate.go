@@ -104,7 +104,7 @@ func (pb *Playback) LocateMoment(
 	)
 
 	candidateSeqNum := reference.SequenceNumber
-	candidateMetadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
+	candidate, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"fetching segment metadata for sq=%d: %w",
@@ -120,7 +120,7 @@ func (pb *Playback) LocateMoment(
 			"jump search step",
 			slog.Int("sq", candidateSeqNum),
 			slog.Duration("diff", currentTimeDiff),
-			slog.Time("time", candidateMetadata.Time().In(time.UTC)),
+			slog.Time("time", candidate.Time().In(time.UTC)),
 		)
 
 		if currentTimeDiff >= 0 {
@@ -140,7 +140,7 @@ func (pb *Playback) LocateMoment(
 		jumpSizeSec := currentTimeDiff.Seconds() / pb.Info().SegmentDuration.Seconds()
 		jumpSize := int(math.Floor(jumpSizeSec))
 		candidateSeqNum += jumpSize
-		candidateMetadata, err = pb.FetchSegmentMetadata(
+		candidate, err = pb.FetchSegmentMetadata(
 			pb.ProbeItag(),
 			candidateSeqNum,
 		)
@@ -152,13 +152,13 @@ func (pb *Playback) LocateMoment(
 			)
 		}
 
-		currentTimeDiff = targetTime.Sub(candidateMetadata.Time())
+		currentTimeDiff = targetTime.Sub(candidate.Time())
 	}
 
 	// Step 2
 	var result *RewindMoment
 	if hasSegmentFound {
-		result = NewRewindMoment(targetTime, candidateMetadata, isEnd, false)
+		result = NewRewindMoment(targetTime, candidate, isEnd, false)
 	} else {
 		startSeqNum, endSeqNum := track[len(track)-2], track[len(track)-1]
 		result, err = pb.searchInRange(targetTime, startSeqNum, endSeqNum, isEnd)
@@ -168,7 +168,7 @@ func (pb *Playback) LocateMoment(
 		"moment located",
 		slog.Int("sq", candidateSeqNum),
 		slog.Duration("diff", currentTimeDiff),
-		slog.Time("time", candidateMetadata.Time().In(time.UTC)),
+		slog.Time("time", candidate.Time().In(time.UTC)),
 	)
 
 	return result, err
@@ -207,7 +207,7 @@ func (pb *Playback) searchInRange(
 	})
 
 	candidateSeqNum := startSeqNum + foundIndex - 1
-	candidateMetadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
+	candidate, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"fetching segment metadata for sq=%d: %w",
@@ -217,7 +217,7 @@ func (pb *Playback) searchInRange(
 	}
 
 	// After Step 2 the time difference is always positive
-	timeDiff := targetTime.Sub(candidateMetadata.Time())
+	timeDiff := targetTime.Sub(candidate.Time())
 
 	// Step 3
 	isInGap := false
@@ -226,7 +226,7 @@ func (pb *Playback) searchInRange(
 		isInGap = true
 		if !isEnd {
 			candidateSeqNum += 1
-			candidateMetadata, err = pb.FetchSegmentMetadata(
+			candidate, err = pb.FetchSegmentMetadata(
 				pb.ProbeItag(),
 				candidateSeqNum,
 			)
@@ -237,17 +237,17 @@ func (pb *Playback) searchInRange(
 					err,
 				)
 			}
-			timeDiff = targetTime.Sub(candidateMetadata.Time())
+			timeDiff = targetTime.Sub(candidate.Time())
 			slog.Debug(
 				"took next segment",
 				slog.Duration("diff", timeDiff),
 				slog.Int("sq", candidateSeqNum),
-				slog.Time("time", candidateMetadata.Time()),
+				slog.Time("time", candidate.Time()),
 			)
 		}
 	}
 
-	moment := NewRewindMoment(targetTime, candidateMetadata, isEnd, isInGap)
+	moment := NewRewindMoment(targetTime, candidate, isEnd, isInGap)
 
 	return moment, nil
 }
