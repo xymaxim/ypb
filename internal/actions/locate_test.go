@@ -134,7 +134,7 @@ func TestLocateMoment(t *testing.T) {
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := *fakeMetadata[len(fakeMetadata)-1]
+	reference := fakeMetadata[len(fakeMetadata)-1]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -259,7 +259,7 @@ func TestLocateInterval(t *testing.T) {
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := *fakeMetadata[len(fakeMetadata)-1]
+	reference := fakeMetadata[len(fakeMetadata)-1]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()

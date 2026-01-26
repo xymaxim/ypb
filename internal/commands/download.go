@@ -83,7 +83,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		a.Playback,
 		start,
 		end,
-		*reference,
+		reference,
 	)
 	if err != nil {
 		return cli.Exit(err, 1)
