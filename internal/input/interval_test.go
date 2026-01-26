@@ -17,18 +17,23 @@ func TestParseIntervalPart(t *testing.T) {
 		wantErr   bool
 		wantValue any
 	}{
+		// Sequence number
 		{
 			name:      "sequence number",
 			input:     "123",
 			wantErr:   false,
 			wantValue: 123,
 		},
+
+		// Unix timestamp
 		{
 			name:      "unix timestamp",
 			input:     "@1767349230",
 			wantErr:   false,
 			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 		},
+
+		// Date and time
 		{
 			name:    "only local date",
 			input:   "2026-01-02",
@@ -116,6 +121,46 @@ func TestParseIntervalPart(t *testing.T) {
 				time.FixedZone("+01:00", 3600),
 			),
 		},
+
+		// Only time
+		{
+			name:    "only local time",
+			input:   "10:20:30",
+			wantErr: false,
+			wantValue: func() time.Time {
+				now := time.Now()
+				return time.Date(
+					now.Year(),
+					now.Month(),
+					now.Day(),
+					10,
+					20,
+					30,
+					0,
+					time.Local, //nolint:gosmopolitan
+				)
+			}(),
+		},
+		{
+			name:    "only time with time zone",
+			input:   "10:20:30+00",
+			wantErr: false,
+			wantValue: func() time.Time {
+				now := time.Now()
+				return time.Date(
+					now.Year(),
+					now.Month(),
+					now.Day(),
+					10,
+					20,
+					30,
+					0,
+					time.UTC,
+				)
+			}(),
+		},
+
+		// Duration
 		{
 			name:      "full duration",
 			input:     "1d2h30m40s",
@@ -128,6 +173,8 @@ func TestParseIntervalPart(t *testing.T) {
 			wantErr:   false,
 			wantValue: time.Duration(7240000000000),
 		},
+
+		// Keywords
 		{
 			name:      "now keyword",
 			input:     "now",
@@ -241,8 +288,6 @@ func TestParseInterval(t *testing.T) {
 			wantStart: 123,
 			wantEnd:   456,
 		},
-
-		// Failure cases
 		{
 			name:    "now at start",
 			input:   "now/456",
