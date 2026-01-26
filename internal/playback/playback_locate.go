@@ -104,7 +104,7 @@ func (pb *Playback) LocateMoment(
 	)
 
 	candidateSeqNum := reference.SequenceNumber
-	candidateMetadata, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), candidateSeqNum)
+	candidateMetadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"fetching segment metadata for sq=%d: %w",
@@ -141,7 +141,7 @@ func (pb *Playback) LocateMoment(
 		jumpSize := int(math.Floor(jumpSizeSec))
 		candidateSeqNum += jumpSize
 		candidateMetadata, err = pb.FetchSegmentMetadata(
-			pb.GetReferenceItag(),
+			pb.ProbeItag(),
 			candidateSeqNum,
 		)
 		if err != nil {
@@ -181,7 +181,7 @@ func (pb *Playback) searchInRange(
 	isEnd bool,
 ) (*RewindMoment, error) {
 	getBisectedTime := func(seqNum SequenceNumber, targetTime time.Time) (time.Time, error) {
-		metadata, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), seqNum)
+		metadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), seqNum)
 		if err != nil {
 			return time.Time{}, fmt.Errorf(
 				"fetching segment metadata for sq=%d: %w",
@@ -207,7 +207,7 @@ func (pb *Playback) searchInRange(
 	})
 
 	candidateSeqNum := startSeqNum + foundIndex - 1
-	candidateMetadata, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), candidateSeqNum)
+	candidateMetadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"fetching segment metadata for sq=%d: %w",
@@ -227,7 +227,7 @@ func (pb *Playback) searchInRange(
 		if !isEnd {
 			candidateSeqNum += 1
 			candidateMetadata, err = pb.FetchSegmentMetadata(
-				pb.GetReferenceItag(),
+				pb.ProbeItag(),
 				candidateSeqNum,
 			)
 			if err != nil {

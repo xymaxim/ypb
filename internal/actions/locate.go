@@ -36,7 +36,7 @@ func LocateMoment(
 		}
 		return out, nil
 	case playback.SequenceNumber:
-		sm, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), v)
+		sm, err := pb.FetchSegmentMetadata(pb.ProbeItag(), v)
 		if err != nil {
 			return nil, fmt.Errorf("fetching segment metadata, sq=%d: %w", v, err)
 		}
@@ -142,7 +142,7 @@ func resolveMoment(
 		}
 		return m, nil
 	case playback.SequenceNumber:
-		sm, err := pb.FetchSegmentMetadata(pb.GetReferenceItag(), v)
+		sm, err := pb.FetchSegmentMetadata(pb.ProbeItag(), v)
 		if err != nil {
 			return nil, fmt.Errorf("fetching segment metadata: %w", err)
 		}

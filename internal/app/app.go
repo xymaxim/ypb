@@ -99,7 +99,7 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	reference, err := a.Playback.FetchSegmentMetadata(
-		a.Playback.GetReferenceItag(),
+		a.Playback.ProbeItag(),
 		referenceSeqNum,
 	)
 	if err != nil {

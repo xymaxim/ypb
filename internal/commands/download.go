@@ -72,7 +72,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		return cli.Exit(err, 1)
 	}
 	reference, err := a.Playback.FetchSegmentMetadata(
-		a.Playback.GetReferenceItag(),
+		a.Playback.ProbeItag(),
 		referenceSeqNum,
 	)
 	if err != nil {

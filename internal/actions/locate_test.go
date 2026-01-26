@@ -34,7 +34,7 @@ func (pb *fakePlayback) FetchSegmentMetadata(
 	return pb.fakeMetadata[sq], nil
 }
 
-func (pb *fakePlayback) GetReferenceItag() string {
+func (pb *fakePlayback) ProbeItag() string {
 	return "100"
 }
 

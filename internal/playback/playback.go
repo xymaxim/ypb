@@ -21,7 +21,7 @@ type Playbacker interface {
 	BaseURLs() map[string]string
 	DownloadSegment(itag string, sq SequenceNumber) ([]byte, error)
 	FetchSegmentMetadata(itag string, sq SequenceNumber) (*segment.Metadata, error)
-	GetReferenceItag() string
+	ProbeItag() string
 	Info() info.VideoInformation
 	LocateMoment(time.Time, segment.Metadata, bool) (*RewindMoment, error)
 	RefreshBaseURLs() error
@@ -85,7 +85,7 @@ func (pb *Playback) RefreshBaseURLs() error {
 }
 
 func (pb *Playback) RequestHeadSeqNum() (int, error) {
-	baseURL := pb.BaseURLs()[pb.GetReferenceItag()]
+	baseURL := pb.BaseURLs()[pb.ProbeItag()]
 	resp, err := pb.client.Head(baseURL)
 	if err != nil {
 		return -1, fmt.Errorf("doing request: %w", err)
@@ -105,7 +105,7 @@ func (pb *Playback) RequestHeadSeqNum() (int, error) {
 	return result, nil
 }
 
-func (pb *Playback) GetReferenceItag() string {
+func (pb *Playback) ProbeItag() string {
 	return pb.Info().VideoStreams[0].Itag
 }
 
