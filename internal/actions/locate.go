@@ -40,7 +40,7 @@ func LocateInterval(
 	start, end input.MomentValue,
 	reference segment.Metadata,
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
-	interval, err := locateInterval(pb, start, end, reference)
+	interval, err := locateStartAndEnd(pb, start, end, reference)
 	if err != nil {
 		return nil, nil, fmt.Errorf("locating interval: %w", err)
 	}
@@ -61,8 +61,7 @@ func LocateInterval(
 	return interval, context, err
 }
 
-// LocateInterval finds start and end moments corresponding to the target times.
-func locateInterval(
+func locateStartAndEnd(
 	pb playback.Playbacker,
 	start, end input.MomentValue,
 	reference segment.Metadata,
