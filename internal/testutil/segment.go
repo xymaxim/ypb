@@ -14,6 +14,19 @@ import (
 
 type MetadataMap = map[playback.SequenceNumber]*segment.Metadata
 
+func GenerateFakeSegmentMetadata(count int, duration time.Duration) MetadataMap {
+	t := time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)
+	out := make(MetadataMap, count)
+	for i := range count {
+		out[i] = &segment.Metadata{
+			SequenceNumber:    i,
+			IngestionWalltime: t.Add(time.Duration(i) * duration),
+			Duration:          duration,
+		}
+	}
+	return out
+}
+
 func MakeSegmentMetadataHandler(
 	t *testing.T,
 	data MetadataMap,

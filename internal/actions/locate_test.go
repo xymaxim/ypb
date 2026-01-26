@@ -27,13 +27,6 @@ func newFakePlayback(data testutil.MetadataMap) *fakePlayback {
 	}
 }
 
-func (pb *fakePlayback) FetchSegmentMetadata(
-	_ string,
-	sq playback.SequenceNumber,
-) (*segment.Metadata, error) {
-	return pb.fakeMetadata[sq], nil
-}
-
 func (pb *fakePlayback) Info() info.VideoInformation {
 	return info.VideoInformation{
 		ID:    "abcdefgh123",
@@ -43,6 +36,17 @@ func (pb *fakePlayback) Info() info.VideoInformation {
 
 func (pb *fakePlayback) ProbeItag() string {
 	return ""
+}
+
+func (pb *fakePlayback) RequestHeadSeqNum() (int, error) {
+	return pb.fakeMetadata[len(pb.fakeMetadata)-1].SequenceNumber, nil
+}
+
+func (pb *fakePlayback) FetchSegmentMetadata(
+	_ string,
+	sq playback.SequenceNumber,
+) (*segment.Metadata, error) {
+	return pb.fakeMetadata[sq], nil
 }
 
 // LocateMoment returns the rewind moment corresponds the target time. For tests
@@ -88,25 +92,10 @@ func (pb *fakePlayback) LocateMoment(
 	return playback.NewRewindMoment(t, m, isEnd, false), nil
 }
 
-func (pb *fakePlayback) RequestHeadSeqNum() (int, error) {
-	return 1, nil
-}
-
 func TestLocateMoment(t *testing.T) {
 	t.Parallel()
-	fakeMetadata := testutil.MetadataMap{
-		0: {
-			SequenceNumber:    0,
-			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
-			Duration:          2 * time.Second,
-		},
-		1: {
-			SequenceNumber:    1,
-			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
-			Duration:          2 * time.Second,
-		},
-	}
 
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
 	testCases := []struct {
 		name     string
 		value    input.MomentValue
@@ -136,23 +125,20 @@ func TestLocateMoment(t *testing.T) {
 			name:  "now",
 			value: "now",
 			expected: &playback.RewindMoment{
-				Metadata:   fakeMetadata[1],
-				ActualTime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
-				TargetTime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
+				Metadata:   fakeMetadata[2],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
 				InGap:      false,
 			},
 		},
 	}
 
 	pb := newFakePlayback(fakeMetadata)
+	reference := *fakeMetadata[2]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			moment, err := actions.LocateMoment(
-				pb,
-				tc.value,
-				*fakeMetadata[1],
-			)
+			moment, err := actions.LocateMoment(pb, tc.value, reference)
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expected, moment); diff != "" {
 				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
@@ -163,20 +149,9 @@ func TestLocateMoment(t *testing.T) {
 
 func TestLocateInterval(t *testing.T) {
 	t.Parallel()
-	fakeMetadata := testutil.MetadataMap{
-		0: {
-			SequenceNumber:    0,
-			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
-			Duration:          2 * time.Second,
-		},
-		1: {
-			SequenceNumber:    1,
-			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 32, 0, time.UTC),
-			Duration:          2 * time.Second,
-		},
-	}
 
-	// Test cases
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
+
 	expectedInterval := &playback.RewindInterval{
 		Start: &playback.RewindMoment{
 			Metadata:   fakeMetadata[0],
@@ -256,6 +231,7 @@ func TestLocateInterval(t *testing.T) {
 	}
 
 	pb := newFakePlayback(fakeMetadata)
+	reference := *fakeMetadata[2]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -263,10 +239,9 @@ func TestLocateInterval(t *testing.T) {
 				pb,
 				tc.start,
 				tc.end,
-				*fakeMetadata[1],
+				reference,
 			)
 			require.NoError(t, err)
-
 			if diff := cmp.Diff(tc.expectedInterval, interval); diff != "" {
 				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
 			}
