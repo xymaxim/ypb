@@ -44,23 +44,11 @@ func LocateMoment(
 	case string:
 		switch v {
 		case "now":
-			sq, err := pb.RequestHeadSeqNum()
+			out, err := resolveMoment(pb, v, reference, false)
 			if err != nil {
-				return nil, fmt.Errorf(
-					"requesting head sequence number, sq=%d: %w",
-					sq,
-					err,
-				)
+				return nil, fmt.Errorf("resolving moment: %w", err)
 			}
-			now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"fetching segment metadata, sq=%d: %w",
-					sq,
-					err,
-				)
-			}
-			return playback.NewRewindMoment(now.Time(), now, false, false), nil
+			return out, nil
 		default:
 			return nil, fmt.Errorf("got unknown keyword '%s'", v)
 		}
@@ -130,30 +118,13 @@ func locateInterval(
 		case string:
 			switch e {
 			case "now":
-				sq, err := pb.RequestHeadSeqNum()
+				endMoment, err := resolveMoment(pb, e, reference, true)
 				if err != nil {
-					return nil, fmt.Errorf(
-						"requesting head sequence number, sq=%d: %w",
-						sq,
-						err,
-					)
-				}
-				now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
-				if err != nil {
-					return nil, fmt.Errorf(
-						"fetching segment metadata, sq=%d: %w",
-						sq,
-						err,
-					)
+					return nil, fmt.Errorf("resolving end moment: %w", err)
 				}
 				return &playback.RewindInterval{
 					Start: startMoment,
-					End: playback.NewRewindMoment(
-						now.EndTime(),
-						now,
-						true,
-						false,
-					),
+					End:   endMoment,
 				}, nil
 			default:
 				return nil, fmt.Errorf("got unknown keyword '%s'", e)
@@ -175,6 +146,25 @@ func locateInterval(
 				Start: startMoment,
 				End:   endMoment,
 			}, nil
+		case string:
+			switch e {
+			case "now":
+				endMoment, err := resolveMoment(pb, e, reference, true)
+				if err != nil {
+					return nil, fmt.Errorf("resolving end moment: %w", err)
+				}
+				targetTime := endMoment.Metadata.EndTime().Add(-s)
+				startMoment, err := resolveMoment(pb, targetTime, reference, false)
+				if err != nil {
+					return nil, fmt.Errorf("resolving start moment: %w", err)
+				}
+				return &playback.RewindInterval{
+					Start: startMoment,
+					End:   endMoment,
+				}, nil
+			default:
+				return nil, fmt.Errorf("got unknown keyword '%s'", e)
+			}
 		case time.Duration:
 			return nil, errors.New("two durations are not allowed")
 		}
@@ -209,6 +199,34 @@ func resolveMoment(
 		}
 
 		return playback.NewRewindMoment(targetTime, sm, isEnd, false), nil
+	case string:
+		switch v {
+		case "now":
+			sq, err := pb.RequestHeadSeqNum()
+			if err != nil {
+				return nil, fmt.Errorf(
+					"requesting head sequence number, sq=%d: %w",
+					sq,
+					err,
+				)
+			}
+			now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"fetching segment metadata, sq=%d: %w",
+					sq,
+					err,
+				)
+			}
+			return &playback.RewindMoment{
+				Metadata:   now,
+				TargetTime: now.EndTime(),
+				ActualTime: now.EndTime(),
+				InGap:      false,
+			}, nil
+		default:
+			return nil, fmt.Errorf("got unknown keyword '%s'", v)
+		}
 	default:
 		return nil, fmt.Errorf("got unexpected type %T: %v", v, v)
 	}

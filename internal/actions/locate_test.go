@@ -126,15 +126,15 @@ func TestLocateMoment(t *testing.T) {
 			value: "now",
 			expected: &playback.RewindMoment{
 				Metadata:   fakeMetadata[2],
-				ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
-				TargetTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
 				InGap:      false,
 			},
 		},
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := *fakeMetadata[2]
+	reference := *fakeMetadata[len(fakeMetadata)-1]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -186,6 +186,7 @@ func TestLocateInterval(t *testing.T) {
 		expectedInterval *playback.RewindInterval
 		expectedContext  *actions.LocateOutputContext
 	}{
+		// Time at start
 		{
 			name:             "time and time",
 			start:            time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
@@ -201,19 +202,14 @@ func TestLocateInterval(t *testing.T) {
 			expectedContext:  expectedContext,
 		},
 		{
-			name:             "duration and time",
-			start:            4 * time.Second,
-			end:              time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
-			expectedInterval: expectedInterval,
-			expectedContext:  expectedContext,
-		},
-		{
 			name:             "time and sequence number",
 			start:            time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 			end:              1,
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
+
+		// Sequence number at start
 		{
 			name:             "sequence number and time",
 			start:            0,
@@ -228,9 +224,34 @@ func TestLocateInterval(t *testing.T) {
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
+
+		// Duration at start
+		{
+			name:             "duration and time",
+			start:            4 * time.Second,
+			end:              time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
+			expectedInterval: expectedInterval,
+			expectedContext:  expectedContext,
+		},
+
+		// 'Now' at end
+		{
+			name:             "time and now",
+			start:            time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+			end:              "now",
+			expectedInterval: expectedInterval,
+			expectedContext:  expectedContext,
+		},
 		{
 			name:             "sequence number and now",
 			start:            0,
+			end:              "now",
+			expectedInterval: expectedInterval,
+			expectedContext:  expectedContext,
+		},
+		{
+			name:             "duration and now",
+			start:            4 * time.Second,
 			end:              "now",
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
