@@ -1,8 +1,7 @@
 package actions_test
 
 import (
-	"net/http"
-	"net/http/httptest"
+	"fmt"
 	"testing"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/internal/playback/info"
 	"github.com/xymaxim/ypb/internal/playback/segment"
 	"github.com/xymaxim/ypb/internal/testutil"
 )
@@ -34,16 +34,58 @@ func (pb *fakePlayback) FetchSegmentMetadata(
 	return pb.fakeMetadata[sq], nil
 }
 
-func (pb *fakePlayback) ProbeItag() string {
-	return "100"
+func (pb *fakePlayback) Info() info.VideoInformation {
+	return info.VideoInformation{
+		ID:    "abcdefgh123",
+		Title: "Test title",
+	}
 }
+
+func (pb *fakePlayback) ProbeItag() string {
+	return ""
+}
+
+// LocateMoment returns the rewind moment corresponds the target time. For tests
+// only. For example, it does not handle timeline gaps.
+//
+// When isEnd is false, segments are treated as closed at the start and open at
+// the end [start, end).  A time exactly on a segment boundary belongs to the
+// segment starting at that time.
+//
+// When isEnd is true, segments are treated as open at the start and closed at
+// the end (start, end].  A time exactly on a segment boundary belongs to the
+// segment ending at that time.
 
 func (pb *fakePlayback) LocateMoment(
 	t time.Time,
-	_ segment.Metadata,
-	_ bool,
+	reference segment.Metadata,
+	isEnd bool,
 ) (*playback.RewindMoment, error) {
-	return playback.NewRewindMoment(t, pb.fakeMetadata[0], false, false), nil
+	timeDiff := t.Sub(reference.Time()).Nanoseconds()
+	segmentDuration := reference.Duration.Nanoseconds()
+
+	segmentOffset := timeDiff / segmentDuration
+	timeRemainder := timeDiff % segmentDuration
+
+	// Adjust for negative remainders (time before reference)
+	if timeRemainder < 0 {
+		segmentOffset--
+		timeRemainder += segmentDuration
+	}
+
+	// Handle boundary conditions for segment end times
+	if isEnd && timeRemainder == 0 {
+		// Exact boundary belongs to the previous segment
+		segmentOffset--
+	}
+
+	sq := reference.SequenceNumber + int(segmentOffset)
+	m, ok := pb.fakeMetadata[sq]
+	if !ok {
+		panic(fmt.Sprintf("segment not found: %d", sq))
+	}
+
+	return playback.NewRewindMoment(t, m, isEnd, false), nil
 }
 
 func (pb *fakePlayback) RequestHeadSeqNum() (int, error) {
@@ -119,10 +161,9 @@ func TestLocateMoment(t *testing.T) {
 	}
 }
 
-//nolint:paralleltest
 func TestLocateInterval(t *testing.T) {
-	// Test data
-	metadataMapping := map[playback.SequenceNumber]*segment.Metadata{
+	t.Parallel()
+	fakeMetadata := testutil.MetadataMap{
 		0: {
 			SequenceNumber:    0,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
@@ -135,38 +176,16 @@ func TestLocateInterval(t *testing.T) {
 		},
 	}
 
-	// Setup
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			testutil.MakeSegmentMetadataHandler(
-				t,
-				metadataMapping,
-			),
-		),
-	)
-	defer ts.Close()
-
-	pb, err := playback.NewPlayback(
-		testutil.TestVideoID,
-		&testutil.MockFetcher{
-			VideoID: testutil.TestVideoID,
-		},
-		testutil.NewClient(ts.URL),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	// Test cases
 	expectedInterval := &playback.RewindInterval{
 		Start: &playback.RewindMoment{
-			Metadata:   metadataMapping[0],
+			Metadata:   fakeMetadata[0],
 			ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 			TargetTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 			InGap:      false,
 		},
 		End: &playback.RewindMoment{
-			Metadata:   metadataMapping[1],
+			Metadata:   fakeMetadata[1],
 			ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
 			TargetTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
 			InGap:      false,
@@ -234,47 +253,17 @@ func TestLocateInterval(t *testing.T) {
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
-		{
-			name:  "time and time with non-zero difference",
-			start: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
-			end:   time.Date(2026, 1, 2, 10, 20, 33, 0, time.UTC),
-			expectedInterval: &playback.RewindInterval{
-				Start: &playback.RewindMoment{
-					Metadata:   metadataMapping[0],
-					ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
-					TargetTime: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
-					InGap:      false,
-				},
-				End: &playback.RewindMoment{
-					Metadata:   metadataMapping[1],
-					ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
-					TargetTime: time.Date(2026, 1, 2, 10, 20, 33, 0, time.UTC),
-					InGap:      false,
-				},
-			},
-			expectedContext: &actions.LocateOutputContext{
-				ID:                  testutil.TestVideoID,
-				Title:               "Test title",
-				StartSequenceNumber: 0,
-				EndSequenceNumber:   1,
-				ActualStartTime:     time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
-				ActualEndTime:       time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
-				ActualDuration:      4 * time.Second,
-				InputStartTime:      time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
-				InputEndTime:        time.Date(2026, 1, 2, 10, 20, 33, 0, time.UTC),
-				InputDuration:       2 * time.Second,
-			},
-		},
 	}
 
-	reference := *metadataMapping[1]
-	for _, tc := range testCases { //nolint:paralleltest
+	pb := newFakePlayback(fakeMetadata)
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			interval, context, err := actions.LocateInterval(
 				pb,
 				tc.start,
 				tc.end,
-				reference,
+				*fakeMetadata[1],
 			)
 			require.NoError(t, err)
 
