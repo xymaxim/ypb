@@ -16,10 +16,39 @@ import (
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 
-//nolint:paralleltest
+type fakePlayback struct {
+	*playback.Playback
+	fakeMetadata testutil.MetadataMap
+}
+
+func newFakePlayback(data testutil.MetadataMap) *fakePlayback {
+	return &fakePlayback{
+		fakeMetadata: data,
+	}
+}
+
+func (pb *fakePlayback) FetchSegmentMetadata(
+	_ string,
+	sq playback.SequenceNumber,
+) (*segment.Metadata, error) {
+	return pb.fakeMetadata[sq], nil
+}
+
+func (pb *fakePlayback) GetReferenceItag() string {
+	return "100"
+}
+
+func (pb *fakePlayback) LocateMoment(
+	t time.Time,
+	_ segment.Metadata,
+	_ bool,
+) (*playback.RewindMoment, error) {
+	return playback.NewRewindMoment(t, pb.fakeMetadata[0], false, false), nil
+}
+
 func TestLocateMoment(t *testing.T) {
-	// Test data
-	metadataMapping := map[playback.SequenceNumber]*segment.Metadata{
+	t.Parallel()
+	fakeMetadata := testutil.MetadataMap{
 		0: {
 			SequenceNumber:    0,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
@@ -32,29 +61,6 @@ func TestLocateMoment(t *testing.T) {
 		},
 	}
 
-	// Setup
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			testutil.MakeSegmentMetadataHandler(
-				t,
-				metadataMapping,
-			),
-		),
-	)
-	defer ts.Close()
-
-	pb, err := playback.NewPlayback(
-		testutil.TestVideoID,
-		&testutil.MockFetcher{
-			VideoID: testutil.TestVideoID,
-		},
-		testutil.NewClient(ts.URL),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Test cases
 	testCases := []struct {
 		name     string
 		value    input.MomentValue
@@ -64,7 +70,7 @@ func TestLocateMoment(t *testing.T) {
 			name:  "time",
 			value: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
 			expected: &playback.RewindMoment{
-				Metadata:   metadataMapping[0],
+				Metadata:   fakeMetadata[0],
 				ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				TargetTime: time.Date(2026, 1, 2, 10, 20, 31, 0, time.UTC),
 				InGap:      false,
@@ -74,7 +80,7 @@ func TestLocateMoment(t *testing.T) {
 			name:  "sequence number",
 			value: 0,
 			expected: &playback.RewindMoment{
-				Metadata:   metadataMapping[0],
+				Metadata:   fakeMetadata[0],
 				ActualTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				TargetTime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				InGap:      false,
@@ -82,13 +88,14 @@ func TestLocateMoment(t *testing.T) {
 		},
 	}
 
-	reference := *metadataMapping[1]
-	for _, tc := range testCases { //nolint:paralleltest
+	pb := newFakePlayback(fakeMetadata)
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			moment, err := actions.LocateMoment(
 				pb,
 				tc.value,
-				reference,
+				*fakeMetadata[1],
 			)
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expected, moment); diff != "" {

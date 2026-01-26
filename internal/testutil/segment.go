@@ -12,9 +12,11 @@ import (
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
+type MetadataMap = map[playback.SequenceNumber]*segment.Metadata
+
 func MakeSegmentMetadataHandler(
 	t *testing.T,
-	data map[playback.SequenceNumber]*segment.Metadata,
+	data MetadataMap,
 ) func(w http.ResponseWriter, r *http.Request) {
 	t.Helper()
 	return func(w http.ResponseWriter, r *http.Request) {

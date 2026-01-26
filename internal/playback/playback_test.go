@@ -20,7 +20,7 @@ func TestNewPlayback(t *testing.T) {
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 	pb, err := playback.NewPlayback(testutil.TestVideoID, fetcher, nil)
 	require.NoError(t, err, "creating playback should not error")
-	assert.Equal(t, testutil.TestBaseURLs, pb.BaseURLs)
+	assert.Equal(t, testutil.TestBaseURLs, pb.BaseURLs())
 }
 
 func TestPlayback_RefreshBaseURLs(t *testing.T) {
@@ -35,7 +35,7 @@ func TestPlayback_RefreshBaseURLs(t *testing.T) {
 			"137": "https://test/videoplayback/itag/137/mime/video%2Fmp4/dur/2.000/new",
 			"140": "https://test/videoplayback/itag/140/mime/audio%2Fmp4/dur/2.000/new",
 		},
-		pb.BaseURLs,
+		pb.BaseURLs(),
 	)
 }
 

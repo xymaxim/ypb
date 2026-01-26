@@ -124,7 +124,7 @@ func (pb *Playback) LocateMoment(
 		)
 
 		if currentTimeDiff >= 0 {
-			if currentTimeDiff <= pb.Info.SegmentDuration+timeDiffTolerance {
+			if currentTimeDiff <= pb.Info().SegmentDuration+timeDiffTolerance {
 				hasSegmentFound = true
 				break
 			}
@@ -137,7 +137,7 @@ func (pb *Playback) LocateMoment(
 
 		hasDomainDiscovered = hasSignChanged && (direction == startDirection)
 
-		jumpSizeSec := currentTimeDiff.Seconds() / pb.Info.SegmentDuration.Seconds()
+		jumpSizeSec := currentTimeDiff.Seconds() / pb.Info().SegmentDuration.Seconds()
 		jumpSize := int(math.Floor(jumpSizeSec))
 		candidateSeqNum += jumpSize
 		candidateMetadata, err = pb.FetchSegmentMetadata(
@@ -221,7 +221,7 @@ func (pb *Playback) searchInRange(
 
 	// Step 3
 	isInGap := false
-	if pb.Info.SegmentDuration < timeDiff-timeDiffTolerance {
+	if pb.Info().SegmentDuration < timeDiff-timeDiffTolerance {
 		slog.Info("target time falls inside a gap")
 		isInGap = true
 		if !isEnd {

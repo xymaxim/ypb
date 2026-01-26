@@ -24,7 +24,7 @@ type LocateOutputContext struct {
 }
 
 func LocateMoment(
-	pb *playback.Playback,
+	pb playback.Playbacker,
 	value input.MomentValue,
 	reference segment.Metadata,
 ) (*playback.RewindMoment, error) {
@@ -47,7 +47,7 @@ func LocateMoment(
 }
 
 func LocateInterval(
-	pb *playback.Playback,
+	pb playback.Playbacker,
 	start, end input.MomentValue,
 	reference segment.Metadata,
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
@@ -57,8 +57,8 @@ func LocateInterval(
 	}
 
 	context := &LocateOutputContext{
-		Title:               pb.Info.Title,
-		ID:                  pb.Info.ID,
+		Title:               pb.Info().Title,
+		ID:                  pb.Info().ID,
 		StartSequenceNumber: interval.Start.Metadata.SequenceNumber,
 		EndSequenceNumber:   interval.End.Metadata.SequenceNumber,
 		ActualStartTime:     interval.Start.ActualTime,
@@ -74,7 +74,7 @@ func LocateInterval(
 
 // LocateInterval finds start and end moments corresponding to the target times.
 func locateInterval(
-	pb *playback.Playback,
+	pb playback.Playbacker,
 	start, end input.MomentValue,
 	reference segment.Metadata,
 ) (*playback.RewindInterval, error) {
@@ -129,7 +129,7 @@ func locateInterval(
 }
 
 func resolveMoment(
-	pb *playback.Playback,
+	pb playback.Playbacker,
 	value any,
 	reference segment.Metadata,
 	isEnd bool,
@@ -148,7 +148,7 @@ func resolveMoment(
 		}
 		var actualTime time.Time
 		if isEnd {
-			actualTime = sm.Time().Add(pb.Info.SegmentDuration)
+			actualTime = sm.Time().Add(pb.Info().SegmentDuration)
 		} else {
 			actualTime = sm.Time()
 		}

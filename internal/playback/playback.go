@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/internal/playback/info"
@@ -16,11 +17,24 @@ import (
 
 type SequenceNumber = int
 
+type Playbacker interface {
+	BaseURLs() map[string]string
+	DownloadSegment(itag string, sq SequenceNumber) ([]byte, error)
+	FetchSegmentMetadata(itag string, sq SequenceNumber) (*segment.Metadata, error)
+	GetReferenceItag() string
+	Info() info.VideoInformation
+	LocateMoment(time.Time, segment.Metadata, bool) (*RewindMoment, error)
+	RefreshBaseURLs() error
+	RequestHeadSeqNum() (int, error)
+}
+
+var _ Playbacker = (*Playback)(nil)
+
 type Playback struct {
-	BaseURLs map[string]string
-	Client   *http.Client
-	Fetcher  fetchers.Fetcher
-	Info     info.VideoInformation
+	baseURLs map[string]string
+	client   *http.Client
+	fetcher  fetchers.Fetcher
+	info     info.VideoInformation
 }
 
 func NewPlayback(videoID string, fetcher fetchers.Fetcher, client *http.Client) (*Playback, error) {
@@ -41,30 +55,38 @@ func NewPlayback(videoID string, fetcher fetchers.Fetcher, client *http.Client) 
 		client = NewClient(pb)
 	}
 	pb = &Playback{
-		BaseURLs: baseURLs,
-		Client:   client,
-		Fetcher:  fetcher,
-		Info:     *information,
+		baseURLs: baseURLs,
+		client:   client,
+		fetcher:  fetcher,
+		info:     *information,
 	}
 
 	return pb, nil
 }
 
+func (pb *Playback) BaseURLs() map[string]string {
+	return pb.baseURLs
+}
+
+func (pb *Playback) Info() info.VideoInformation {
+	return pb.info
+}
+
 func (pb *Playback) RefreshBaseURLs() error {
 	slog.Info("refreshing base URLs")
-	baseURLs, err := pb.Fetcher.FetchBaseURLs()
+	baseURLs, err := pb.fetcher.FetchBaseURLs()
 	if err != nil {
 		return fmt.Errorf("fetching base URLs: %w", err)
 	}
 
-	pb.BaseURLs = baseURLs
+	pb.baseURLs = baseURLs
 
 	return nil
 }
 
 func (pb *Playback) RequestHeadSeqNum() (int, error) {
-	baseURL := pb.BaseURLs[pb.GetReferenceItag()]
-	resp, err := pb.Client.Head(baseURL)
+	baseURL := pb.BaseURLs()[pb.GetReferenceItag()]
+	resp, err := pb.client.Head(baseURL)
 	if err != nil {
 		return -1, fmt.Errorf("doing request: %w", err)
 	}
@@ -81,6 +103,10 @@ func (pb *Playback) RequestHeadSeqNum() (int, error) {
 	}
 
 	return result, nil
+}
+
+func (pb *Playback) GetReferenceItag() string {
+	return pb.Info().VideoStreams[0].Itag
 }
 
 func (pb *Playback) DownloadSegment(itag string, sq SequenceNumber) ([]byte, error) {
@@ -104,16 +130,12 @@ func (pb *Playback) FetchSegmentMetadata(
 	return sm, nil
 }
 
-func (pb *Playback) GetReferenceItag() string {
-	return pb.Info.VideoStreams[0].Itag
-}
-
 func (pb *Playback) downloadSegmentPartial(
 	itag string,
 	sq SequenceNumber,
 	length int64,
 ) ([]byte, error) {
-	baseURL := pb.BaseURLs[itag]
+	baseURL := pb.BaseURLs()[itag]
 	if baseURL == "" {
 		return nil, fmt.Errorf("missing base URL for itag '%s'", itag)
 	}
@@ -130,7 +152,7 @@ func (pb *Playback) downloadSegmentPartial(
 	if length > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", length-1))
 	}
-	resp, err := pb.Client.Do(req)
+	resp, err := pb.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("requesting segment: %w", err)
 	}

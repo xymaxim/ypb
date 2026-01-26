@@ -10,11 +10,11 @@ import (
 const segmentMediaURL = "videoplayback/itag/$RepresentationID$/sq/$Number$"
 
 func ComposeStatic(
-	pb *playback.Playback,
+	pb playback.Playbacker,
 	interval *playback.RewindInterval,
 	baseURL string,
 ) ([]byte, error) {
-	segmentDuration := strconv.FormatInt(pb.Info.SegmentDuration.Milliseconds(), 10)
+	segmentDuration := strconv.FormatInt(pb.Info().SegmentDuration.Milliseconds(), 10)
 	mpdInfo := mpd.Information{
 		AvailabilityStartTime: interval.Start.Metadata.Time(),
 		MediaPresentationDuration: interval.End.Metadata.Time().
@@ -28,7 +28,7 @@ func ComposeStatic(
 		},
 	}
 
-	out := mpd.ComposeStaticMPD(mpdInfo, pb.Info)
+	out := mpd.ComposeStaticMPD(mpdInfo, pb.Info())
 
 	return []byte(out), nil
 }

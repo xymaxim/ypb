@@ -2,10 +2,8 @@ package app
 
 import (
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -23,7 +21,7 @@ import (
 var segmentPatternRe = regexp.MustCompile(`^/videoplayback/itag/([0-9]+)/sq/([0-9]+)/?$`)
 
 type App struct {
-	Playback    *playback.Playback
+	Playback    playback.Playbacker
 	Server      *http.Server
 	Config      *Config
 	YtdlpRunner exec.Runner
@@ -141,34 +139,25 @@ func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	itag, sq := matches[1], matches[2]
-	segmentURL, err := url.JoinPath(a.Playback.BaseURLs[itag], "sq", sq)
+	itag, sqRaw := matches[1], matches[2]
+	sq, err := strconv.Atoi(sqRaw)
 	if err != nil {
-		slog.Error("building segment URL", "itag", itag, "sq", sq)
-		writeError(w, "Couldn't build segment URL", http.StatusInternalServerError)
+		slog.Error("parsing sq parameter", "value", sqRaw, "err", err)
+		writeError(w, "parsing sq parameter value: "+sqRaw, http.StatusInternalServerError)
 		return
 	}
 
-	req, err := http.NewRequestWithContext(r.Context(), r.Method, segmentURL, r.Body)
+	segment, err := a.Playback.DownloadSegment(itag, sq)
 	if err != nil {
-		slog.Error("creating request", "url", segmentURL, "err", err)
-		writeError(w, "Couldn't create segment request", http.StatusInternalServerError)
+		slog.Error("downloading segment", "sq", sq, "err", err)
+		writeError(
+			w,
+			fmt.Sprintf("Error downloading segment sq=%d", sq),
+			http.StatusInternalServerError,
+		)
 		return
 	}
-
-	resp, err := a.Playback.Client.Do(req)
-	if err != nil {
-		slog.Error("requesting segment", "url", segmentURL, "err", err)
-		writeError(w, "Error requesting segment", http.StatusInternalServerError)
-		return
-	}
-
-	defer resp.Body.Close()
-	if _, err := io.Copy(w, resp.Body); err != nil {
-		slog.Error("copying response data", "sq", sq, "err", err)
-		writeError(w, "Error copying response data", http.StatusInternalServerError)
-		return
-	}
+	w.Write(segment)
 }
 
 func writeError(w http.ResponseWriter, msg string, code int) {

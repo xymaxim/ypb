@@ -50,7 +50,7 @@ func NewDownloadCommand(a *app.App) *cli.Command {
 				return fmt.Errorf("initializing app: %w", err)
 			}
 
-			fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info.Title)
+			fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
 
 			return runDownload(a, ctx, cmd)
 		},
