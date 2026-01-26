@@ -14,12 +14,23 @@ const (
 	EarliestKeyword = "earliest"
 )
 
+const (
+	OpPlus  = '+'
+	OpMinus = '-'
+)
+
 // MomentValue defines the interface for all moment values.
 type MomentValue any
+
+type MomentExpression struct {
+	Operator    rune
+	Left, Right MomentValue
+}
 
 type ParserResult = gomme.Result[MomentValue, string]
 
 var intervalPart = gomme.Alternative(
+	parseExpression,               // e.g., 2026-01-02T10:20:30+00 - 30s
 	parseDateAndTime,              // e.g., 2026-01-02T10:20:30+00
 	parseDuration,                 // e.g., 1d2h3m4s
 	parseUnixTimestamp,            // e.g., @1767349230
@@ -242,10 +253,7 @@ func parseUnixTimestamp(input string) ParserResult {
 	return gomme.Map(
 		gomme.Preceded(
 			gomme.Token[string]("@"),
-			gomme.Terminated(
-				gomme.Int64[string](),
-				eof[string](),
-			),
+			gomme.Int64[string](),
 		),
 		func(sec int64) (MomentValue, error) {
 			return time.Unix(sec, 0).UTC(), nil
@@ -281,6 +289,49 @@ func parseDuration(input string) ParserResult {
 			return duration, nil
 		},
 	)(input)
+}
+
+func parseExpression(input string) ParserResult {
+	// Parse left operand
+	leftResult := gomme.Terminated(
+		gomme.Alternative(
+			parseDateAndTime,
+			parseUnixTimestamp,
+			parseSequenceNumber,
+			parseKeyword(NowKeyword),
+		),
+		gomme.Whitespace0[string](),
+	)(input)
+	if leftResult.Err != nil {
+		return gomme.Failure[string, MomentValue](
+			gomme.NewError(input, "leftResult"),
+			input,
+		)
+	}
+
+	// Parse operator
+	opResult := gomme.OneOf[string](OpPlus, OpMinus)(leftResult.Remaining)
+
+	// Parse right operand
+	rightResult := gomme.Preceded(
+		gomme.Whitespace0[string](),
+		parseDuration,
+	)(opResult.Remaining)
+	if rightResult.Err != nil {
+		return gomme.Failure[string, MomentValue](
+			gomme.NewError(input, "rightResult"),
+			input,
+		)
+	}
+
+	return gomme.Result[MomentValue, string]{
+		Output: MomentExpression{
+			Left:     leftResult.Output,
+			Operator: opResult.Output,
+			Right:    rightResult.Output,
+		},
+		Remaining: rightResult.Remaining,
+	}
 }
 
 func eof[Input gomme.Bytes]() gomme.Parser[Input, Input] {
