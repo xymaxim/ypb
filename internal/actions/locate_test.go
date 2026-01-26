@@ -123,7 +123,7 @@ func TestLocateMoment(t *testing.T) {
 		},
 		{
 			name:  "now",
-			value: "now",
+			value: input.NowKeyword,
 			expected: &playback.RewindMoment{
 				Metadata:   fakeMetadata[2],
 				ActualTime: time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
@@ -238,21 +238,21 @@ func TestLocateInterval(t *testing.T) {
 		{
 			name:             "time and now",
 			start:            time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
-			end:              "now",
+			end:              input.NowKeyword,
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
 		{
 			name:             "sequence number and now",
 			start:            0,
-			end:              "now",
+			end:              input.NowKeyword,
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
 		{
 			name:             "duration and now",
 			start:            4 * time.Second,
-			end:              "now",
+			end:              input.NowKeyword,
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},

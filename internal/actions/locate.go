@@ -94,7 +94,7 @@ func locateStartAndEnd(
 			}, nil
 		case string:
 			switch e {
-			case "now":
+			case input.NowKeyword:
 				endMoment, err := resolveMoment(pb, e, reference, true)
 				if err != nil {
 					return nil, fmt.Errorf("resolving end moment: %w", err)
@@ -125,7 +125,7 @@ func locateStartAndEnd(
 			}, nil
 		case string:
 			switch e {
-			case "now":
+			case input.NowKeyword:
 				endMoment, err := resolveMoment(pb, e, reference, true)
 				if err != nil {
 					return nil, fmt.Errorf("resolving end moment: %w", err)
@@ -178,7 +178,7 @@ func resolveMoment(
 		return playback.NewRewindMoment(targetTime, sm, isEnd, false), nil
 	case string:
 		switch v {
-		case "now":
+		case input.NowKeyword:
 			sq, err := pb.RequestHeadSeqNum()
 			if err != nil {
 				return nil, fmt.Errorf(
