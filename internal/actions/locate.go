@@ -127,6 +127,37 @@ func locateInterval(
 				Start: startMoment,
 				End:   endMoment,
 			}, nil
+		case string:
+			switch e {
+			case "now":
+				sq, err := pb.RequestHeadSeqNum()
+				if err != nil {
+					return nil, fmt.Errorf(
+						"requesting head sequence number, sq=%d: %w",
+						sq,
+						err,
+					)
+				}
+				now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+				if err != nil {
+					return nil, fmt.Errorf(
+						"fetching segment metadata, sq=%d: %w",
+						sq,
+						err,
+					)
+				}
+				return &playback.RewindInterval{
+					Start: startMoment,
+					End: playback.NewRewindMoment(
+						now.EndTime(),
+						now,
+						true,
+						false,
+					),
+				}, nil
+			default:
+				return nil, fmt.Errorf("got unknown keyword '%s'", e)
+			}
 		}
 	case time.Duration:
 		switch e := end.(type) {

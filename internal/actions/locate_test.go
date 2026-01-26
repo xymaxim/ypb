@@ -150,7 +150,7 @@ func TestLocateMoment(t *testing.T) {
 func TestLocateInterval(t *testing.T) {
 	t.Parallel()
 
-	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(2, 2*time.Second)
 
 	expectedInterval := &playback.RewindInterval{
 		Start: &playback.RewindMoment{
@@ -228,10 +228,17 @@ func TestLocateInterval(t *testing.T) {
 			expectedInterval: expectedInterval,
 			expectedContext:  expectedContext,
 		},
+		{
+			name:             "sequence number and now",
+			start:            0,
+			end:              "now",
+			expectedInterval: expectedInterval,
+			expectedContext:  expectedContext,
+		},
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := *fakeMetadata[2]
+	reference := *fakeMetadata[len(fakeMetadata)-1]
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
