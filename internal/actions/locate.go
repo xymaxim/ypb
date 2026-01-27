@@ -214,28 +214,7 @@ func resolveMoment(
 
 		return playback.NewRewindMoment(targetTime, sm, isEnd, false), nil
 	case input.MomentKeyword:
-		switch v {
-		case input.NowKeyword:
-			sq, err := pb.RequestHeadSeqNum()
-			if err != nil {
-				return nil, fmt.Errorf(
-					"requesting head sequence number, sq=%d: %w",
-					sq,
-					err,
-				)
-			}
-			now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"fetching segment metadata, sq=%d: %w",
-					sq,
-					err,
-				)
-			}
-			return playback.NewRewindMoment(now.EndTime(), now, isEnd, false), nil
-		default:
-			return nil, fmt.Errorf("got unknown keyword '%s'", v)
-		}
+		return resolveKeyword(pb, v, ctx, isEnd)
 	case input.MomentExpression:
 		result, err := evaluateExpression(pb, v, ctx, isEnd)
 		if err != nil {
@@ -284,4 +263,28 @@ func evaluateExpression(
 	}
 
 	return m, nil
+}
+
+func resolveKeyword(
+	pb playback.Playbacker,
+	keyword input.MomentKeyword,
+	ctx *LocateContext,
+	isEnd bool,
+) (*playback.RewindMoment, error) {
+	switch keyword {
+	case input.NowKeyword:
+		sq, err := pb.RequestHeadSeqNum()
+		if err != nil {
+			return nil, fmt.Errorf("requesting head segment: %w", err)
+		}
+
+		now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+		if err != nil {
+			return nil, fmt.Errorf("fetching segment metadata, seq=%d: %w", sq, err)
+		}
+
+		return playback.NewRewindMoment(now.EndTime(), now, isEnd, false), nil
+	default:
+		return nil, fmt.Errorf("unknown keyword: '%s'", keyword)
+	}
 }
