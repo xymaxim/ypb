@@ -126,8 +126,38 @@ func TestLocateMoment(t *testing.T) {
 			value: input.NowKeyword,
 			expected: &playback.RewindMoment{
 				Metadata:   fakeMetadata[2],
-				ActualTime: time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
 				TargetTime: time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
+				InGap:      false,
+			},
+		},
+
+		// Arithmetic expressions
+		{
+			name: "time minus duration",
+			value: input.MomentExpression{
+				Left:     time.Date(2026, 1, 2, 10, 20, 36, 0, time.UTC),
+				Operator: input.OpMinus,
+				Right:    time.Second,
+			},
+			expected: &playback.RewindMoment{
+				Metadata:   fakeMetadata[2],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 35, 0, time.UTC),
+				InGap:      false,
+			},
+		},
+		{
+			name: "now minus duration",
+			value: input.MomentExpression{
+				Left:     input.NowKeyword,
+				Operator: input.OpMinus,
+				Right:    time.Second,
+			},
+			expected: &playback.RewindMoment{
+				Metadata:   fakeMetadata[2],
+				ActualTime: time.Date(2026, 1, 2, 10, 20, 34, 0, time.UTC),
+				TargetTime: time.Date(2026, 1, 2, 10, 20, 35, 0, time.UTC),
 				InGap:      false,
 			},
 		},

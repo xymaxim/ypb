@@ -23,8 +23,9 @@ const (
 type MomentValue any
 
 type MomentExpression struct {
-	Operator    rune
-	Left, Right MomentValue
+	Operator rune
+	Left     MomentValue
+	Right    time.Duration
 }
 
 type ParserResult = gomme.Result[MomentValue, string]
@@ -304,7 +305,7 @@ func parseExpression(input string) ParserResult {
 	)(input)
 	if leftResult.Err != nil {
 		return gomme.Failure[string, MomentValue](
-			gomme.NewError(input, "leftResult"),
+			gomme.NewError(input, "parseExpression"),
 			input,
 		)
 	}
@@ -319,7 +320,7 @@ func parseExpression(input string) ParserResult {
 	)(opResult.Remaining)
 	if rightResult.Err != nil {
 		return gomme.Failure[string, MomentValue](
-			gomme.NewError(input, "rightResult"),
+			gomme.NewError(input, "parseExpression"),
 			input,
 		)
 	}
@@ -328,7 +329,7 @@ func parseExpression(input string) ParserResult {
 		Output: MomentExpression{
 			Left:     leftResult.Output,
 			Operator: opResult.Output,
-			Right:    rightResult.Output,
+			Right:    rightResult.Output.(time.Duration),
 		},
 		Remaining: rightResult.Remaining,
 	}

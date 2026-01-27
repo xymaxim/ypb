@@ -195,16 +195,56 @@ func resolveMoment(
 					err,
 				)
 			}
-			return &playback.RewindMoment{
-				Metadata:   now,
-				TargetTime: now.EndTime(),
-				ActualTime: now.EndTime(),
-				InGap:      false,
-			}, nil
+			return playback.NewRewindMoment(now.EndTime(), now, isEnd, false), nil
 		default:
 			return nil, fmt.Errorf("got unknown keyword '%s'", v)
 		}
+	case input.MomentExpression:
+		result, err := evaluateExpression(pb, v, reference, isEnd)
+		if err != nil {
+			return nil, fmt.Errorf("evaluating expression: %w", err)
+		}
+		return result, nil
 	default:
 		return nil, fmt.Errorf("got unexpected type %T: %v", v, v)
 	}
+}
+
+func evaluateExpression(
+	pb playback.Playbacker,
+	e input.MomentExpression,
+	reference *segment.Metadata,
+	isEnd bool,
+) (*playback.RewindMoment, error) {
+	// Resolve left operand to a concrete time
+	var leftTime time.Time
+	if e.Left == input.NowKeyword {
+		if e.Operator == input.OpPlus {
+			return nil, fmt.Errorf("'%s' cannot be used with plus", input.NowKeyword)
+		}
+		m, err := resolveMoment(pb, e.Left, nil, false)
+		if err != nil {
+			return nil, fmt.Errorf("resolving '%s': %w", input.NowKeyword, err)
+		}
+		leftTime = m.TargetTime
+	} else {
+		leftTime = e.Left.(time.Time)
+	}
+
+	// Apply the operator to calculate target time
+	var targetTime time.Time
+	switch e.Operator {
+	case input.OpPlus:
+		targetTime = leftTime.Add(e.Right)
+	case input.OpMinus:
+		targetTime = leftTime.Add(-e.Right)
+	}
+
+	// Locate and return the moment
+	m, err := pb.LocateMoment(targetTime, *reference, isEnd)
+	if err != nil {
+		return nil, fmt.Errorf("locating time '%v': %w", targetTime, err)
+	}
+
+	return m, nil
 }
