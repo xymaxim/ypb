@@ -210,21 +210,33 @@ func TestParseIntervalPart(t *testing.T) {
 			},
 		},
 		{
-			name:    "unix timestamp plus duration",
-			input:   "@1767349230 + 1h",
+			name:    "only local time plus duration",
+			input:   "10:20:30 + 1h",
 			wantErr: false,
 			wantValue: input.MomentExpression{
-				Left:     time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+				Left: func() time.Time {
+					now := time.Now()
+					return time.Date(
+						now.Year(),
+						now.Month(),
+						now.Day(),
+						10,
+						20,
+						30,
+						0,
+						time.Local, //nolint:gosmopolitan
+					)
+				}(),
 				Operator: input.OpPlus,
 				Right:    time.Hour,
 			},
 		},
 		{
-			name:    "sequence number plus duration",
-			input:   "123 + 1h",
+			name:    "unix timestamp plus duration",
+			input:   "@1767349230 + 1h",
 			wantErr: false,
 			wantValue: input.MomentExpression{
-				Left:     123,
+				Left:     time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				Operator: input.OpPlus,
 				Right:    time.Hour,
 			},
