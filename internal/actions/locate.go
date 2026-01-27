@@ -85,7 +85,7 @@ func LocateInterval(
 		InputDuration:       interval.End.TargetTime.Sub(interval.Start.TargetTime),
 	}
 
-	return interval, context, err
+	return interval, context, nil
 }
 
 func locateStartAndEnd(
