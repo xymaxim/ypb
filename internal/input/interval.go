@@ -9,24 +9,28 @@ import (
 	"github.com/oleiade/gomme"
 )
 
-const (
-	NowKeyword      = "now"
-	EarliestKeyword = "earliest"
-)
-
-const (
-	OpPlus  = '+'
-	OpMinus = '-'
-)
-
 // MomentValue defines the interface for all moment values.
 type MomentValue any
 
+// MomentKeyword represents predefined keywords.
+type MomentKeyword string
+
+const (
+	NowKeyword      MomentKeyword = "now"
+	EarliestKeyword MomentKeyword = "earliest"
+)
+
+// MomentExpression represents a time and date arithmetic expression.
 type MomentExpression struct {
 	Operator rune
 	Left     MomentValue
 	Right    time.Duration
 }
+
+const (
+	OpPlus  = '+'
+	OpMinus = '-'
+)
 
 type ParserResult = gomme.Result[MomentValue, string]
 
@@ -86,15 +90,15 @@ func ParseIntervalPart(input string) (MomentValue, error) {
 	return result.Output, nil
 }
 
-func parseKeyword(keyword string) func(string) ParserResult {
+func parseKeyword(keyword MomentKeyword) func(string) ParserResult {
 	return func(input string) ParserResult {
 		return gomme.Map(
 			gomme.Terminated(
-				gomme.Token[string](keyword),
+				gomme.Token[string](string(keyword)),
 				eof[string](),
 			),
-			func(keyword string) (MomentValue, error) {
-				return keyword, nil
+			func(k string) (MomentValue, error) {
+				return MomentKeyword(k), nil
 			},
 		)(input)
 	}

@@ -179,13 +179,13 @@ func TestParseIntervalPart(t *testing.T) {
 			name:      "now keyword",
 			input:     "now",
 			wantErr:   false,
-			wantValue: "now",
+			wantValue: input.NowKeyword,
 		},
 		{
 			name:      "earliest keyword",
 			input:     "earliest",
 			wantErr:   false,
-			wantValue: "earliest",
+			wantValue: input.MomentKeyword("earliest"),
 		},
 
 		// Arithmetic expressions
@@ -291,7 +291,7 @@ func TestParseInterval(t *testing.T) {
 			input:     "123/now",
 			wantErr:   false,
 			wantStart: 123,
-			wantEnd:   "now",
+			wantEnd:   input.NowKeyword,
 		},
 		{
 			name:      "two sequence numbers with two hyphens",
