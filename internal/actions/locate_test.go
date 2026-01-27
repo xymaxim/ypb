@@ -164,11 +164,12 @@ func TestLocateMoment(t *testing.T) {
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := fakeMetadata[len(fakeMetadata)-1]
+	now := fakeMetadata[len(fakeMetadata)-1]
+	ctx := &actions.LocateContext{Now: now, Reference: now}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			moment, err := actions.LocateMoment(pb, tc.value, reference)
+			moment, err := actions.LocateMoment(pb, tc.value, ctx)
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expected, moment); diff != "" {
 				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
@@ -289,7 +290,8 @@ func TestLocateInterval(t *testing.T) {
 	}
 
 	pb := newFakePlayback(fakeMetadata)
-	reference := fakeMetadata[len(fakeMetadata)-1]
+	now := fakeMetadata[len(fakeMetadata)-1]
+	ctx := &actions.LocateContext{Now: now, Reference: now}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -297,7 +299,7 @@ func TestLocateInterval(t *testing.T) {
 				pb,
 				tc.start,
 				tc.end,
-				reference,
+				ctx,
 			)
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expectedInterval, interval); diff != "" {

@@ -66,27 +66,19 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	}
 
 	fmt.Println("(<<) Locating start and end moments...")
-
-	referenceSeqNum, err := a.Playback.RequestHeadSeqNum()
+	locateContext, err := actions.NewLocateContext(a.Playback, nil)
 	if err != nil {
-		return cli.Exit(err, 1)
-	}
-	reference, err := a.Playback.FetchSegmentMetadata(
-		a.Playback.ProbeItag(),
-		referenceSeqNum,
-	)
-	if err != nil {
-		return cli.Exit(err, 1)
+		return cli.Exit(fmt.Errorf("building locate context: %w", err), 1)
 	}
 
-	interval, actionContext, err := actions.LocateInterval(
+	interval, outputContext, err := actions.LocateInterval(
 		a.Playback,
 		start,
 		end,
-		reference,
+		locateContext,
 	)
 	if err != nil {
-		return cli.Exit(err, 1)
+		return cli.Exit(fmt.Errorf("locating interval: %w", err), 1)
 	}
 
 	fmt.Printf(
@@ -131,7 +123,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return cli.Exit(fmt.Errorf("building URL: %w", err), 1)
 	}
-	err = a.YtdlpRunner.Run(u, "--newline", "--output", buildOutputName(actionContext))
+	err = a.YtdlpRunner.Run(u, "--newline", "--output", buildOutputName(outputContext))
 	if err != nil {
 		return cli.Exit(fmt.Errorf("downloading failed: %w", err), 1)
 	}

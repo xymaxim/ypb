@@ -23,12 +23,39 @@ type LocateOutputContext struct {
 	InputDuration       time.Duration
 }
 
+type LocateContext struct {
+	Now       *segment.Metadata
+	Reference *segment.Metadata
+}
+
+func NewLocateContext(
+	pb playback.Playbacker,
+	reference *segment.Metadata,
+) (*LocateContext, error) {
+	now, err := resolveMoment(pb, input.NowKeyword, nil, false)
+	if err != nil {
+		return nil, fmt.Errorf("resolving '%s': %w", input.NowKeyword, err)
+	}
+
+	if reference == nil {
+		return &LocateContext{
+			Now:       now.Metadata,
+			Reference: now.Metadata,
+		}, nil
+	}
+
+	return &LocateContext{
+		Now:       now.Metadata,
+		Reference: reference,
+	}, nil
+}
+
 func LocateMoment(
 	pb playback.Playbacker,
 	value input.MomentValue,
-	reference *segment.Metadata,
+	ctx *LocateContext,
 ) (*playback.RewindMoment, error) {
-	out, err := resolveMoment(pb, value, reference, false)
+	out, err := resolveMoment(pb, value, ctx, false)
 	if err != nil {
 		return nil, fmt.Errorf("resolving moment: %w", err)
 	}
@@ -38,9 +65,9 @@ func LocateMoment(
 func LocateInterval(
 	pb playback.Playbacker,
 	start, end input.MomentValue,
-	reference *segment.Metadata,
+	ctx *LocateContext,
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
-	interval, err := locateStartAndEnd(pb, start, end, reference)
+	interval, err := locateStartAndEnd(pb, start, end, ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("locating interval: %w", err)
 	}
@@ -64,18 +91,18 @@ func LocateInterval(
 func locateStartAndEnd(
 	pb playback.Playbacker,
 	start, end input.MomentValue,
-	reference *segment.Metadata,
+	ctx *LocateContext,
 ) (*playback.RewindInterval, error) {
 	switch s := start.(type) {
 	case time.Time, playback.SequenceNumber:
-		startMoment, err := resolveMoment(pb, s, reference, false)
+		startMoment, err := resolveMoment(pb, s, ctx, false)
 		if err != nil {
 			return nil, fmt.Errorf("resolving start moment: %w", err)
 		}
 		switch e := end.(type) {
 		case time.Duration:
 			endTime := startMoment.TargetTime.Add(e)
-			endMoment, locErr := pb.LocateMoment(endTime, *reference, true)
+			endMoment, locErr := pb.LocateMoment(endTime, *ctx.Reference, true)
 			if locErr != nil {
 				return nil, fmt.Errorf("locating end moment: %w", locErr)
 			}
@@ -84,7 +111,7 @@ func locateStartAndEnd(
 				End:   endMoment,
 			}, nil
 		case time.Time, playback.SequenceNumber:
-			endMoment, err := resolveMoment(pb, e, reference, true)
+			endMoment, err := resolveMoment(pb, e, ctx, true)
 			if err != nil {
 				return nil, fmt.Errorf("resolving end moment: %w", err)
 			}
@@ -110,12 +137,12 @@ func locateStartAndEnd(
 	case time.Duration:
 		switch e := end.(type) {
 		case time.Time, playback.SequenceNumber:
-			endMoment, err := resolveMoment(pb, e, reference, true)
+			endMoment, err := resolveMoment(pb, e, ctx, true)
 			if err != nil {
 				return nil, fmt.Errorf("resolving end moment: %w", err)
 			}
 			startTime := endMoment.TargetTime.Add(-s)
-			startMoment, locErr := pb.LocateMoment(startTime, *reference, false)
+			startMoment, locErr := pb.LocateMoment(startTime, *ctx.Reference, false)
 			if locErr != nil {
 				return nil, fmt.Errorf("locating start moment: %w", locErr)
 			}
@@ -131,7 +158,7 @@ func locateStartAndEnd(
 					return nil, fmt.Errorf("resolving end moment: %w", err)
 				}
 				targetTime := endMoment.Metadata.EndTime().Add(-s)
-				startMoment, err := resolveMoment(pb, targetTime, reference, false)
+				startMoment, err := resolveMoment(pb, targetTime, ctx, false)
 				if err != nil {
 					return nil, fmt.Errorf("resolving start moment: %w", err)
 				}
@@ -152,17 +179,27 @@ func locateStartAndEnd(
 func resolveMoment(
 	pb playback.Playbacker,
 	value any,
-	reference *segment.Metadata,
+	ctx *LocateContext,
 	isEnd bool,
 ) (*playback.RewindMoment, error) {
 	switch v := value.(type) {
 	case time.Time:
-		m, err := pb.LocateMoment(v, *reference, isEnd)
+		if v.After(ctx.Now.EndTime()) {
+			return nil, fmt.Errorf("time is after now: %v", v)
+		}
+		m, err := pb.LocateMoment(v, *ctx.Reference, isEnd)
 		if err != nil {
 			return nil, fmt.Errorf("locating moment: %w", err)
 		}
 		return m, nil
 	case playback.SequenceNumber:
+		if v > ctx.Now.SequenceNumber {
+			return nil, fmt.Errorf(
+				"%d is not yet available, the latest is %d",
+				v,
+				ctx.Now.SequenceNumber,
+			)
+		}
 		sm, err := pb.FetchSegmentMetadata(pb.ProbeItag(), v)
 		if err != nil {
 			return nil, fmt.Errorf("fetching segment metadata: %w", err)
@@ -200,7 +237,7 @@ func resolveMoment(
 			return nil, fmt.Errorf("got unknown keyword '%s'", v)
 		}
 	case input.MomentExpression:
-		result, err := evaluateExpression(pb, v, reference, isEnd)
+		result, err := evaluateExpression(pb, v, ctx, isEnd)
 		if err != nil {
 			return nil, fmt.Errorf("evaluating expression: %w", err)
 		}
@@ -213,7 +250,7 @@ func resolveMoment(
 func evaluateExpression(
 	pb playback.Playbacker,
 	e input.MomentExpression,
-	reference *segment.Metadata,
+	ctx *LocateContext,
 	isEnd bool,
 ) (*playback.RewindMoment, error) {
 	// Resolve left operand to a concrete time
@@ -241,7 +278,7 @@ func evaluateExpression(
 	}
 
 	// Locate and return the moment
-	m, err := pb.LocateMoment(targetTime, *reference, isEnd)
+	m, err := resolveMoment(pb, targetTime, ctx, isEnd)
 	if err != nil {
 		return nil, fmt.Errorf("locating time '%v': %w", targetTime, err)
 	}
