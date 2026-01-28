@@ -1,4 +1,3 @@
-// This file provides actions for locating moments and intervals.
 package actions
 
 import (
@@ -10,6 +9,27 @@ import (
 	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/playback/segment"
 )
+
+// BadMomentTypeError indicates that an unsupported moment value type was encountered.
+type BadMomentTypeError struct {
+	Value  any
+	Origin string
+}
+
+// NewBadMomentTypeError creates a new BadMomentTypeError.
+func NewBadMomentTypeError(value any, origin string) BadMomentTypeError {
+	return BadMomentTypeError{
+		Value:  value,
+		Origin: origin,
+	}
+}
+
+func (e BadMomentTypeError) Error() string {
+	if e.Origin != "" {
+		return fmt.Sprintf("unsupported type for %s: %T", e.Origin, e.Value)
+	}
+	return fmt.Sprintf("unsupported moment type: %T", e.Value)
+}
 
 // LocateOutputContext contains the resolved details of a located interval.
 type LocateOutputContext struct {
@@ -110,7 +130,7 @@ func locateStartAndEnd(
 	if duration, ok := start.(time.Duration); ok {
 		return locateWithDurationStart(pb, duration, end, ctx)
 	}
-	return nil, fmt.Errorf("unsupported start moment type: %T", start)
+	return nil, NewBadMomentTypeError(start, "start moment")
 }
 
 // isAbsoluteMoment reports whether the value represents an absolute point in time.
@@ -149,7 +169,7 @@ func locateWithAbsoluteStart(
 		return &playback.RewindInterval{Start: startMoment, End: endMoment}, nil
 	}
 
-	return nil, fmt.Errorf("unsupported end moment type with absolute start: %T", end)
+	return nil, NewBadMomentTypeError(end, "end moment (with absolute start)")
 }
 
 // locateWithDurationStart handles intervals where the start is a duration.
@@ -174,7 +194,7 @@ func locateWithDurationStart(
 		}
 		return &playback.RewindInterval{Start: startMoment, End: endMoment}, nil
 	}
-	return nil, fmt.Errorf("unsupported end moment type with duration start: %T", end)
+	return nil, NewBadMomentTypeError(end, "end moment (with duration start)")
 }
 
 // resolveMoment resolves any MomentValue into a RewindMoment.
@@ -194,7 +214,7 @@ func resolveMoment(
 	case input.MomentExpression:
 		return resolveExpression(pb, v, ctx, isEnd)
 	default:
-		return nil, fmt.Errorf("unsupported moment value type: %T", v)
+		return nil, NewBadMomentTypeError(v, "")
 	}
 }
 

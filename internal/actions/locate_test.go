@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -59,7 +60,6 @@ func (pb *fakePlayback) FetchSegmentMetadata(
 // When isEnd is true, segments are treated as open at the start and closed at
 // the end (start, end].  A time exactly on a segment boundary belongs to the
 // segment ending at that time.
-
 func (pb *fakePlayback) LocateMoment(
 	t time.Time,
 	reference segment.Metadata,
@@ -173,6 +173,42 @@ func TestLocateMoment(t *testing.T) {
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expected, moment); diff != "" {
 				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestLocateMoment_Failure(t *testing.T) {
+	t.Parallel()
+
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
+	testCases := []struct {
+		name    string
+		value   input.MomentValue
+		wantErr error
+	}{
+		{
+			name:    "duration",
+			value:   time.Second,
+			wantErr: actions.NewBadMomentTypeError(time.Second, ""),
+		},
+		{
+			name:    "any string",
+			value:   "abc",
+			wantErr: actions.NewBadMomentTypeError("abc", ""),
+		},
+	}
+
+	pb := newFakePlayback(fakeMetadata)
+	now := fakeMetadata[len(fakeMetadata)-1]
+	ctx := &actions.LocateContext{Now: now, Reference: now}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			_, err := actions.LocateMoment(pb, tc.value, ctx)
+			if diff := cmp.Diff(err, tc.wantErr, cmpopts.EquateErrors()); diff != "" {
+				t.Errorf("LocateMoment() error mismatch (-got, +want):\n%s", diff)
 			}
 		})
 	}
@@ -292,6 +328,7 @@ func TestLocateInterval(t *testing.T) {
 	pb := newFakePlayback(fakeMetadata)
 	now := fakeMetadata[len(fakeMetadata)-1]
 	ctx := &actions.LocateContext{Now: now, Reference: now}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
