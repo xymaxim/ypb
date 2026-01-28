@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -82,10 +83,16 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	intervalString := params[1]
-	_, _, err := input.ParseInterval(intervalString)
+	startMoment, endMoment, err := input.ParseInterval(intervalString)
 	if err != nil {
 		slog.Error("parsing input interval", "value", intervalString, "err", err)
 		writeError(w, "Error parsing rewind parameter", http.StatusInternalServerError)
+		return
+	}
+
+	if err := input.ValidateMoments(startMoment, endMoment); err != nil {
+		slog.Error("bad input interval", "err", err)
+		writeError(w, "Bad input interval", http.StatusInternalServerError)
 		return
 	}
 

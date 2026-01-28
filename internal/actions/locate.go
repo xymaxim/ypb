@@ -121,6 +121,10 @@ func LocateInterval(
 	start, end input.MomentValue,
 	ctx *LocateContext,
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
+	if err := validateMoments(start, end, ctx); err != nil {
+		return nil, nil, err
+	}
+
 	interval, err := locateStartAndEnd(pb, start, end, ctx)
 	if err != nil {
 		return nil, nil, err
@@ -140,6 +144,28 @@ func LocateInterval(
 	}
 
 	return interval, context, nil
+}
+
+func validateMoments(start, end input.MomentValue, ctx *LocateContext) error {
+	switch s := start.(type) {
+	case time.Time:
+		if s.After(ctx.Now.EndTime()) {
+			return fmt.Errorf(
+				"start time is after head segment: %v > %v",
+				s,
+				ctx.Now.EndTime(),
+			)
+		}
+	case playback.SequenceNumber:
+		if s > ctx.Now.SequenceNumber {
+			return fmt.Errorf(
+				"start segment %d is after head one %d",
+				s,
+				ctx.Now.SequenceNumber,
+			)
+		}
+	}
+	return nil
 }
 
 // locateStartAndEnd resolves both start and end moments into a RewindInterval.
@@ -180,6 +206,15 @@ func locateWithAbsoluteStart(
 		if err != nil {
 			return nil, NewResolveMomentError(end, true, err)
 		}
+
+		if startMoment.TargetTime.After(endMoment.ActualTime) {
+			return nil, NewResolveMomentError(
+				start,
+				false,
+				fmt.Errorf("start is after end"),
+			)
+		}
+
 		return &playback.RewindInterval{Start: startMoment, End: endMoment}, nil
 	}
 

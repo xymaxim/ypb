@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"log/slog"
@@ -16,7 +15,6 @@ import (
 	"github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/pathutil"
-	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -52,9 +50,9 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 
 	start, end, err := input.ParseInterval(intervalInput)
 	if err != nil {
-		return fmt.Errorf("parsing input interval: w%", err)
+		return fmt.Errorf("parsing input interval: %w", err)
 	}
-	if err := validateInputMoments(start, end); err != nil {
+	if err := input.ValidateMoments(start, end); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
@@ -143,33 +141,4 @@ func buildOutputName(ctx *actions.LocateOutputContext) string {
 		pathutil.FormatTime(ctx.InputStartTime),
 		pathutil.FormatDuration(ctx.InputDuration),
 	)
-}
-
-// validateInputMoments performs preliminary validation on start and end moment values
-// to catch obvious errors before locating them.
-func validateInputMoments(start, end input.MomentValue) error {
-	switch s := start.(type) {
-	case time.Time:
-		if e, ok := end.(time.Time); ok && s.After(e) {
-			return fmt.Errorf("start time is after end time: %v > %v", s, e)
-		}
-
-	case playback.SequenceNumber:
-		if e, ok := end.(playback.SequenceNumber); ok && s > e {
-			return fmt.Errorf(
-				"start segment is after end segment: %d > %d", s, e)
-		}
-
-	case time.Duration:
-		if _, ok := end.(time.Duration); ok {
-			return errors.New("both start and end cannot be durations")
-		}
-
-	case input.MomentKeyword:
-		if s == input.NowKeyword {
-			return fmt.Errorf("'%s' cannot be used at start", input.NowKeyword)
-		}
-	}
-
-	return nil
 }
