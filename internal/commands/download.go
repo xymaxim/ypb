@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"log/slog"
@@ -15,6 +16,7 @@ import (
 	"github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/pathutil"
+	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -34,24 +36,9 @@ func NewDownloadCommand(a *app.App) *cli.Command {
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			videoID := cmd.StringArg("video-id")
-			if videoID == "" {
-				return cli.Exit("ypb download requires a video ID", 2)
+			if cmd.StringArg("video-id") == "" {
+				return fmt.Errorf("%s requires a video ID", cmd.FullName())
 			}
-
-			fmt.Printf(
-				"(<<) Collecting info about %s...\n",
-				urlutil.BuildVideoLiveURL(videoID),
-			)
-			cfg := &app.Config{
-				Port: cmd.Int("port"),
-			}
-			if err := a.Initialize(videoID, cfg); err != nil {
-				return fmt.Errorf("initializing app: %w", err)
-			}
-
-			fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
-
 			return runDownload(a, ctx, cmd)
 		},
 	}
@@ -59,11 +46,28 @@ func NewDownloadCommand(a *app.App) *cli.Command {
 
 func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	intervalInput := cmd.String("interval")
+	if !cmd.IsSet("interval") {
+		return fmt.Errorf("%s requires the --interval flag", cmd.FullName())
+	}
+
 	start, end, err := input.ParseInterval(intervalInput)
 	if err != nil {
-		slog.Error("parsing input interval", "value", intervalInput, "err", err)
-		return err
+		return fmt.Errorf("parsing input interval: w%", err)
 	}
+	if err := validateInputMoments(start, end); err != nil {
+		return fmt.Errorf("bad input interval: %w", err)
+	}
+
+	videoID := cmd.StringArg("video-id")
+	videoURL := urlutil.BuildVideoLiveURL(videoID)
+	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
+
+	cfg := &app.Config{Port: cmd.Int("port")}
+	if err := a.Initialize(videoID, cfg); err != nil {
+		return fmt.Errorf("initializing app: %w", err)
+	}
+
+	fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
 
 	fmt.Println("(<<) Locating start and end moments...")
 	locateContext, err := actions.NewLocateContext(a.Playback, nil)
@@ -139,4 +143,33 @@ func buildOutputName(ctx *actions.LocateOutputContext) string {
 		pathutil.FormatTime(ctx.InputStartTime),
 		pathutil.FormatDuration(ctx.InputDuration),
 	)
+}
+
+// validateInputMoments performs preliminary validation on start and end moment values
+// to catch obvious errors before locating them.
+func validateInputMoments(start, end input.MomentValue) error {
+	switch s := start.(type) {
+	case time.Time:
+		if e, ok := end.(time.Time); ok && s.After(e) {
+			return fmt.Errorf("start time is after end time: %v > %v", s, e)
+		}
+
+	case playback.SequenceNumber:
+		if e, ok := end.(playback.SequenceNumber); ok && s > e {
+			return fmt.Errorf(
+				"start segment is after end segment: %d > %d", s, e)
+		}
+
+	case time.Duration:
+		if _, ok := end.(time.Duration); ok {
+			return errors.New("both start and end cannot be durations")
+		}
+
+	case input.MomentKeyword:
+		if s == input.NowKeyword {
+			return fmt.Errorf("'%s' cannot be used at start", input.NowKeyword)
+		}
+	}
+
+	return nil
 }
