@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -349,6 +350,50 @@ func TestLocateInterval(t *testing.T) {
 			}
 			if diff := cmp.Diff(tc.expectedContext, context); diff != "" {
 				t.Fatalf("Mismatch (- expected, + actual):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestLocateInterval_Failure(t *testing.T) {
+	t.Parallel()
+
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
+
+	testCases := []struct {
+		name    string
+		start   input.MomentValue
+		end     input.MomentValue
+		wantErr error
+	}{
+		{
+			name:  "end time after current moment",
+			start: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+			end:   time.Date(2026, 1, 2, 23, 59, 59, 0, time.UTC),
+			wantErr: actions.NewResolveMomentError(
+				time.Date(2026, 1, 2, 23, 59, 59, 0, time.UTC),
+				true,
+				nil,
+			),
+		},
+	}
+
+	pb := newFakePlayback(fakeMetadata)
+	now := fakeMetadata[len(fakeMetadata)-1]
+	ctx := &actions.LocateContext{Now: now, Reference: now}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			_, _, err := actions.LocateInterval(pb, tc.start, tc.end, ctx)
+
+			var gotErr *actions.ResolveMomentError
+			if !errors.As(err, &gotErr) {
+				t.Fatalf("expected ResolveMomentError, got %T: %v", err, err)
+			}
+			opts := cmpopts.IgnoreFields(actions.ResolveMomentError{}, "Err")
+			if diff := cmp.Diff(gotErr, tc.wantErr, opts); diff != "" {
+				t.Fatalf("error mismatch (- got, + want):\n%s", diff)
 			}
 		})
 	}

@@ -31,6 +31,30 @@ func (e *BadMomentTypeError) Error() string {
 	return fmt.Sprintf("unsupported moment type: %T", e.Value)
 }
 
+// ResolveMomentError wraps errors that occur when resolving a moment value.
+type ResolveMomentError struct {
+	Moment input.MomentValue
+	IsEnd  bool
+	Err    error
+}
+
+// NewResolveMomentError create a ResolveMomentError.
+func NewResolveMomentError(m input.MomentValue, isEnd bool, err error) *ResolveMomentError {
+	return &ResolveMomentError{Moment: m, IsEnd: isEnd, Err: err}
+}
+
+func (e *ResolveMomentError) Error() string {
+	position := "start"
+	if e.IsEnd {
+		position = "end"
+	}
+	return fmt.Sprintf("resolving %s moment '%v': %v", position, e.Moment, e.Err)
+}
+
+func (e *ResolveMomentError) Unwrap() error {
+	return e.Err
+}
+
 // LocateOutputContext contains the resolved details of a located interval.
 type LocateOutputContext struct {
 	ID                  string
@@ -62,7 +86,7 @@ func NewLocateContext(
 ) (*LocateContext, error) {
 	now, err := resolveMoment(pb, input.NowKeyword, nil, false)
 	if err != nil {
-		return nil, fmt.Errorf("resolving '%s': %w", input.NowKeyword, err)
+		return nil, NewResolveMomentError(input.NowKeyword, false, err)
 	}
 
 	if reference == nil {
@@ -86,7 +110,7 @@ func LocateMoment(
 ) (*playback.RewindMoment, error) {
 	out, err := resolveMoment(pb, value, ctx, false)
 	if err != nil {
-		return nil, fmt.Errorf("resolving moment: %w", err)
+		return nil, NewResolveMomentError(value, false, err)
 	}
 	return out, nil
 }
@@ -147,14 +171,14 @@ func locateWithAbsoluteStart(
 ) (*playback.RewindInterval, error) {
 	startMoment, err := resolveMoment(pb, start, ctx, false)
 	if err != nil {
-		return nil, fmt.Errorf("resolving start moment: %w", err)
+		return nil, NewResolveMomentError(start, false, err)
 	}
 
 	// Handle absolute end
 	if isAbsoluteMoment(end) {
 		endMoment, err := resolveMoment(pb, end, ctx, true)
 		if err != nil {
-			return nil, fmt.Errorf("resolving end moment: %w", err)
+			return nil, NewResolveMomentError(end, true, err)
 		}
 		return &playback.RewindInterval{Start: startMoment, End: endMoment}, nil
 	}
@@ -185,7 +209,7 @@ func locateWithDurationStart(
 	if isAbsoluteMoment(end) {
 		endMoment, err := resolveMoment(pb, end, ctx, true)
 		if err != nil {
-			return nil, fmt.Errorf("resolving end moment: %w", err)
+			return nil, NewResolveMomentError(end, true, err)
 		}
 		startTime := endMoment.TargetTime.Add(-startDuration)
 		startMoment, err := pb.LocateMoment(startTime, *ctx.Reference, false)
@@ -303,7 +327,7 @@ func resolveExpression(
 		}
 		moment, err := resolveMoment(pb, expr.Left, nil, false)
 		if err != nil {
-			return nil, fmt.Errorf("resolving '%s': %w", input.NowKeyword, err)
+			return nil, NewResolveMomentError(input.NowKeyword, isEnd, err)
 		}
 		leftTime = moment.TargetTime
 	} else {
