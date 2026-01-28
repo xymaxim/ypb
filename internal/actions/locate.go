@@ -99,7 +99,7 @@ func LocateInterval(
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
 	interval, err := locateStartAndEnd(pb, start, end, ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("locating interval: %w", err)
+		return nil, nil, err
 	}
 
 	context := &LocateOutputContext{
