@@ -1,12 +1,12 @@
 package actions_test
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -178,14 +178,14 @@ func TestLocateMoment(t *testing.T) {
 	}
 }
 
-func TestLocateMoment_Failure(t *testing.T) {
+func TestLocateMoment_BadMomentType(t *testing.T) {
 	t.Parallel()
 
 	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
 	testCases := []struct {
 		name    string
 		value   input.MomentValue
-		wantErr error
+		wantErr *actions.BadMomentTypeError
 	}{
 		{
 			name:    "duration",
@@ -207,8 +207,13 @@ func TestLocateMoment_Failure(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := actions.LocateMoment(pb, tc.value, ctx)
-			if diff := cmp.Diff(err, tc.wantErr, cmpopts.EquateErrors()); diff != "" {
-				t.Errorf("LocateMoment() error mismatch (-got, +want):\n%s", diff)
+
+			var gotErr *actions.BadMomentTypeError
+			if !errors.As(err, &gotErr) {
+				t.Fatalf("expected BadMomentTypeError, got %T: %v", err, err)
+			}
+			if diff := cmp.Diff(gotErr, tc.wantErr); diff != "" {
+				t.Fatalf("error mismatch (- got, + want):\n%s", diff)
 			}
 		})
 	}

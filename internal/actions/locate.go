@@ -17,14 +17,14 @@ type BadMomentTypeError struct {
 }
 
 // NewBadMomentTypeError creates a new BadMomentTypeError.
-func NewBadMomentTypeError(value any, origin string) BadMomentTypeError {
-	return BadMomentTypeError{
+func NewBadMomentTypeError(value any, origin string) *BadMomentTypeError {
+	return &BadMomentTypeError{
 		Value:  value,
 		Origin: origin,
 	}
 }
 
-func (e BadMomentTypeError) Error() string {
+func (e *BadMomentTypeError) Error() string {
 	if e.Origin != "" {
 		return fmt.Sprintf("unsupported type for %s: %T", e.Origin, e.Value)
 	}
@@ -252,7 +252,7 @@ func resolveSequenceNumber(
 
 	metadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
 	if err != nil {
-		return nil, fmt.Errorf("fetching segment metadata, sq=%d: %w", sq, err)
+		return nil, playback.NewSegmentMetadataFetchError(sq, err)
 	}
 
 	targetTime := metadata.Time()
@@ -279,7 +279,7 @@ func resolveKeyword(
 
 		now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
 		if err != nil {
-			return nil, fmt.Errorf("fetching segment metadata, seq=%d: %w", sq, err)
+			return nil, playback.NewSegmentMetadataFetchError(sq, err)
 		}
 
 		return playback.NewRewindMoment(now.EndTime(), now, isEnd, false), nil

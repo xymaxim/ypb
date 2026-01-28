@@ -17,6 +17,24 @@ import (
 
 type SequenceNumber = int
 
+// SegmentFetchError wraps errors that occur when fetching segment metadata.
+type SegmentMetadataFetchError struct {
+	SequenceNumber SequenceNumber
+	Err            error
+}
+
+func NewSegmentMetadataFetchError(sq SequenceNumber, err error) *SegmentMetadataFetchError {
+	return &SegmentMetadataFetchError{SequenceNumber: sq, Err: err}
+}
+
+func (e *SegmentMetadataFetchError) Error() string {
+	return fmt.Sprintf("fetching segment metadata (sq = %d): %v", e.SequenceNumber, e.Err)
+}
+
+func (e *SegmentMetadataFetchError) Unwrap() error {
+	return e.Err
+}
+
 type Playbacker interface {
 	BaseURLs() map[string]string
 	DownloadSegment(itag string, sq SequenceNumber) ([]byte, error)

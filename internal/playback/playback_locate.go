@@ -22,7 +22,6 @@
 package playback
 
 import (
-	"fmt"
 	"log"
 	"log/slog"
 	"math"
@@ -106,11 +105,7 @@ func (pb *Playback) LocateMoment(
 	candidateSeqNum := reference.SequenceNumber
 	candidate, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"fetching segment metadata for sq=%d: %w",
-			candidateSeqNum,
-			err,
-		)
+		return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 	}
 
 	// Step 1
@@ -145,11 +140,7 @@ func (pb *Playback) LocateMoment(
 			candidateSeqNum,
 		)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"fetching segment metadata, sq=%d: %w",
-				candidateSeqNum,
-				err,
-			)
+			return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 		}
 
 		currentTimeDiff = targetTime.Sub(candidate.Time())
@@ -183,11 +174,7 @@ func (pb *Playback) searchInRange(
 	getBisectedTime := func(seqNum SequenceNumber, targetTime time.Time) (time.Time, error) {
 		metadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), seqNum)
 		if err != nil {
-			return time.Time{}, fmt.Errorf(
-				"fetching segment metadata for sq=%d: %w",
-				seqNum,
-				err,
-			)
+			return time.Time{}, NewSegmentMetadataFetchError(seqNum, err)
 		}
 		slog.Debug(
 			"Bisect step",
@@ -209,11 +196,7 @@ func (pb *Playback) searchInRange(
 	candidateSeqNum := startSeqNum + foundIndex - 1
 	candidate, err := pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"fetching segment metadata for sq=%d: %w",
-			candidateSeqNum,
-			err,
-		)
+		return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 	}
 
 	// After Step 2 the time difference is always positive
@@ -231,11 +214,7 @@ func (pb *Playback) searchInRange(
 				candidateSeqNum,
 			)
 			if err != nil {
-				return nil, fmt.Errorf(
-					"fetching segment metadata, sq=%d: %w",
-					candidateSeqNum,
-					err,
-				)
+				return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 			}
 			timeDiff = targetTime.Sub(candidate.Time())
 			slog.Debug(
