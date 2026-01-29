@@ -11,7 +11,6 @@ import (
 
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
-	client.RetryMax = 3
 	client.CheckRetry = makeRetryPolicy(pb)
 	return client
 }
@@ -24,7 +23,7 @@ func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 
 		switch resp.StatusCode {
 		case http.StatusForbidden, http.StatusServiceUnavailable:
-			slog.Warn("got recoverable HTTP error, retrying", "status", resp.StatusCode)
+			slog.Warn("got transient HTTP error, retrying", "status", resp.StatusCode)
 			if resp.StatusCode == http.StatusForbidden {
 				if err := pb.RefreshBaseURLs(); err != nil {
 					return false, fmt.Errorf(
