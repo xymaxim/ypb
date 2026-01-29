@@ -26,9 +26,9 @@ func (pb *fakePlayback) BaseURLs() map[string]string {
 	return pb.baseURLs
 }
 
-func (pb *fakePlayback) RefreshBaseURLs() (err error) {
+func (pb *fakePlayback) RefreshBaseURLs() error {
 	pb.baseURLs = map[string]string{"0": "refreshed"}
-	return
+	return nil
 }
 
 func TestClient_CheckRetry_StatusForbidden(t *testing.T) {
