@@ -119,11 +119,10 @@ func (pb *Playback) LocateMoment(
 			slog.Time("time", candidate.Time().In(time.UTC)),
 		)
 
-		if currentTimeDiff >= 0 {
-			if currentTimeDiff <= pb.Info().SegmentDuration+timeDiffTolerance {
-				hasSegmentFound = true
-				break
-			}
+		maxAllowed := candidate.Duration + timeDiffTolerance
+		if 0 <= currentTimeDiff && currentTimeDiff <= maxAllowed {
+			hasSegmentFound = true
+			break
 		}
 
 		direction := math.Copysign(1, currentTimeDiff.Seconds())
