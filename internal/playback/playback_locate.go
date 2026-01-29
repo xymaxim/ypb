@@ -90,6 +90,7 @@ func (pb *Playback) LocateMoment(
 	var track []SequenceNumber
 
 	currentTimeDiff := targetTime.Sub(reference.Time())
+	slog.Warn("locate", "timeDiff", currentTimeDiff.Seconds())
 	startDirection := math.Copysign(1, currentTimeDiff.Seconds())
 
 	slog.Info(
@@ -132,9 +133,7 @@ func (pb *Playback) LocateMoment(
 
 		hasDomainDiscovered = hasSignChanged && (direction == startDirection)
 
-		jumpSizeSec := currentTimeDiff.Seconds() / pb.Info().SegmentDuration.Seconds()
-		jumpSize := int(math.Floor(jumpSizeSec))
-		candidateSeqNum += jumpSize
+		candidateSeqNum += calculateSegmentOffset(targetTime, *candidate, isEnd)
 		candidate, err = pb.FetchSegmentMetadata(
 			pb.ProbeItag(),
 			candidateSeqNum,
@@ -163,6 +162,31 @@ func (pb *Playback) LocateMoment(
 	)
 
 	return result, err
+}
+
+// calculateSegmentOffset calculates the sequence number offset of the segment
+// that contains time t relative to the provided reference. If isEnd is true, an
+// exact boundary time is treated as belonging to the previous segment.
+func calculateSegmentOffset(t time.Time, reference segment.Metadata, isEnd bool) SequenceNumber {
+	timeDiff := t.Sub(reference.Time()).Nanoseconds()
+	segmentDuration := reference.Duration.Nanoseconds()
+
+	segmentOffset := timeDiff / segmentDuration
+	timeRemainder := timeDiff % segmentDuration
+
+	// Adjust for negative remainders (time before reference)
+	if timeRemainder < 0 {
+		segmentOffset--
+		timeRemainder += segmentDuration
+	}
+
+	// Handle boundary conditions for segment end times
+	if isEnd && timeRemainder == 0 {
+		// Exact boundary belongs to the previous segment
+		segmentOffset--
+	}
+
+	return int(segmentOffset)
 }
 
 // searchinRange performs a binary search within a search domain.

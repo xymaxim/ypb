@@ -66,6 +66,7 @@ func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]
 		mapping[sequenceNumber] = &segment.Metadata{
 			SequenceNumber:    sequenceNumber,
 			IngestionWalltime: time.Unix(0, ingestionWalltimeUs*1e3).In(time.UTC),
+			Duration:          2 * time.Second,
 		}
 	}
 
@@ -280,6 +281,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,
 					IngestionWalltime: referenceTime,
+					Duration:          2 * time.Second,
 				},
 				tc.isEnd,
 			)
@@ -376,6 +378,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,
 					IngestionWalltime: referenceTime,
+					Duration:          2 * time.Second,
 				},
 				tc.isEnd,
 			)
@@ -496,6 +499,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,
 					IngestionWalltime: referenceTime,
+					Duration:          2 * time.Second,
 				},
 				tc.isEnd,
 			)
