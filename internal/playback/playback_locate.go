@@ -1,23 +1,19 @@
-// This file extends Playback with segment locating given a target time.
+// This file extends Playback with segment location functionality.
 //
-// The search algorithm is based on the original ytpb's implementation [1] and
-// consists of three steps: (1) a "look around", jump-based search to find a
-// segment directly or outline a search domain (the jump length is based on the
-// time difference [2] and constant duration of segments); (2) search for a
-// segment in the outlined domain using a binary search if a segment is not
-// found in the previous step; (3) check whether a target time falls inside a
-// gap or not.
+// The search algorithm is based on the original ytpb's implementation
+// (https://github.com/xymaxim/ytpb/pull/3) and consists of three steps:
 //
-// Three steps are required for accurate results since a stream timeline due
-// to instability may contain numerous gaps, which leads to under- or
-// overestimation of rewind timings.
+//  1. Jump-based search: Uses time differences to quickly find a segment or
+//     narrow the search domain
+//  2. Binary search: Refines the search within the discovered domain
+//  3. Gap detection: Validates whether the target time falls within a gap
 //
-// References:
+// This multi-step approach handles timeline instabilities and gaps that could
+// otherwise cause incorrect rewind timing estimations.
 //
-// 1. See https://github.com/xymaxim/ytpb/pull/3
-// 2. For time comparison, we rely on the 'Ingestion-Walltime-US' metadata (see
-//    https://github.com/xymaxim/ytpb/tree/main/notebooks on why this value was
-//    chosen and different edge cases)
+// Time comparisons use 'Ingestion-Walltime-US' metadata. For details on this
+// choice and edge cases, see:
+// https://github.com/xymaxim/ytpb/tree/main/notebooks
 
 package playback
 
@@ -31,8 +27,8 @@ import (
 	"github.com/xymaxim/ypb/internal/playback/segment"
 )
 
-// timeDiffTolerance is the absolute time difference tolerance. See
-// https://github.com/xymaxim/ytpb/issues/5.
+// timeDiffTolerance defines the acceptable time difference when matching
+// segments.  See https://github.com/xymaxim/ytpb/issues/5.
 const timeDiffTolerance = 50 * time.Millisecond
 
 // RewindMoment describes a specific point in time mapped to a segment-locate result.
@@ -43,6 +39,8 @@ type RewindMoment struct {
 	InGap      bool
 }
 
+// NewRewindMoment creates a RewindMoment from segment metadata and target time.
+// If isEnd is true, uses the segment's end time as the actual time.
 func NewRewindMoment(
 	target time.Time,
 	metadata *segment.Metadata,
@@ -62,11 +60,12 @@ func NewRewindMoment(
 	}
 }
 
+// TimeDifference returns the duration between target and actual times.
 func (m *RewindMoment) TimeDifference() time.Duration {
 	return m.TargetTime.Sub(m.ActualTime)
 }
 
-// RewindInterval holds start and end rewind moments.
+// RewindInterval represents a time range with start and end moments.
 type RewindInterval struct {
 	Start *RewindMoment
 	End   *RewindMoment
@@ -160,31 +159,6 @@ func (pb *Playback) LocateMoment(
 	return moment, nil
 }
 
-// calculateSegmentOffset calculates the sequence number offset of the segment
-// that contains time t relative to the provided reference. If isEnd is true, an
-// exact boundary time is treated as belonging to the previous segment.
-func calculateSegmentOffset(t time.Time, reference *segment.Metadata, isEnd bool) SequenceNumber {
-	timeDiff := t.Sub(reference.Time()).Nanoseconds()
-	segmentDuration := reference.Duration.Nanoseconds()
-
-	segmentOffset := timeDiff / segmentDuration
-	timeRemainder := timeDiff % segmentDuration
-
-	// Adjust for negative remainders (time before reference)
-	if timeRemainder < 0 {
-		segmentOffset--
-		timeRemainder += segmentDuration
-	}
-
-	// Handle boundary conditions for segment end times
-	if isEnd && timeRemainder == 0 {
-		// Exact boundary belongs to the previous segment
-		segmentOffset--
-	}
-
-	return int(segmentOffset)
-}
-
 // searchInRange performs binary search within the specified domain and handles
 // gaps. This implements Step 2 and Step 3 of the search algorithm.
 func (pb *Playback) searchInRange(
@@ -260,6 +234,31 @@ func (pb *Playback) searchInRange(
 	}
 
 	return NewRewindMoment(targetTime, candidate, isEnd, true), nil
+}
+
+// calculateSegmentOffset calculates the sequence number offset of the segment
+// that contains time t relative to the provided reference. If isEnd is true, an
+// exact boundary time is treated as belonging to the previous segment.
+func calculateSegmentOffset(t time.Time, reference *segment.Metadata, isEnd bool) SequenceNumber {
+	timeDiff := t.Sub(reference.Time()).Nanoseconds()
+	segmentDuration := reference.Duration.Nanoseconds()
+
+	segmentOffset := timeDiff / segmentDuration
+	timeRemainder := timeDiff % segmentDuration
+
+	// Adjust for negative remainders (time before reference)
+	if timeRemainder < 0 {
+		segmentOffset--
+		timeRemainder += segmentDuration
+	}
+
+	// Handle boundary conditions for segment end times
+	if isEnd && timeRemainder == 0 {
+		// Exact boundary belongs to the previous segment
+		segmentOffset--
+	}
+
+	return int(segmentOffset)
 }
 
 // fetchSegmentMetadata fetches segment metadata and wraps errors consistently.
