@@ -231,7 +231,7 @@ func (pb *Playback) searchInRange(
 	timeDiff := targetTime.Sub(candidate.Time())
 
 	// Step 3: Detect and handle gaps
-	if !(candidate.Duration < timeDiff-timeDiffTolerance) {
+	if timeDiff-timeDiffTolerance <= candidate.Duration {
 		return NewRewindMoment(targetTime, candidate, isEnd, false), nil
 	}
 
