@@ -70,7 +70,7 @@ func NewPlayback(videoID string, fetcher fetchers.Fetcher, client *http.Client) 
 
 	var pb *Playback
 	if client == nil {
-		client = NewClient(pb)
+		client = NewClient(pb).StandardClient()
 	}
 	pb = &Playback{
 		baseURLs: baseURLs,
