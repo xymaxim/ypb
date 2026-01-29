@@ -94,7 +94,8 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		interval.End.Metadata.SequenceNumber,
 	)
 
-	http.HandleFunc("/mpd", app.WithError(
+	mux := http.NewServeMux()
+	mux.HandleFunc("/mpd", app.WithError(
 		func(w http.ResponseWriter, r *http.Request) error {
 			out, err := actions.ComposeStatic(
 				a.Playback,
@@ -110,9 +111,11 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 				return fmt.Errorf("writing manifest: %w", err)
 			}
 			return nil
-		}),
-	)
-	http.HandleFunc("/videoplayback/", app.WithError(a.SegmentHandler))
+		},
+	))
+	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))
+
+	a.Server.Handler = mux
 
 	go func() {
 		slog.Debug("starting server", "addr", a.Server.Addr)

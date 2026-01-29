@@ -1,14 +1,12 @@
 package app
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -19,7 +17,10 @@ import (
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
-var segmentPatternRe = regexp.MustCompile(`^/videoplayback/itag/([0-9]+)/sq/([0-9]+)/?$`)
+const (
+	SegmentPath = "/videoplayback/itag/{itag}/sq/{sq}"
+	RewindPath  = "/rewind/{rewind}"
+)
 
 type App struct {
 	Playback    playback.Playbacker
@@ -71,16 +72,12 @@ func (a *App) Initialize(videoID string, cfg *Config) error {
 }
 
 func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
-	path := strings.Trim(r.URL.Path, "/")
-	var params []string
-	if path != "" {
-		params = strings.Split(path, "/")
-	}
-	if len(params) == 1 {
-		return errors.New("missing rewind parameter argument")
+	rewindParam, err := url.PathUnescape(r.PathValue("rewind"))
+	if err != nil {
+		return fmt.Errorf("unescaping rewind parameter argument: %w", err)
 	}
 
-	startMoment, endMoment, err := input.ParseInterval(params[1])
+	startMoment, endMoment, err := input.ParseInterval(rewindParam)
 	if err != nil {
 		return fmt.Errorf("parsing rewind parameter argument: %w", err)
 	}
@@ -121,19 +118,12 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) error {
-	path := strings.TrimRight(r.URL.Path, "/")
-	matches := segmentPatternRe.FindStringSubmatch(path)
-	if len(matches) != 3 {
-		return errors.New("missing itag and/or sq parameters")
-	}
-
-	itag, sqParam := matches[1], matches[2]
-	sq, err := strconv.Atoi(sqParam)
+	sq, err := strconv.Atoi(r.PathValue("sq"))
 	if err != nil {
 		return fmt.Errorf("parsing sq parameter argument: %w", err)
 	}
 
-	segment, err := a.Playback.DownloadSegment(itag, sq)
+	segment, err := a.Playback.DownloadSegment(r.PathValue("itag"), sq)
 	if err != nil {
 		return fmt.Errorf("downloading segment, sq = %d: %w", sq, err)
 	}

@@ -45,8 +45,11 @@ func NewServeCommand(a *app.App) *cli.Command {
 }
 
 func runServe(a *app.App, _ context.Context, _ *cli.Command) error {
-	http.HandleFunc("/rewind/", app.WithError(a.RewindHandler))
-	http.HandleFunc("/videoplayback/", app.WithError(a.SegmentHandler))
+	mux := http.NewServeMux()
+	mux.HandleFunc(app.RewindPath, app.WithError(a.RewindHandler))
+	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))
+
+	a.Server.Handler = mux
 
 	fmt.Printf(
 		"(<<) Playback started and listening on %s...\n",
