@@ -70,30 +70,23 @@ func (a *App) Initialize(videoID string, cfg *Config) error {
 	return nil
 }
 
-func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimRight(r.URL.Path, "/")
+func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
+	path := strings.Trim(r.URL.Path, "/")
 	var params []string
 	if path != "" {
 		params = strings.Split(path, "/")
 	}
 	if len(params) == 1 {
-		slog.Error("missing rewind parameter", "path", path)
-		writeError(w, "Missing rewind parameter", http.StatusBadRequest)
-		return
+		return errors.New("missing rewind parameter argument")
 	}
 
-	intervalString := params[1]
-	startMoment, endMoment, err := input.ParseInterval(intervalString)
+	startMoment, endMoment, err := input.ParseInterval(params[1])
 	if err != nil {
-		slog.Error("parsing input interval", "value", intervalString, "err", err)
-		writeError(w, "Error parsing rewind parameter", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("parsing rewind parameter argument: %w", err)
 	}
 
 	if err := input.ValidateMoments(startMoment, endMoment); err != nil {
-		slog.Error("bad input interval", "err", err)
-		writeError(w, "Bad input interval", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("bad input interval: %w", err)
 	}
 
 	startTime := time.Now().Add(-time.Duration(78+2) * time.Hour)
@@ -101,61 +94,60 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) {
 
 	locateCtx, err := actions.NewLocateContext(a.Playback, nil)
 	if err != nil {
-		slog.Error("building locate context", "err", err)
-		writeError(w, "Error building locate context", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("building locate context: %w", err)
 	}
 
 	interval, _, err := actions.LocateInterval(a.Playback, startTime, endTime, locateCtx)
 	if err != nil {
-		slog.Error("locating interval", "err", err)
-		writeError(w, "Error locating rewind interval", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("locating interval: %w", err)
 	}
 
-	out, _ := actions.ComposeStatic(
+	out, err := actions.ComposeStatic(
 		a.Playback,
 		interval,
 		urlutil.FormatServerAddress(a.Server.Addr),
 	)
+	if err != nil {
+		return fmt.Errorf("composing manifest: %w", err)
+	}
 
 	w.Header().Set("Content-Type", "application/dash+xml")
 	_, err = w.Write(out)
 	if err != nil {
-		slog.Error("writing manifest", "err", err)
-		writeError(w, "Error writing manifest", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("writing manifest: %w", err)
 	}
+
+	return nil
 }
 
-func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) {
+func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) error {
 	path := strings.TrimRight(r.URL.Path, "/")
 	matches := segmentPatternRe.FindStringSubmatch(path)
 	if len(matches) != 3 {
-		return
+		return errors.New("missing itag and/or sq parameters")
 	}
 
-	itag, sqRaw := matches[1], matches[2]
-	sq, err := strconv.Atoi(sqRaw)
+	itag, sqParam := matches[1], matches[2]
+	sq, err := strconv.Atoi(sqParam)
 	if err != nil {
-		slog.Error("parsing sq parameter", "value", sqRaw, "err", err)
-		writeError(w, "parsing sq parameter value: "+sqRaw, http.StatusInternalServerError)
-		return
+		return fmt.Errorf("parsing sq parameter argument: %w", err)
 	}
 
 	segment, err := a.Playback.DownloadSegment(itag, sq)
 	if err != nil {
-		slog.Error("downloading segment", "sq", sq, "err", err)
-		writeError(
-			w,
-			fmt.Sprintf("Error downloading segment sq=%d", sq),
-			http.StatusInternalServerError,
-		)
-		return
+		return fmt.Errorf("downloading segment, sq = %d: %w", sq, err)
 	}
 	w.Write(segment)
+
+	return nil
 }
 
-func writeError(w http.ResponseWriter, msg string, code int) {
-	http.Error(w, fmt.Sprintf("%d %s", code, msg), code)
+func WithError(fn func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := fn(w, r)
+		if err != nil {
+			msg := fmt.Sprintf("%d %s", http.StatusInternalServerError, err.Error())
+			http.Error(w, msg, http.StatusInternalServerError)
+		}
+	})
 }

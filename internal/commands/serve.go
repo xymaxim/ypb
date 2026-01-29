@@ -45,8 +45,8 @@ func NewServeCommand(a *app.App) *cli.Command {
 }
 
 func runServe(a *app.App, _ context.Context, _ *cli.Command) error {
-	http.HandleFunc("/rewind/", a.RewindHandler)
-	http.HandleFunc("/videoplayback/", a.SegmentHandler)
+	http.HandleFunc("/rewind/", app.WithError(a.RewindHandler))
+	http.HandleFunc("/videoplayback/", app.WithError(a.SegmentHandler))
 
 	fmt.Printf(
 		"(<<) Playback started and listening on %s...\n",

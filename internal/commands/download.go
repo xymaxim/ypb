@@ -94,24 +94,25 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		interval.End.Metadata.SequenceNumber,
 	)
 
-	http.HandleFunc("/mpd", func(w http.ResponseWriter, r *http.Request) {
-		out, err := actions.ComposeStatic(
-			a.Playback,
-			interval,
-			urlutil.FormatServerAddress(a.Server.Addr),
-		)
-		if err != nil {
-			http.Error(w, "Error composing MPD", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/dash+xml")
-		_, err = w.Write(out)
-		if err != nil {
-			http.Error(w, "Error writing manifest", http.StatusInternalServerError)
-			return
-		}
-	})
-	http.HandleFunc("/videoplayback/", a.SegmentHandler)
+	http.HandleFunc("/mpd", app.WithError(
+		func(w http.ResponseWriter, r *http.Request) error {
+			out, err := actions.ComposeStatic(
+				a.Playback,
+				interval,
+				urlutil.FormatServerAddress(a.Server.Addr),
+			)
+			if err != nil {
+				return fmt.Errorf("composing  manifest: %w", err)
+			}
+			w.Header().Set("Content-Type", "application/dash+xml")
+			_, err = w.Write(out)
+			if err != nil {
+				return fmt.Errorf("writing manifest: %w", err)
+			}
+			return nil
+		}),
+	)
+	http.HandleFunc("/videoplayback/", app.WithError(a.SegmentHandler))
 
 	go func() {
 		slog.Debug("starting server", "addr", a.Server.Addr)
