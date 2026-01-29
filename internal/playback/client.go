@@ -2,6 +2,7 @@ package playback
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -18,7 +19,7 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 	return func(_ context.Context, resp *http.Response, err error) (bool, error) {
 		if resp == nil {
-			return false, fmt.Errorf("got nil response: %w", err)
+			return false, errors.New("got nil response")
 		}
 
 		switch resp.StatusCode {
