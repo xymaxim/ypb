@@ -70,7 +70,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	fmt.Println("(<<) Locating start and end moments...")
 	locateContext, err := actions.NewLocateContext(a.Playback, nil)
 	if err != nil {
-		return cli.Exit(fmt.Errorf("building locate context: %w", err), 1)
+		return fmt.Errorf("building locate context: %w", err)
 	}
 
 	interval, outputContext, err := actions.LocateInterval(
@@ -80,7 +80,7 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		locateContext,
 	)
 	if err != nil {
-		return cli.Exit(fmt.Errorf("locating interval: %w", err), 1)
+		return fmt.Errorf("locating interval: %w", err)
 	}
 
 	fmt.Printf(
@@ -127,11 +127,11 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 
 	u, err := url.JoinPath(urlutil.FormatServerAddress(a.Server.Addr), "mpd")
 	if err != nil {
-		return cli.Exit(fmt.Errorf("building URL: %w", err), 1)
+		return fmt.Errorf("building URL: %w", err)
 	}
 	err = a.YtdlpRunner.Run(u, "--newline", "--output", buildOutputName(outputContext))
 	if err != nil {
-		return cli.Exit(fmt.Errorf("downloading failed: %w", err), 1)
+		return fmt.Errorf("downloading failed: %w", err)
 	}
 
 	return nil

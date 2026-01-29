@@ -23,7 +23,7 @@ func NewServeCommand(a *app.App) *cli.Command {
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			videoID := cmd.StringArg("video-id")
 			if videoID == "" {
-				return cli.Exit("ypb serve requires a video ID", 2)
+				return fmt.Errorf("%s requires a video ID", cmd.FullName())
 			}
 
 			fmt.Printf(
