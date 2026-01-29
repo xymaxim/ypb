@@ -90,7 +90,6 @@ func (pb *Playback) LocateMoment(
 	var track []SequenceNumber
 
 	currentTimeDiff := targetTime.Sub(reference.Time())
-	slog.Warn("locate", "timeDiff", currentTimeDiff.Seconds())
 	startDirection := math.Copysign(1, currentTimeDiff.Seconds())
 
 	slog.Info(
@@ -133,10 +132,7 @@ func (pb *Playback) LocateMoment(
 		hasDomainDiscovered = hasSignChanged && (direction == startDirection)
 
 		candidateSeqNum += calculateSegmentOffset(targetTime, *candidate, isEnd)
-		candidate, err = pb.FetchSegmentMetadata(
-			pb.ProbeItag(),
-			candidateSeqNum,
-		)
+		candidate, err = pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 		if err != nil {
 			return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 		}
@@ -232,10 +228,7 @@ func (pb *Playback) searchInRange(
 		isInGap = true
 		if !isEnd {
 			candidateSeqNum += 1
-			candidate, err = pb.FetchSegmentMetadata(
-				pb.ProbeItag(),
-				candidateSeqNum,
-			)
+			candidate, err = pb.FetchSegmentMetadata(pb.ProbeItag(), candidateSeqNum)
 			if err != nil {
 				return nil, NewSegmentMetadataFetchError(candidateSeqNum, err)
 			}
