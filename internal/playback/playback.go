@@ -68,16 +68,16 @@ func NewPlayback(videoID string, fetcher fetchers.Fetcher, client *http.Client) 
 		baseURLs[s.Itag] = s.BaseURL
 	}
 
-	var pb *Playback
-	if client == nil {
-		client = NewClient(pb).StandardClient()
-	}
-	pb = &Playback{
+	pb := &Playback{
 		baseURLs: baseURLs,
-		client:   client,
 		fetcher:  fetcher,
 		info:     *information,
 	}
+
+	if client == nil {
+		client = NewClient(pb).StandardClient()
+	}
+	pb.client = client
 
 	return pb, nil
 }
