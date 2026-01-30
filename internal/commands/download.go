@@ -15,6 +15,7 @@ import (
 	"github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/pathutil"
+	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -58,8 +59,8 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 
 	videoID := cmd.StringArg("video-id")
 	videoURL := urlutil.BuildVideoLiveURL(videoID)
-	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
 
+	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
 	cfg := &app.Config{Port: cmd.Int("port")}
 	if err := a.Initialize(videoID, cfg); err != nil {
 		return fmt.Errorf("initializing app: %w", err)
@@ -83,16 +84,8 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("locating interval: %w", err)
 	}
 
-	fmt.Printf(
-		"Actual start: %s, sq=%d\n",
-		interval.Start.ActualTime.Format(time.RFC1123Z),
-		interval.Start.Metadata.SequenceNumber,
-	)
-	fmt.Printf(
-		"  Actual end: %s, sq=%d\n",
-		interval.End.ActualTime.Format(time.RFC1123Z),
-		interval.End.Metadata.SequenceNumber,
-	)
+	fmt.Println(formatActualLine("start", interval.Start))
+	fmt.Println(" ", formatActualLine("end", interval.End))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mpd", app.WithError(
@@ -135,6 +128,27 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 	}
 
 	return nil
+}
+
+func formatActualLine(side string, moment *playback.RewindMoment) string {
+	diffPart := ""
+
+	diff := moment.TimeDifference()
+	if diff.Abs() >= time.Second {
+		sign := ""
+		if diff > 0 {
+			sign = "+"
+		}
+		diffPart = fmt.Sprintf(" (%s%s)", sign, pathutil.FormatDuration(diff))
+	}
+
+	return fmt.Sprintf(
+		"Actual %s: %s%s, sq=%d",
+		side,
+		moment.ActualTime.Format(time.RFC1123Z),
+		diffPart,
+		moment.Metadata.SequenceNumber,
+	)
 }
 
 func buildOutputName(ctx *actions.LocateOutputContext) string {
