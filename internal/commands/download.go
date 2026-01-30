@@ -135,11 +135,7 @@ func formatActualLine(side string, moment *playback.RewindMoment) string {
 
 	diff := moment.TimeDifference()
 	if diff.Abs() >= time.Second {
-		sign := ""
-		if diff > 0 {
-			sign = "+"
-		}
-		diffPart = fmt.Sprintf(" (%s%s)", sign, pathutil.FormatDuration(diff))
+		diffPart = fmt.Sprintf(" (%s)", formatDifference(diff, true))
 	}
 
 	return fmt.Sprintf(
@@ -149,6 +145,14 @@ func formatActualLine(side string, moment *playback.RewindMoment) string {
 		diffPart,
 		moment.Metadata.SequenceNumber,
 	)
+}
+
+func formatDifference(diff time.Duration, showPlus bool) string {
+	sign := ""
+	if diff > 0 && showPlus {
+		sign = "+"
+	}
+	return sign + pathutil.FormatDuration(diff)
 }
 
 func buildOutputName(ctx *actions.LocateOutputContext) string {
