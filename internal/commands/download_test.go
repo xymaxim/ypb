@@ -1,12 +1,10 @@
-package pathutil_test
+package commands
 
 import (
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/xymaxim/ypb/internal/pathutil"
 )
 
 //nolint:paralleltest
@@ -45,7 +43,7 @@ func TestAdjustForFilename(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, pathutil.AdjustForFilename(tc.s, tc.length))
+			assert.Equal(t, tc.expected, adjustForFilename(tc.s, tc.length))
 		})
 	}
 }
@@ -75,7 +73,7 @@ func TestFormatTime(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parsing input time string: %v", err)
 			}
-			assert.Equal(t, tc.expected, pathutil.FormatTime(tt))
+			assert.Equal(t, tc.expected, formatTime(tt))
 		})
 	}
 }
@@ -131,7 +129,48 @@ func TestFormatDuration(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.expected, pathutil.FormatDuration(tc.dur))
+			assert.Equal(t, tc.expected, formatDuration(tc.dur))
+		})
+	}
+}
+
+func TestFormatDifference(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name     string
+		diff     time.Duration
+		showPlus bool
+		expected string
+	}{
+		{
+			name:     "+1s",
+			diff:     time.Second,
+			showPlus: true,
+			expected: "+1s",
+		},
+		{
+			name:     "1s",
+			diff:     time.Second,
+			showPlus: false,
+			expected: "1s",
+		},
+		{
+			name:     "-1s",
+			diff:     -time.Second,
+			showPlus: true,
+			expected: "-1s",
+		},
+		{
+			name:     "0s",
+			diff:     time.Duration(0),
+			showPlus: true,
+			expected: "0s",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.expected, formatDifference(tc.diff, tc.showPlus))
 		})
 	}
 }
