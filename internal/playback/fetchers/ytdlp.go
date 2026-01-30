@@ -43,7 +43,7 @@ type format struct {
 func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, error) {
 	out, err := fetcher.runDumpJSON()
 	if err != nil {
-		return nil, nil, fmt.Errorf("fetching video info: %w", err)
+		return nil, nil, fmt.Errorf("dumping video info: %w", err)
 	}
 
 	// var x = 2
@@ -123,7 +123,7 @@ func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, e
 func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 	out, err := fetcher.runDumpJSON()
 	if err != nil {
-		return nil, fmt.Errorf("fetching video info: %w", err)
+		return nil, fmt.Errorf("dumping video info: %w", err)
 	}
 
 	var dump struct {
