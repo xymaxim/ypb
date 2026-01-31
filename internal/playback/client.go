@@ -13,6 +13,7 @@ import (
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
 	client.CheckRetry = makeRetryPolicy(pb)
+	client.Logger = slog.Default()
 	return client
 }
 
