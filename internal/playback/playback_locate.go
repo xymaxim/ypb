@@ -84,6 +84,7 @@ func (pb *Playback) LocateMoment(
 	slog.Info(
 		"locating moment",
 		slog.Time("time", targetTime.In(time.UTC)),
+		slog.Bool("end", isEnd),
 		slog.Group(
 			"reference",
 			slog.Int("sq", reference.SequenceNumber),
@@ -119,11 +120,15 @@ func (pb *Playback) LocateMoment(
 		// Check if target time falls within current segment
 		maxAllowed := candidate.Duration + timeDiffTolerance
 		if 0 <= candidateTimeDiff && candidateTimeDiff <= maxAllowed {
-			slog.Debug(
-				"segment located via jump search",
-				slog.Int("sq", currentSeqNum),
+			moment := NewRewindMoment(targetTime, candidate, isEnd, false)
+			slog.Info(
+				"moment located via jump search",
+				slog.Int("sq", moment.Metadata.SequenceNumber),
+				slog.Duration("diff", moment.TimeDifference()),
+				slog.Time("time", moment.ActualTime.UTC()),
 			)
-			return NewRewindMoment(targetTime, candidate, isEnd, false), nil
+
+			return moment, nil
 		}
 
 		// Check if a search domain has been outlined
@@ -151,9 +156,11 @@ func (pb *Playback) LocateMoment(
 		return nil, fmt.Errorf("searching in range: %w", err)
 	}
 
-	slog.Debug(
-		"segment located via binary search",
+	slog.Info(
+		"moment located via binary search",
 		slog.Int("sq", moment.Metadata.SequenceNumber),
+		slog.Duration("diff", moment.TimeDifference()),
+		slog.Time("time", moment.ActualTime.UTC()),
 	)
 
 	return moment, nil

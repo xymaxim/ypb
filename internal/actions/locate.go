@@ -3,6 +3,7 @@ package actions
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/input"
@@ -121,6 +122,8 @@ func LocateInterval(
 	start, end input.MomentValue,
 	ctx *LocateContext,
 ) (*playback.RewindInterval, *LocateOutputContext, error) {
+	slog.Info("locating interval", "start", start, "end", end)
+
 	if err := validateMoments(start, end, ctx); err != nil {
 		return nil, nil, err
 	}

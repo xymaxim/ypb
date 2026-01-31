@@ -91,7 +91,7 @@ func (pb *Playback) Info() info.VideoInformation {
 }
 
 func (pb *Playback) RefreshBaseURLs() error {
-	slog.Info("refreshing base URLs")
+	slog.Debug("refreshing base URLs")
 	baseURLs, err := pb.fetcher.FetchBaseURLs()
 	if err != nil {
 		return fmt.Errorf("fetching base URLs: %w", err)
@@ -103,6 +103,8 @@ func (pb *Playback) RefreshBaseURLs() error {
 }
 
 func (pb *Playback) RequestHeadSeqNum() (int, error) {
+	slog.Debug("requesting head sequence number")
+
 	baseURL := pb.BaseURLs()[pb.ProbeItag()]
 	resp, err := pb.client.Head(baseURL)
 	if err != nil {
@@ -114,6 +116,7 @@ func (pb *Playback) RequestHeadSeqNum() (int, error) {
 	if seqNumRaw == "" {
 		return -1, errors.New("missing 'X-Head-Seqnum' header")
 	}
+	slog.Debug("got head sequence number", "sq", seqNumRaw)
 
 	result, err := strconv.Atoi(seqNumRaw)
 	if err != nil {
