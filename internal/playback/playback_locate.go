@@ -62,7 +62,7 @@ func NewRewindMoment(
 
 // TimeDifference returns the duration between target and actual times.
 func (m *RewindMoment) TimeDifference() time.Duration {
-	return m.TargetTime.Sub(m.ActualTime)
+	return m.ActualTime.Sub(m.TargetTime)
 }
 
 // RewindInterval represents a time range with start and end moments.
