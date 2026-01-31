@@ -16,15 +16,9 @@ type Serve struct {
 func (c *Serve) Run() error {
 	a := app.NewApp()
 
-	videoURL := urlutil.BuildVideoLiveURL(c.Stream)
-
-	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
-	cfg := &app.Config{Port: c.Port}
-	if err := a.Initialize(c.Stream, cfg); err != nil {
-		return fmt.Errorf("initializing app: %w", err)
+	if err := collectVideoInfo(c.Stream, a, c.Port); err != nil {
+		return err
 	}
-
-	fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(app.RewindPath, app.WithError(a.RewindHandler))
