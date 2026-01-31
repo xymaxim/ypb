@@ -77,15 +77,12 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	startTime := time.Now().Add(-time.Duration(78+2) * time.Hour)
-	endTime := startTime.Add(time.Duration(12) * time.Hour)
-
 	locateCtx, err := actions.NewLocateContext(a.Playback, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
-	interval, _, err := actions.LocateInterval(a.Playback, startTime, endTime, locateCtx)
+	interval, _, err := actions.LocateInterval(a.Playback, startMoment, endMoment, locateCtx)
 	if err != nil {
 		return fmt.Errorf("locating interval: %w", err)
 	}
