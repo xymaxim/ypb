@@ -211,7 +211,7 @@ func locateWithAbsoluteStart(
 			return nil, NewResolveMomentError(
 				start,
 				false,
-				fmt.Errorf("start is after end"),
+				errors.New("start is after end"),
 			)
 		}
 
