@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/alecthomas/kong v1.13.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect

@@ -1,37 +1,56 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"log/slog"
 	"os"
 
-	"github.com/urfave/cli/v3"
+	"github.com/alecthomas/kong"
 
-	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/commands"
 )
 
+type CLI struct {
+	Verbose int `help:"Print verbose output" short:"v" type:"counter"`
+
+	Download commands.Download `cmd:"" help:"Download stream excerpts"`
+	Serve    commands.Serve    `cmd:"" help:"Start playback server"`
+}
+
 func main() {
-	app := apppkg.NewApp()
+	var cli CLI
 
-	cliApp := &cli.Command{
-		Name:  "ypb",
-		Usage: "A playback for YouTube live streams",
-		Flags: []cli.Flag{
-			&cli.IntFlag{
-				Name:  "port",
-				Value: 8080,
-				Usage: "port to start playback on",
-			},
-		},
-		Commands: []*cli.Command{
-			commands.NewDownloadCommand(app),
-			commands.NewServeCommand(app),
-		},
+	kongCtx := kong.Parse(&cli,
+		kong.Name("ypb"),
+		kong.Description("A playback for YouTube live streams"),
+		kong.UsageOnError(),
+	)
+
+	setupLogging(cli.Verbose)
+
+	err := kongCtx.Run()
+	kongCtx.FatalIfErrorf(err)
+}
+
+func setupLogging(verbose int) {
+	var level slog.Level
+
+	switch verbose {
+	case 0:
+		level = slog.LevelWarn
+	case 1:
+		level = slog.LevelInfo
+	case 2:
+		level = slog.LevelDebug
+	default:
+		level = slog.LevelDebug
 	}
 
-	if err := cliApp.Run(context.Background(), os.Args); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
-		os.Exit(1)
-	}
+	handler := slog.NewTextHandler(
+		os.Stdout,
+		&slog.HandlerOptions{
+			Level: level,
+		},
+	)
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
 }

@@ -2,10 +2,8 @@ package app
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"time"
 
@@ -34,13 +32,6 @@ type Config struct {
 }
 
 func NewApp() *App {
-	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		ReplaceAttr: nil,
-		Level:       slog.LevelDebug,
-	})
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
-
 	return &App{
 		Config:      &Config{},
 		YtdlpRunner: exec.NewCommandRunner("yt-dlp"),

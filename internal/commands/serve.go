@@ -1,50 +1,31 @@
 package commands
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/urfave/cli/v3"
 
 	"github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
-func NewServeCommand(a *app.App) *cli.Command {
-	return &cli.Command{
-		Name:  "serve",
-		Usage: "Start a playback server for a live stream",
-		Arguments: []cli.Argument{
-			&cli.StringArg{
-				Name: "video-id",
-			},
-		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			videoID := cmd.StringArg("video-id")
-			if videoID == "" {
-				return fmt.Errorf("%s requires a video ID", cmd.FullName())
-			}
-
-			fmt.Printf(
-				"(<<) Collecting info about %s...\n",
-				urlutil.BuildVideoLiveURL(videoID),
-			)
-			cfg := &app.Config{
-				Port: cmd.Int("port"),
-			}
-			if err := a.Initialize(videoID, cfg); err != nil {
-				return fmt.Errorf("initializing app: %w", err)
-			}
-
-			fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
-
-			return runServe(a, ctx, cmd)
-		},
-	}
+type Serve struct {
+	Stream string `arg:"" help:"YouTube video ID"          required:""`
+	Port   int    `       help:"Port to start playback on"             short:"p" default:"8080"`
 }
 
-func runServe(a *app.App, _ context.Context, _ *cli.Command) error {
+func (c *Serve) Run() error {
+	a := app.NewApp()
+
+	videoURL := urlutil.BuildVideoLiveURL(c.Stream)
+
+	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
+	cfg := &app.Config{Port: c.Port}
+	if err := a.Initialize(c.Stream, cfg); err != nil {
+		return fmt.Errorf("initializing app: %w", err)
+	}
+
+	fmt.Printf("Stream '%s' is alive!\n", a.Playback.Info().Title)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc(app.RewindPath, app.WithError(a.RewindHandler))
 	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))

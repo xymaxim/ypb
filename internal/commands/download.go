@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -11,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gosimple/slug"
-	"github.com/urfave/cli/v3"
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/app"
@@ -20,37 +18,16 @@ import (
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
-func NewDownloadCommand(a *app.App) *cli.Command {
-	return &cli.Command{
-		Name:  "download",
-		Usage: "Download live stream excerpts",
-		Arguments: []cli.Argument{
-			&cli.StringArg{
-				Name: "video-id",
-			},
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "interval",
-				Usage: "interval to rewind",
-			},
-		},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			if cmd.StringArg("video-id") == "" {
-				return fmt.Errorf("%s requires a video ID", cmd.FullName())
-			}
-			return runDownload(a, ctx, cmd)
-		},
-	}
+type Download struct {
+	Stream   string `arg:"" help:"YouTube video ID"          required:""`
+	Interval string `       help:"Time or segment interval"  required:"" short:"i"`
+	Port     int    `       help:"Port to start playback on"             short:"p" default:"8080"`
 }
 
-func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
-	intervalInput := cmd.String("interval")
-	if !cmd.IsSet("interval") {
-		return fmt.Errorf("%s requires the --interval flag", cmd.FullName())
-	}
+func (c *Download) Run() error {
+	a := app.NewApp()
 
-	start, end, err := input.ParseInterval(intervalInput)
+	start, end, err := input.ParseInterval(c.Interval)
 	if err != nil {
 		return fmt.Errorf("parsing input interval: %w", err)
 	}
@@ -58,12 +35,11 @@ func runDownload(a *app.App, _ context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	videoID := cmd.StringArg("video-id")
-	videoURL := urlutil.BuildVideoLiveURL(videoID)
+	videoURL := urlutil.BuildVideoLiveURL(c.Stream)
 
 	fmt.Printf("(<<) Collecting info about %s...\n", videoURL)
-	cfg := &app.Config{Port: cmd.Int("port")}
-	if err := a.Initialize(videoID, cfg); err != nil {
+	cfg := &app.Config{Port: c.Port}
+	if err := a.Initialize(c.Stream, cfg); err != nil {
 		return fmt.Errorf("initializing app: %w", err)
 	}
 
