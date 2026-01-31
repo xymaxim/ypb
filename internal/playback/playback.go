@@ -17,7 +17,7 @@ import (
 
 type SequenceNumber = int
 
-// SegmentFetchError wraps errors that occur when fetching segment metadata.
+// SegmentMetadataFetchError wraps errors that occur when fetching segment metadata.
 type SegmentMetadataFetchError struct {
 	SequenceNumber SequenceNumber
 	Err            error
