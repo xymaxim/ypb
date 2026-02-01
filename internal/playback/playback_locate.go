@@ -83,8 +83,8 @@ func (pb *Playback) LocateMoment(
 ) (*RewindMoment, error) {
 	slog.Info(
 		"locating moment",
-		slog.Time("time", targetTime.In(time.UTC)),
 		slog.Bool("end", isEnd),
+		slog.Time("time", targetTime.In(time.UTC)),
 		slog.Group(
 			"reference",
 			slog.Int("sq", reference.SequenceNumber),
