@@ -16,12 +16,13 @@ import (
 
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
-	client.CheckRetry = makeRetryPolicy(pb)
-	client.PrepareRetry = makePrepareRetry(pb)
-	client.Logger = nil
 
-	client.Backoff = func(min, max time.Duration, attempt int, resp *http.Response) time.Duration {
-		wait := retryablehttp.DefaultBackoff(min, max, attempt, resp)
+	client.Backoff = func(
+		minimum, maximum time.Duration,
+		attempt int,
+		resp *http.Response,
+	) time.Duration {
+		wait := retryablehttp.DefaultBackoff(minimum, maximum, attempt, resp)
 		slog.Warn(
 			fmt.Sprintf(
 				"retrying request in %v seconds, attempt %d of %d",
@@ -31,11 +32,7 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 		return wait
 	}
 
-	return client
-}
-
-func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
-	return func(_ context.Context, resp *http.Response, err error) (bool, error) {
+	client.CheckRetry = func(_ context.Context, resp *http.Response, err error) (bool, error) {
 		if resp == nil {
 			return false, errors.New("got nil response")
 		}
@@ -61,10 +58,8 @@ func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 			return false, nil
 		}
 	}
-}
 
-func makePrepareRetry(pb Playbacker) retryablehttp.PrepareRetry {
-	return func(req *http.Request) error {
+	client.PrepareRetry = func(req *http.Request) error {
 		// Extract the itag parameter
 		itag := urlutil.ExtractParameter(req.URL.Path, "itag")
 		if itag == "" {
@@ -94,4 +89,8 @@ func makePrepareRetry(pb Playbacker) retryablehttp.PrepareRetry {
 
 		return nil
 	}
+
+	client.Logger = nil
+
+	return client
 }
