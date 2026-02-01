@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 
@@ -17,7 +18,19 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
 	client.CheckRetry = makeRetryPolicy(pb)
 	client.PrepareRetry = makePrepareRetry(pb)
-	client.Logger = slog.Default()
+	client.Logger = nil
+
+	client.Backoff = func(min, max time.Duration, attempt int, resp *http.Response) time.Duration {
+		wait := retryablehttp.DefaultBackoff(min, max, attempt, resp)
+		slog.Warn(
+			fmt.Sprintf(
+				"retrying request in %v seconds, attempt %d of %d",
+				wait.Seconds(), attempt+1, client.RetryMax,
+			),
+		)
+		return wait
+	}
+
 	return client
 }
 
@@ -31,12 +44,9 @@ func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 		case http.StatusForbidden, http.StatusServiceUnavailable:
 			slog.Warn(
 				"got transient HTTP error, retrying",
-				slog.Int("status", resp.StatusCode),
-				slog.Group(
-					"req",
-					"method", resp.Request.Method,
-					"url", resp.Request.URL,
-				),
+				"status", resp.StatusCode,
+				"method", resp.Request.Method,
+				"url", resp.Request.URL,
 			)
 			if resp.StatusCode == http.StatusForbidden {
 				if err := pb.RefreshBaseURLs(); err != nil {
