@@ -3,7 +3,6 @@ package urlutil
 import (
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 )
 
@@ -19,12 +18,16 @@ func BuildVideoLiveURL(id string) string {
 	return "https://www.youtube.com/live/" + id
 }
 
-func BuildSegmentURL(baseURL string, sq int) (string, error) {
-	out, err := url.JoinPath(baseURL, "sq", strconv.Itoa(sq))
+func BuildSegmentURL(baseURL, sq string) (*url.URL, error) {
+	base, err := url.Parse(baseURL)
 	if err != nil {
-		return "", fmt.Errorf("joining URL parts: %w", err)
+		return nil, fmt.Errorf("parsing base URL: %w", err)
 	}
-	return out, nil
+	return BuildSegmentURLFromParsed(base, sq), nil
+}
+
+func BuildSegmentURLFromParsed(baseURL *url.URL, sq string) *url.URL {
+	return baseURL.JoinPath("sq", sq)
 }
 
 func ExtractParameter(rawURL, name string) string {
@@ -35,11 +38,7 @@ func ExtractParameter(rawURL, name string) string {
 		return ""
 	}
 
-	path := u.RawPath
-	if path == "" {
-		path = u.Path
-	}
-
+	path := u.EscapedPath()
 	tokenStartIndex := strings.Index(path, token)
 	var startIndex int
 	if tokenStartIndex == -1 {

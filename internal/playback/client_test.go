@@ -3,6 +3,8 @@ package playback_test
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -13,12 +15,16 @@ import (
 
 type fakePlayback struct {
 	*playback.Playback
+	addr     string
 	baseURLs map[string]string
 }
 
-func newFakePlayback() *fakePlayback {
+func newFakePlayback(addr string) *fakePlayback {
 	return &fakePlayback{
-		baseURLs: map[string]string{"0": "initial"},
+		addr: addr,
+		baseURLs: map[string]string{
+			"0": strings.TrimRight(addr, "/") + "/initial/itag/0",
+		},
 	}
 }
 
@@ -27,68 +33,99 @@ func (pb *fakePlayback) BaseURLs() map[string]string {
 }
 
 func (pb *fakePlayback) RefreshBaseURLs() error {
-	pb.baseURLs = map[string]string{"0": "refreshed"}
+	pb.baseURLs = map[string]string{
+		"0": strings.TrimRight(pb.addr, "/") + "/refreshed/itag/0",
+	}
 	return nil
 }
 
-func TestClient_CheckRetry_StatusForbidden(t *testing.T) {
-	pb := newFakePlayback()
-	client := playback.NewClient(pb)
-	client.RetryWaitMax = time.Millisecond
+func TestClient_CheckRetry(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name            string
+		statusCode      int
+		path            string
+		wantPath        string
+		wantBaseURLPath string
+	}{
+		{
+			name:            "service unavailable - head sequence number",
+			statusCode:      http.StatusServiceUnavailable,
+			path:            "/initial/itag/0",
+			wantPath:        "/initial/itag/0",
+			wantBaseURLPath: "/initial/itag/0",
+		},
+		{
+			name:            "service unavailable - segment",
+			statusCode:      http.StatusServiceUnavailable,
+			path:            "/initial/itag/0/sq/0",
+			wantPath:        "/initial/itag/0/sq/0",
+			wantBaseURLPath: "/initial/itag/0",
+		},
+		{
+			name:            "forbidden - head sequence number",
+			statusCode:      http.StatusForbidden,
+			path:            "/initial/itag/0",
+			wantPath:        "/refreshed/itag/0",
+			wantBaseURLPath: "/refreshed/itag/0",
+		},
+		{
+			name:            "forbidden - segment",
+			statusCode:      http.StatusForbidden,
+			path:            "/initial/itag/0/sq/0",
+			wantPath:        "/refreshed/itag/0/sq/0",
+			wantBaseURLPath: "/refreshed/itag/0",
+		},
+	}
 
-	var requestCount int
-	attemptsBeforeOK := client.RetryMax - 1
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			var requestCount int
+			attemptsBeforeOK := 2
+			ts := httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					requestCount++
+					if requestCount <= attemptsBeforeOK {
+						w.WriteHeader(tc.statusCode)
+						return
+					}
+					w.WriteHeader(http.StatusOK)
+				}),
+			)
+			defer ts.Close()
 
-	ts := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestCount++
-			if requestCount <= attemptsBeforeOK {
-				w.WriteHeader(http.StatusForbidden)
-				return
+			pb := newFakePlayback(ts.URL)
+			client := playback.NewClient(pb)
+			client.RetryWaitMax = time.Millisecond
+			client.RetryMax = attemptsBeforeOK + 1
+
+			u, err := url.JoinPath(ts.URL, tc.path)
+			if err != nil {
+				t.Fatal(err)
 			}
-			w.WriteHeader(http.StatusOK)
-		}),
-	)
-	defer ts.Close()
 
-	_, err := client.Get(ts.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	wantBaseURLs := map[string]string{"0": "refreshed"}
-	if diff := cmp.Diff(pb.BaseURLs(), wantBaseURLs); diff != "" {
-		t.Fatalf("base URLs mismatched after retries (- got, + want):\n%s", diff)
-	}
-}
-
-func TestClient_CheckRetry_StatusServiceUnavailable(t *testing.T) {
-	pb := newFakePlayback()
-	client := playback.NewClient(pb)
-	client.RetryWaitMax = time.Millisecond
-
-	var requestCount int
-	attemptsBeforeOK := client.RetryMax - 1
-
-	ts := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestCount++
-			if requestCount <= attemptsBeforeOK {
-				w.WriteHeader(http.StatusServiceUnavailable)
-				return
+			resp, err := client.Get(u)
+			if err != nil {
+				t.Fatal(err)
 			}
-			w.WriteHeader(http.StatusOK)
-		}),
-	)
-	defer ts.Close()
 
-	_, err := client.Get(ts.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
+			wantBaseURLs := map[string]string{
+				"0": strings.TrimRight(ts.URL, "/") + tc.wantBaseURLPath,
+			}
+			if diff := cmp.Diff(pb.BaseURLs(), wantBaseURLs); diff != "" {
+				t.Errorf("base URLs mismatch (- have, + want):\n%s", diff)
+			}
 
-	wantBaseURLs := map[string]string{"0": "initial"}
-	if diff := cmp.Diff(pb.BaseURLs(), wantBaseURLs); diff != "" {
-		t.Fatalf("base URLs mismatch (- got, + want):\n%s", diff)
+			haveURL := resp.Request.Header.Get("X-Request-Url")
+			wantURL := strings.TrimRight(ts.URL, "/") + tc.wantPath
+			if haveURL != wantURL {
+				t.Errorf(
+					"request URL mismatch:\n have: %s\n want: %s",
+					haveURL,
+					wantURL,
+				)
+			}
+		})
 	}
 }

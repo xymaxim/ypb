@@ -6,13 +6,17 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 
 	"github.com/hashicorp/go-retryablehttp"
+
+	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
 	client.CheckRetry = makeRetryPolicy(pb)
+	client.PrepareRetry = makePrepareRetry(pb)
 	client.Logger = slog.Default()
 	return client
 }
@@ -25,7 +29,15 @@ func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 
 		switch resp.StatusCode {
 		case http.StatusForbidden, http.StatusServiceUnavailable:
-			slog.Warn("got transient HTTP error, retrying", "status", resp.StatusCode)
+			slog.Warn(
+				"got transient HTTP error, retrying",
+				slog.Int("status", resp.StatusCode),
+				slog.Group(
+					"req",
+					"method", resp.Request.Method,
+					"url", resp.Request.URL,
+				),
+			)
 			if resp.StatusCode == http.StatusForbidden {
 				if err := pb.RefreshBaseURLs(); err != nil {
 					return false, fmt.Errorf(
@@ -38,5 +50,38 @@ func makeRetryPolicy(pb Playbacker) retryablehttp.CheckRetry {
 		default:
 			return false, nil
 		}
+	}
+}
+
+func makePrepareRetry(pb Playbacker) retryablehttp.PrepareRetry {
+	return func(req *http.Request) error {
+		// Extract the itag parameter
+		itag := urlutil.ExtractParameter(req.URL.Path, "itag")
+		if itag == "" {
+			return nil
+		}
+
+		baseURLString := pb.BaseURLs()[itag]
+		if baseURLString == "" {
+			return fmt.Errorf("no base URL found for itag: %s", itag)
+		}
+		baseURL, err := url.Parse(baseURLString)
+		if err != nil {
+			return fmt.Errorf("parsing base URL: %w", err)
+		}
+
+		// Extract the sq parameter
+		sq := urlutil.ExtractParameter(req.URL.Path, "sq")
+		if sq == "" {
+			// Looks like a request for the head sequence number
+			req.URL = baseURL
+		} else {
+			// Looks like as a request for a specific segment
+			req.URL = urlutil.BuildSegmentURLFromParsed(baseURL, sq)
+		}
+
+		req.Header.Set("X-Request-Url", req.URL.String())
+
+		return nil
 	}
 }

@@ -33,7 +33,7 @@ func MakeSegmentMetadataHandler(
 ) func(w http.ResponseWriter, r *http.Request) {
 	t.Helper()
 	return func(w http.ResponseWriter, r *http.Request) {
-		sq, err := strconv.Atoi(urlutil.ExtractParameter(r.URL.RawPath, "sq"))
+		sq, err := strconv.Atoi(urlutil.ExtractParameter(r.URL.EscapedPath(), "sq"))
 		if err != nil {
 			t.Fatalf("parsing sq in request URL: %v", err)
 		}

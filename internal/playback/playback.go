@@ -160,12 +160,12 @@ func (pb *Playback) downloadSegmentPartial(
 	if baseURL == "" {
 		return nil, fmt.Errorf("missing base URL for itag '%s'", itag)
 	}
-	u, err := urlutil.BuildSegmentURL(baseURL, sq)
+	u, err := urlutil.BuildSegmentURL(baseURL, strconv.Itoa(sq))
 	if err != nil {
 		return nil, fmt.Errorf("building segment URL: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodGet, u, nil)
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating new request: %w", err)
 	}

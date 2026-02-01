@@ -82,7 +82,7 @@ func TestPlayback_DownloadSegment(t *testing.T) {
 			assert.Equal(
 				t,
 				"/videoplayback/itag/140/mime/audio%2Fmp4/dur/2.000/sq/123",
-				r.URL.RawPath,
+				r.URL.EscapedPath(),
 			)
 			w.Write([]byte("test"))
 		}),
@@ -128,7 +128,7 @@ Target-Duration-Us: 2000000`
 			assert.Equal(
 				t,
 				"/videoplayback/itag/140/mime/audio%2Fmp4/dur/2.000/sq/123",
-				r.URL.RawPath,
+				r.URL.EscapedPath(),
 			)
 			w.Write([]byte(metadataBytes))
 		}),
