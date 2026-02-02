@@ -13,7 +13,7 @@ const revisionLength = 7
 
 func GetFull() string {
 	info, ok := debug.ReadBuildInfo()
-	if ok { //nolint:nestif
+	if ok {
 		var sb strings.Builder
 
 		var (
@@ -36,7 +36,7 @@ func GetFull() string {
 			}
 		}
 
-		// Write Git version
+		// Write version number
 		version := buildVersionNumber(GitVersion, dirty)
 		sb.WriteString("ypb version " + version)
 
