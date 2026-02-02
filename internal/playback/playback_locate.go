@@ -18,6 +18,7 @@
 package playback
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -30,6 +31,9 @@ import (
 // timeDiffTolerance defines the acceptable time difference when matching
 // segments.  See https://github.com/xymaxim/ytpb/issues/5.
 const timeDiffTolerance = 50 * time.Millisecond
+
+// maxJumpSteps limits the number of jump search iterations.
+const maxJumpSteps = 10
 
 // RewindMoment describes a specific point in time mapped to a segment-locate result.
 type RewindMoment struct {
@@ -108,6 +112,12 @@ func (pb *Playback) LocateMoment(
 	directionChanged := false
 
 	for {
+		if len(track) >= maxJumpSteps {
+			msg := "jump search exceeded max steps, exit"
+			slog.Warn(msg, "track", track)
+			return nil, errors.New(msg)
+		}
+
 		track = append(track, currentSeqNum)
 		candidateTimeDiff := targetTime.Sub(candidate.Time())
 		slog.Debug(
