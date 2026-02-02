@@ -14,7 +14,10 @@ type CLI struct {
 
 	Download commands.Download `cmd:"" help:"Download stream excerpts"`
 	Serve    commands.Serve    `cmd:"" help:"Start playback server"`
+	Version  commands.Version  `cmd:"" help:"Show version info and exit"`
 }
+
+type VersionFlag string
 
 func main() {
 	var cli CLI
