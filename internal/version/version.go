@@ -20,7 +20,7 @@ func GetFull() string {
 			arch     string
 			platform string
 			revision string
-			modified bool
+			dirty    bool
 		)
 
 		for _, kv := range info.Settings {
@@ -32,15 +32,12 @@ func GetFull() string {
 			case "vcs.revision":
 				revision = kv.Value[:revisionLength]
 			case "vcs.modified":
-				modified = kv.Value == "true"
+				dirty = kv.Value == "true"
 			}
 		}
 
 		// Write Git version
-		var version = "(untagged)"
-		if GitVersion != "" {
-			version = buildVersionNumber(GitVersion, modified)
-		}
+		version := buildVersionNumber(GitVersion, dirty)
 		sb.WriteString("ypb version " + version)
 
 		// Write revision
@@ -63,21 +60,24 @@ func GetFull() string {
 func GetShort() string {
 	info, ok := debug.ReadBuildInfo()
 	if ok {
-		var modified bool
+		var dirty bool
 		for _, kv := range info.Settings {
 			switch kv.Key {
 			case "vcs.modified":
-				modified = kv.Value == "true"
+				dirty = kv.Value == "true"
 				break
 			}
 		}
-		return buildVersionNumber(GitVersion, modified)
+		return buildVersionNumber(GitVersion, dirty)
 	}
 	return ""
 }
 
 func buildVersionNumber(v string, dirty bool) string {
-	if v != "" && dirty {
+	if v == "" {
+		return "(untagged)"
+	}
+	if dirty {
 		return v + "+dirty"
 	}
 	return v
