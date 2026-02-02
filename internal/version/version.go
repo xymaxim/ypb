@@ -11,7 +11,7 @@ var GitVersion string
 
 const revisionLength = 7
 
-func Get() string {
+func GetFull() string {
 	info, ok := debug.ReadBuildInfo()
 	if ok { //nolint:nestif
 		var sb strings.Builder
@@ -37,14 +37,11 @@ func Get() string {
 		}
 
 		// Write Git version
+		var version = "(untagged)"
 		if GitVersion != "" {
-			if modified {
-				GitVersion += "+dirty"
-			}
-			sb.WriteString("ypb version " + GitVersion)
-		} else {
-			sb.WriteString("ypb version (untagged)")
+			version = buildVersionNumber(GitVersion, modified)
 		}
+		sb.WriteString("ypb version " + version)
 
 		// Write revision
 		if revision != "" {
@@ -61,4 +58,27 @@ func Get() string {
 	}
 
 	return ""
+}
+
+func GetShort() string {
+	info, ok := debug.ReadBuildInfo()
+	if ok {
+		var modified bool
+		for _, kv := range info.Settings {
+			switch kv.Key {
+			case "vcs.modified":
+				modified = kv.Value == "true"
+				break
+			}
+		}
+		return buildVersionNumber(GitVersion, modified)
+	}
+	return ""
+}
+
+func buildVersionNumber(v string, dirty bool) string {
+	if v != "" && dirty {
+		return v + "+dirty"
+	}
+	return v
 }
