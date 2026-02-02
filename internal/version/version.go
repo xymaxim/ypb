@@ -61,11 +61,12 @@ func GetShort() string {
 	info, ok := debug.ReadBuildInfo()
 	if ok {
 		var dirty bool
+	Loop:
 		for _, kv := range info.Settings {
 			switch kv.Key {
 			case "vcs.modified":
 				dirty = kv.Value == "true"
-				break
+				break Loop
 			}
 		}
 		return buildVersionNumber(GitVersion, dirty)
