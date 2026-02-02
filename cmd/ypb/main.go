@@ -10,7 +10,7 @@ import (
 )
 
 type CLI struct {
-	Verbose int `help:"Print verbose output" short:"v" type:"counter"`
+	Verbose int `help:"Show verbose output" short:"v" type:"counter"`
 
 	Download commands.Download `cmd:"" help:"Download stream excerpts"`
 	Serve    commands.Serve    `cmd:"" help:"Start playback server"`
