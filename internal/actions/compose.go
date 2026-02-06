@@ -2,6 +2,7 @@ package actions
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/xymaxim/ypb/internal/mpd"
 	"github.com/xymaxim/ypb/internal/playback"
@@ -14,17 +15,17 @@ func ComposeStatic(
 	interval *playback.RewindInterval,
 	baseURL string,
 ) ([]byte, error) {
-	segmentDuration := strconv.FormatInt(pb.Info().SegmentDuration.Milliseconds(), 10)
+	timescale := time.Millisecond
+	segmentDuration := pb.Info().SegmentDuration
 	mpdInfo := mpd.Information{
-		AvailabilityStartTime: interval.Start.Metadata.Time(),
-		MediaPresentationDuration: interval.End.Metadata.Time().
-			Sub(interval.Start.Metadata.Time()),
-		RepresentationBaseURL: baseURL,
+		AvailabilityStartTime:     interval.Start.Metadata.Time(),
+		MediaPresentationDuration: interval.Duration(),
+		RepresentationBaseURL:     baseURL,
 		SegmentTemplate: &mpd.SegmentTemplate{
 			Media:       segmentMediaURL,
 			StartNumber: interval.Start.Metadata.SequenceNumber,
-			Duration:    segmentDuration,
-			Timescale:   "1000",
+			Duration:    strconv.Itoa(int(segmentDuration / timescale)),
+			Timescale:   strconv.Itoa(int(time.Second / timescale)),
 		},
 	}
 

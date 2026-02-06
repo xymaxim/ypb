@@ -75,6 +75,11 @@ type RewindInterval struct {
 	End   *RewindMoment
 }
 
+// Duration returns the actual duration of an interval.
+func (i *RewindInterval) Duration() time.Duration {
+	return i.End.ActualTime.Sub(i.Start.ActualTime)
+}
+
 // LocateMoment finds the RewindMoment corresponding to a targetTime.
 //
 // The search begins from a reference point (typically the head segment or the
