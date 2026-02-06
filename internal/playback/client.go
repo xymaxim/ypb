@@ -17,6 +17,8 @@ import (
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
 
+	client.HTTPClient.Timeout = time.Minute
+
 	client.Backoff = func(
 		minimum, maximum time.Duration,
 		attempt int,
