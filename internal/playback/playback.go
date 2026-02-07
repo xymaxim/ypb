@@ -139,7 +139,7 @@ func (pb *Playback) StreamSegment(itag string, sq SequenceNumber, w io.Writer) e
 func (pb *Playback) DownloadSegment(itag string, sq SequenceNumber) ([]byte, error) {
 	var buf bytes.Buffer
 	if err := pb.streamSegmentPartial(itag, sq, 0, &buf); err != nil {
-		return nil, fmt.Errorf("streaming segment: %w", sq, err)
+		return nil, fmt.Errorf("streaming segment: %w", err)
 	}
 	return buf.Bytes(), nil
 }
@@ -193,14 +193,12 @@ func (pb *Playback) streamSegmentPartial(
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusPartialContent:
-		var copyErr error
-		if resp.StatusCode == http.StatusPartialContent && length > 0 {
-			reader := &io.LimitedReader{R: resp.Body, N: length}
-			_, copyErr = io.Copy(w, reader)
-		} else {
-			_, copyErr = io.Copy(w, resp.Body)
+		reader := io.Reader(resp.Body)
+		if resp.StatusCode == http.StatusOK && length > 0 {
+			reader = &io.LimitedReader{R: resp.Body, N: length}
 		}
-		return copyErr
+		_, err := io.Copy(w, reader)
+		return err
 	default:
 		return fmt.Errorf("got unexpected status: %s", resp.Status)
 	}
