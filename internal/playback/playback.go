@@ -1,6 +1,7 @@
 package playback
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -39,11 +40,12 @@ type Playbacker interface {
 	BaseURLs() map[string]string
 	DownloadSegment(itag string, sq SequenceNumber) ([]byte, error)
 	FetchSegmentMetadata(itag string, sq SequenceNumber) (*segment.Metadata, error)
-	ProbeItag() string
 	Info() info.VideoInformation
 	LocateMoment(time.Time, segment.Metadata, bool) (*RewindMoment, error)
+	ProbeItag() string
 	RefreshBaseURLs() error
 	RequestHeadSeqNum() (int, error)
+	StreamSegment(itag string, sq SequenceNumber, w io.Writer) error
 }
 
 var _ Playbacker = (*Playback)(nil)
@@ -130,20 +132,29 @@ func (pb *Playback) ProbeItag() string {
 	return pb.Info().VideoStreams[0].Itag
 }
 
+func (pb *Playback) StreamSegment(itag string, sq SequenceNumber, w io.Writer) error {
+	return pb.streamSegmentPartial(itag, sq, 0, w)
+}
+
 func (pb *Playback) DownloadSegment(itag string, sq SequenceNumber) ([]byte, error) {
-	return pb.downloadSegmentPartial(itag, sq, 0)
+	var buf bytes.Buffer
+	if err := pb.streamSegmentPartial(itag, sq, 0, &buf); err != nil {
+		return nil, fmt.Errorf("streaming segment: %w", sq, err)
+	}
+	return buf.Bytes(), nil
 }
 
 func (pb *Playback) FetchSegmentMetadata(
 	itag string,
 	sq SequenceNumber,
 ) (*segment.Metadata, error) {
-	b, err := pb.downloadSegmentPartial(itag, sq, segment.MetadataLength)
+	var buf bytes.Buffer
+	err := pb.streamSegmentPartial(itag, sq, segment.MetadataLength, &buf)
 	if err != nil {
-		return nil, fmt.Errorf("downloading segment sq=%d metadata: %w", sq, err)
+		return nil, fmt.Errorf("downloading segment metadata, sq=%d: %w", sq, err)
 	}
 
-	sm, err := segment.ParseMetadata(b)
+	sm, err := segment.ParseMetadata(buf.Bytes())
 	if err != nil {
 		return nil, fmt.Errorf("parsing metadata: %w", err)
 	}
@@ -151,23 +162,24 @@ func (pb *Playback) FetchSegmentMetadata(
 	return sm, nil
 }
 
-func (pb *Playback) downloadSegmentPartial(
+func (pb *Playback) streamSegmentPartial(
 	itag string,
 	sq SequenceNumber,
 	length int64,
-) ([]byte, error) {
+	w io.Writer,
+) error {
 	baseURL := pb.BaseURLs()[itag]
 	if baseURL == "" {
-		return nil, fmt.Errorf("missing base URL for itag '%s'", itag)
+		return fmt.Errorf("missing base URL for itag '%s'", itag)
 	}
 	u, err := urlutil.BuildSegmentURL(baseURL, strconv.Itoa(sq))
 	if err != nil {
-		return nil, fmt.Errorf("building segment URL: %w", err)
+		return fmt.Errorf("building segment URL: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("creating new request: %w", err)
+		return fmt.Errorf("creating new request: %w", err)
 	}
 
 	if length > 0 {
@@ -175,22 +187,21 @@ func (pb *Playback) downloadSegmentPartial(
 	}
 	resp, err := pb.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("requesting segment: %w", err)
+		return fmt.Errorf("requesting segment: %w", err)
 	}
 	defer resp.Body.Close()
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusPartialContent:
-		var body []byte
-		var readErr error
-		if resp.StatusCode == http.StatusPartialContent {
+		var copyErr error
+		if resp.StatusCode == http.StatusPartialContent && length > 0 {
 			reader := &io.LimitedReader{R: resp.Body, N: length}
-			body, readErr = io.ReadAll(reader)
+			_, copyErr = io.Copy(w, reader)
 		} else {
-			body, readErr = io.ReadAll(resp.Body)
+			_, copyErr = io.Copy(w, resp.Body)
 		}
-		return body, readErr
+		return copyErr
 	default:
-		return nil, fmt.Errorf("got unexpected status: %s", resp.Status)
+		return fmt.Errorf("got unexpected status: %s", resp.Status)
 	}
 }

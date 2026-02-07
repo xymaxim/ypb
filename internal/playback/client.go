@@ -40,14 +40,15 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 		}
 
 		switch resp.StatusCode {
-		case http.StatusForbidden, http.StatusServiceUnavailable:
+		case http.StatusForbidden, http.StatusServiceUnavailable, http.StatusBadRequest:
 			slog.Warn(
 				"got transient HTTP error, retrying",
 				"status", resp.StatusCode,
 				"method", resp.Request.Method,
 				"url", resp.Request.URL,
 			)
-			if resp.StatusCode == http.StatusForbidden {
+			if resp.StatusCode == http.StatusForbidden ||
+				resp.StatusCode == http.StatusBadRequest {
 				if err := pb.RefreshBaseURLs(); err != nil {
 					return false, fmt.Errorf(
 						"refreshing base URLs before retry: %w",

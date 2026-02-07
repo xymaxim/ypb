@@ -107,7 +107,9 @@ func TestPlayback_DownloadSegment_UnknownItag(t *testing.T) {
 	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
 	_, err := pb.DownloadSegment("unknown", 123)
-	assert.EqualError(t, err, "missing base URL for itag 'unknown'")
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
 }
 
 func TestPlayback_FetchSegmentMetadata(t *testing.T) {

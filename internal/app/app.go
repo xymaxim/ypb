@@ -111,11 +111,10 @@ func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("parsing sq parameter argument: %w", err)
 	}
 
-	segment, err := a.Playback.DownloadSegment(r.PathValue("itag"), sq)
+	err = a.Playback.StreamSegment(r.PathValue("itag"), sq, w)
 	if err != nil {
-		return fmt.Errorf("downloading segment, sq = %d: %w", sq, err)
+		return fmt.Errorf("streaming segment, sq=%d: %w", sq, err)
 	}
-	w.Write(segment)
 
 	return nil
 }
