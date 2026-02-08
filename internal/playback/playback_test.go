@@ -1,9 +1,11 @@
 package playback_test
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 	"time"
 
@@ -73,7 +75,7 @@ func TestPlayback_RequestHeadSeqNum_MissingHeader(t *testing.T) {
 	}
 }
 
-func TestPlayback_DownloadSegment(t *testing.T) {
+func TestPlayback_StreamSegment(t *testing.T) {
 	t.Parallel()
 
 	ts := httptest.NewServer(
@@ -92,12 +94,19 @@ func TestPlayback_DownloadSegment(t *testing.T) {
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
-	data, err := pb.DownloadSegment("140", 123)
-	require.NoError(t, err)
-	assert.Equal(t, []byte("test"), data)
+	var buf bytes.Buffer
+	if err := pb.StreamSegment("140", 123, &buf); err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	got := buf.Bytes()
+	want := []byte("test")
+	if !slices.Equal(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
 }
 
-func TestPlayback_DownloadSegment_UnknownItag(t *testing.T) {
+func TestPlayback_StreamSegment_UnknownItag(t *testing.T) {
 	t.Parallel()
 
 	ts := httptest.NewServer(testutil.MakeDummyHandler())
@@ -106,8 +115,8 @@ func TestPlayback_DownloadSegment_UnknownItag(t *testing.T) {
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
-	_, err := pb.DownloadSegment("unknown", 123)
-	if err == nil {
+	var buf bytes.Buffer
+	if err := pb.StreamSegment("unknown", 123, &buf); err == nil {
 		t.Fatalf("expected error, got nil")
 	}
 }

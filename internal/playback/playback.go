@@ -38,7 +38,6 @@ func (e *SegmentMetadataFetchError) Unwrap() error {
 
 type Playbacker interface {
 	BaseURLs() map[string]string
-	DownloadSegment(itag string, sq SequenceNumber) ([]byte, error)
 	FetchSegmentMetadata(itag string, sq SequenceNumber) (*segment.Metadata, error)
 	Info() info.VideoInformation
 	LocateMoment(time.Time, segment.Metadata, bool) (*RewindMoment, error)
@@ -134,14 +133,6 @@ func (pb *Playback) ProbeItag() string {
 
 func (pb *Playback) StreamSegment(itag string, sq SequenceNumber, w io.Writer) error {
 	return pb.streamSegmentPartial(itag, sq, 0, w)
-}
-
-func (pb *Playback) DownloadSegment(itag string, sq SequenceNumber) ([]byte, error) {
-	var buf bytes.Buffer
-	if err := pb.streamSegmentPartial(itag, sq, 0, &buf); err != nil {
-		return nil, fmt.Errorf("streaming segment: %w", err)
-	}
-	return buf.Bytes(), nil
 }
 
 func (pb *Playback) FetchSegmentMetadata(
