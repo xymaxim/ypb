@@ -1,6 +1,7 @@
 package input_test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -187,8 +188,33 @@ func TestParseIntervalPart(t *testing.T) {
 			wantErr:   false,
 			wantValue: input.MomentKeyword("earliest"),
 		},
+	}
 
-		// Arithmetic expressions
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			value, err := input.ParseIntervalPart(tc.input)
+			if err == nil && tc.wantErr {
+				t.Fatalf("should fail, got: %v", value)
+			}
+			if err != nil && !tc.wantErr {
+				t.Fatalf("should not fail, got %v", err)
+			}
+			if diff := cmp.Diff(tc.wantValue, value); diff != "" {
+				t.Fatalf("Mismatch (- want, + have):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestParseIntervalPart_Expressions(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name      string
+		input     string
+		wantErr   bool
+		wantValue any
+	}{
 		{
 			name:    "date and time plus duration",
 			input:   "2026-01-02T10:20:30+00 + 1h",
@@ -206,6 +232,28 @@ func TestParseIntervalPart(t *testing.T) {
 			wantValue: input.MomentExpression{
 				Left:     time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 				Operator: input.OpMinus,
+				Right:    time.Hour,
+			},
+		},
+		{
+			name:    "only local time plus duration",
+			input:   "10:20:30 + 1h",
+			wantErr: false,
+			wantValue: input.MomentExpression{
+				Left: func() time.Time {
+					now := time.Now()
+					return time.Date(
+						now.Year(),
+						now.Month(),
+						now.Day(),
+						10,
+						20,
+						30,
+						0,
+						time.Local, //nolint:gosmopolitan
+					)
+				}(),
+				Operator: input.OpPlus,
 				Right:    time.Hour,
 			},
 		},
@@ -253,7 +301,30 @@ func TestParseIntervalPart(t *testing.T) {
 		},
 	}
 
+	// Expand test cases to include "without spaces" variants
+	expandedTestCases := make([]struct {
+		name      string
+		input     string
+		wantErr   bool
+		wantValue any
+	}, 0, 2*len(testCases))
+
 	for _, tc := range testCases {
+		expandedTestCases = append(expandedTestCases, tc)
+		expandedTestCases = append(expandedTestCases, struct {
+			name      string
+			input     string
+			wantErr   bool
+			wantValue any
+		}{
+			name:      tc.name + " without spaces",
+			input:     strings.ReplaceAll(tc.input, " ", ""),
+			wantErr:   tc.wantErr,
+			wantValue: tc.wantValue,
+		})
+	}
+
+	for _, tc := range expandedTestCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			value, err := input.ParseIntervalPart(tc.input)

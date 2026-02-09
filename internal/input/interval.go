@@ -175,7 +175,7 @@ func parseDateAndTime(input string) ParserResult {
 	)
 	offsetMinutes := gomme.Optional(
 		gomme.Preceded(
-			gomme.Optional(gomme.Char[string](':')),
+			gomme.Char[string](':'),
 			digits(2),
 		),
 	)
