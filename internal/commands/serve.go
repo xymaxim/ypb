@@ -10,7 +10,7 @@ import (
 
 type Serve struct {
 	Stream string `arg:"" help:"YouTube video ID"          required:""`
-	Port   int    `       help:"Port to start playback on"             short:"p" default:"8080"`
+	Port   int    `       help:"Port to start playback on"             default:"8080" short:"p"`
 }
 
 func (c *Serve) Run() error {
