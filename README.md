@@ -30,23 +30,23 @@ guide for different ways to install and run `ypb`.
 
 ## Showcase
 
-### Download stream excerpt
+### Download stream excerpts
 
 Download the latest 10 minutes from a live stream to a local file:
 
 ```shell
 $ ypb download --interval 10m/now Mm_zVDDUeNA && ls
-Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T054630+00_10m.f137.mp4
+Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T054630+00_10m.mp4
 ``` 
 
-Or download a similar 10-minute excerpt from one day ago:
+Or download a similar excerpt from one day ago:
 
 ```shell
 $ ypb download --interval now-1d10m/now-1d Mm_zVDDUeNA && ls
-Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260207T054630+00_10m.f137.mp4
+Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260207T054630+00_10m.mp4
 ``` 
 
-### Preview stream excerpt
+### Serve stream excerpts
 
 Start the playback server to enable rewind requests:
 
@@ -54,12 +54,18 @@ Start the playback server to enable rewind requests:
 $ ypb serve --port 8080 Mm_zVDDUeNA
 ```
 
-With the server running, you can rewind to excerpts and play them, for example,
-with `ffplay`:
+With the server running, you can preview rewind excerpts, for example, with
+`ffplay`:
 
 ```shell
 $ ffplay -protocol_whitelist file,http,https,tcp,tls \
-      http://localhost:8080/rewind/30m--now
+      http://localhost:8080/rewind/10m--now
+```
+
+Or download them with `yt-dlp`:
+
+```shell
+$ yt-dlp http://localhost:8080/rewind/10m--now
 ```
 
 ## License
