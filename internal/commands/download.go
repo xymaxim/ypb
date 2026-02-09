@@ -19,9 +19,10 @@ import (
 )
 
 type Download struct {
-	Stream   string `arg:"" help:"YouTube video ID"          required:""`
-	Interval string `       help:"Time or segment interval"  required:"" short:"i"`
-	Port     int    `       help:"Port to start playback on"             short:"p" default:"8080"`
+	Stream       string   `arg:"" help:"YouTube video ID"                         required:""`
+	Interval     string   `       help:"Time or segment interval"                 required:"" short:"i"`
+	Port         int      `       help:"Port to start playback on"                            short:"p" default:"8080"`
+	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                                      optional:"" passthrough:""`
 }
 
 func (c *Download) Run() error {
@@ -89,12 +90,25 @@ func (c *Download) Run() error {
 		}
 	}()
 
-	u, err := url.JoinPath(urlutil.FormatServerAddress(a.Server.Addr), "mpd")
+	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(a.Server.Addr), "mpd")
 	if err != nil {
 		return fmt.Errorf("building URL: %w", err)
 	}
-	err = a.YtdlpRunner.Run(u, "--newline", "--output", buildOutputName(outputContext))
-	if err != nil {
+
+	ytdlpOptions := c.YtdlpOptions
+	if len(ytdlpOptions) > 0 && ytdlpOptions[0] == "--" {
+		ytdlpOptions = ytdlpOptions[1:]
+	}
+	args := append(
+		[]string{
+			mpdURL,
+			"--newline",
+			"--output", buildOutputName(outputContext),
+		},
+		ytdlpOptions...,
+	)
+
+	if err := a.YtdlpRunner.Run(args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
 
