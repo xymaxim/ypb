@@ -34,6 +34,7 @@ linters:
     - noinlineerr
     - noctx
     - varnamelen
+    - tagalign
     - tagliatelle
     - wsl
     - wsl_v5
