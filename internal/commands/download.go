@@ -19,11 +19,10 @@ import (
 )
 
 type Download struct {
+	CommonFlags
 	Stream       string   `arg:"" help:"YouTube video ID"                         required:""`
 	Interval     string   `       help:"Time or segment interval"                 required:"" short:"i"`
-	Port         int      `       help:"Port to start playback on"                            short:"p" default:"8080"`
-	YtdlpPath    string   `       help:"Path to yt-dlp binary"                                          default:"yt-dlp" type:"path"`
-	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                                                    optional:"" passthrough:""` //nolint:lll
+	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                       optional:"" passthrough:""` //nolint:lll
 }
 
 func (c *Download) Run() error {

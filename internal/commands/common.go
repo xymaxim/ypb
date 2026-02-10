@@ -8,6 +8,11 @@ import (
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
+type CommonFlags struct {
+	Port      int    `help:"Port to start playback on" short:"p" default:"8080"`
+	YtdlpPath string `help:"Path to the yt-dlp binary"           default:"yt-dlp" type:"path"`
+}
+
 func checkYtdlp(path string) error {
 	_, err := exec.LookPath(path)
 	if err != nil {
