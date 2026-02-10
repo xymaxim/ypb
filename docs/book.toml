@@ -1,0 +1,8 @@
+[book]
+title = "Ypb documentation"
+
+[output.html]
+no-section-label = true
+
+[preprocessor.variables.variables]
+release_version = "v2026.2.10"

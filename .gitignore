@@ -30,3 +30,6 @@ go.work.sum
 
 # Added by goreleaser init:
 dist/
+
+# mdBook
+docs/book/

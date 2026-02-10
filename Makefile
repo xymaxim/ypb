@@ -23,3 +23,7 @@ release:
 
 snapshot:
 	goreleaser release --clean --snapshot --skip=publish
+
+.PHONY: docs
+docs:
+	mdbook build docs
