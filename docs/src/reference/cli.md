@@ -75,8 +75,9 @@ follows:
 For a complete list of available options, see the [yt-dlp
 documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
 
-> [!IMPORTANT] Not all `yt-dlp` options are compatible with `ypb`'s
-> workflow. Such options will not have any effect. For example, [the network
+> [!IMPORTANT]
+> Not all `yt-dlp` options are compatible with `ypb`'s workflow. Incompatible
+> options will not have effect. For example, [the network
 > options](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options)
 > are not supported.
 
