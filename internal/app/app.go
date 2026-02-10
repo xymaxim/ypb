@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	SegmentPath = "/videoplayback/itag/{itag}/sq/{sq}"
-	RewindPath  = "/rewind/{rewind}"
+	SegmentPath     = "/videoplayback/itag/{itag}/sq/{sq}"
+	RewindPath      = "/rewind/{rewind}"
+	YtdlpBinaryPath = "yt-dlp"
 )
 
 type App struct {
@@ -31,10 +32,10 @@ type Config struct {
 	Port int
 }
 
-func NewApp(ytdlpPath string) *App {
+func NewApp() *App {
 	return &App{
 		Config:      &Config{},
-		YtdlpRunner: exec.NewCommandRunner(ytdlpPath),
+		YtdlpRunner: exec.NewCommandRunner(YtdlpBinaryPath),
 	}
 }
 

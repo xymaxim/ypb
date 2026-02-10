@@ -10,11 +10,11 @@ import (
 
 type CommonFlags struct {
 	Port      int    `help:"Port to start playback on" short:"p" default:"8080"`
-	YtdlpPath string `help:"Path to the yt-dlp binary"           default:"yt-dlp" type:"path"`
+	YtdlpPath string `help:"Path to the yt-dlp binary"           default:"yt-dlp"`
 }
 
-func checkYtdlp(path string) error {
-	_, err := exec.LookPath(path)
+func checkYtdlp() error {
+	_, err := exec.LookPath(apppkg.YtdlpBinaryPath)
 	if err != nil {
 		return fmt.Errorf("unable to find yt-dlp: %w", err)
 	}

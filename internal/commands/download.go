@@ -26,11 +26,11 @@ type Download struct {
 }
 
 func (c *Download) Run() error {
-	if err := checkYtdlp(c.YtdlpPath); err != nil {
+	if err := checkYtdlp(); err != nil {
 		return err
 	}
 
-	a := app.NewApp(c.YtdlpPath)
+	a := app.NewApp()
 
 	start, end, err := input.ParseInterval(c.Interval)
 	if err != nil {

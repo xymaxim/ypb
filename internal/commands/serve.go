@@ -14,11 +14,11 @@ type Serve struct {
 }
 
 func (c *Serve) Run() error {
-	if err := checkYtdlp(c.YtdlpPath); err != nil {
+	if err := checkYtdlp(); err != nil {
 		return err
 	}
 
-	a := app.NewApp(c.YtdlpPath)
+	a := app.NewApp()
 
 	if err := collectVideoInfo(c.Stream, a, c.Port); err != nil {
 		return err
