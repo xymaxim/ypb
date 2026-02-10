@@ -22,11 +22,16 @@ type Download struct {
 	Stream       string   `arg:"" help:"YouTube video ID"                         required:""`
 	Interval     string   `       help:"Time or segment interval"                 required:"" short:"i"`
 	Port         int      `       help:"Port to start playback on"                            short:"p" default:"8080"`
-	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                                      optional:"" passthrough:""` //nolint:lll
+	YtdlpPath    string   `       help:"Path to yt-dlp binary"                                          default:"yt-dlp" type:"path"`
+	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                                                    optional:"" passthrough:""` //nolint:lll
 }
 
 func (c *Download) Run() error {
-	a := app.NewApp()
+	if err := checkYtdlp(c.YtdlpPath); err != nil {
+		return err
+	}
+
+	a := app.NewApp(c.YtdlpPath)
 
 	start, end, err := input.ParseInterval(c.Interval)
 	if err != nil {

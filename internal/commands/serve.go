@@ -9,12 +9,17 @@ import (
 )
 
 type Serve struct {
-	Stream string `arg:"" help:"YouTube video ID"          required:""`
-	Port   int    `       help:"Port to start playback on"             default:"8080" short:"p"`
+	Stream    string `arg:"" help:"YouTube video ID"          required:""`
+	Port      int    `       help:"Port to start playback on"             default:"8080"   short:"p"`
+	YtdlpPath string `       help:"Path to yt-dlp binary"                 default:"yt-dlp"           type:"path"`
 }
 
 func (c *Serve) Run() error {
-	a := app.NewApp()
+	if err := checkYtdlp(c.YtdlpPath); err != nil {
+		return err
+	}
+
+	a := app.NewApp(c.YtdlpPath)
 
 	if err := collectVideoInfo(c.Stream, a, c.Port); err != nil {
 		return err

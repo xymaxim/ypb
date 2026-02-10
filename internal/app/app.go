@@ -31,10 +31,10 @@ type Config struct {
 	Port int
 }
 
-func NewApp() *App {
+func NewApp(ytdlpPath string) *App {
 	return &App{
 		Config:      &Config{},
-		YtdlpRunner: exec.NewCommandRunner("yt-dlp"),
+		YtdlpRunner: exec.NewCommandRunner(ytdlpPath),
 	}
 }
 
