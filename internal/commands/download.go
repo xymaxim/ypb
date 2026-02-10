@@ -107,6 +107,7 @@ func (c *Download) Run() error {
 		[]string{
 			mpdURL,
 			"--newline",
+			"--force-generic-extractor",
 			"--output", buildOutputName(outputContext),
 		},
 		ytdlpOptions...,
