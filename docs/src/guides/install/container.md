@@ -57,6 +57,10 @@ alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
 alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
 ```
 
+> [!IMPORTANT]
+> On SELinux-enabled systems add `:Z` to the volume mount to avoid permission
+> errors.
+
 ### Manual usage without aliases
 
 If you prefer not to use aliases or need custom configurations:
