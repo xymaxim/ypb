@@ -17,3 +17,9 @@ run:
 
 build:
 	go build -ldflags "$(VERSION_LDFLAGS)" -o ypb ./cmd/ypb
+
+release:
+	goreleaser release --clean
+
+snapshot:
+	goreleaser release --clean --snapshot --skip=publish
