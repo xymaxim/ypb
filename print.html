@@ -1,0 +1,874 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Ypb documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-0f0f5c53.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-e2d41da3.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ypb documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="ypb--a-playback-for-youtube-live-streams"><a class="header" href="#ypb--a-playback-for-youtube-live-streams">Ypb — A playback for YouTube live streams</a></h1>
+<p><em>Rewind to past moments in live streams and play or download excerpts</em></p>
+<p>Ypb is a playback tool for YouTube live streams written in Go. It provides
+MPEG-DASH access to past moments in live streams, allowing you to rewind beyond
+the web player’s limits, play selected excerpts instantly in any compatible
+player, or download them as local files.</p>
+<h2>Further reading</h2>
+
+<p><strong>Before you begin</strong></p>
+<ul>
+<li><a href="#get-started-with-ypb"><strong>Quickstart</strong></a> — Showcase of main usage scenarios</li>
+<li><a href="#install"><strong>Installation guide</strong></a> — How to install and run
+ypb</li>
+</ul>
+<p><strong>Reference</strong></p>
+<ul>
+<li><a href="#command-line-interface"><strong>Command Line Interface</strong></a> — Overview of the command
+line interface</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="get-started-with-ypb"><a class="header" href="#get-started-with-ypb">Get started with ypb</a></h1>
+<p>This tutorial shows how to install <code>ypb</code> and demonstrates its main usage
+scenarios.</p>
+<p>You will explore two running modes: download and serve. We will download a live
+stream excerpt, explaining the main command options. Next, we will see how to
+play past moments without downloading.</p>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>There are two ways to get <code>ypb</code> running: install from pre-built binaries or run in
+a container. The choice depends on what’s already installed on your system and
+your preferences.</p>
+<h3 id="install-from-binaries"><a class="header" href="#install-from-binaries">Install from binaries</a></h3>
+<p>Ypb requires <code>yt-dlp</code> and the <a href="#requirements">related
+dependencies</a>. If you already have a
+working <code>yt-dlp</code> installation on your computer, the quickest way to start is to
+download the pre-built binaries.</p>
+<p>Use the links from the <a href="https://github.com/xymaxim/ypb/releases/latest">latest
+release</a> below for your platform
+and architecture:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>Linux</th><th>macOS</th><th>Windows</th></tr>
+</thead>
+<tbody>
+<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-linux-amd64.zip">ypb-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-windows-amd64.zip">ypb-windows-amd64.zip</a></td></tr>
+<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-linux-arm64.zip">ypb-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-windows-arm64.zip">ypb-windows-arm64.zip</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>Download and unzip a file to your working directory.</p>
+<p>Verify the version with the following command:</p>
+<p><strong>Linux/macOS</strong></p>
+<pre><code>chmod +x ypb &amp;&amp; ./ypb version
+</code></pre>
+<p><strong>Windows</strong></p>
+<p>(Type <code>ypb.exe</code> instead of <code>ypb</code>; no installation needed.)</p>
+<pre><code>.\ypb.exe version
+</code></pre>
+<blockquote>
+<p>See <a href="#pre-built-binaries">Pre-built binaries</a> for more details.</p>
+</blockquote>
+<h3 id="try-in-a-container"><a class="header" href="#try-in-a-container">Try in a container</a></h3>
+<p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
+<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a></p>
+<p><strong>macOS/Windows only:</strong> Initialize the Podman machine (one-time setup):</p>
+<pre><code class="language-shell">podman machine init &amp;&amp; podman machine start
+</code></pre>
+<p>Pull the container image and verify the version:</p>
+<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+podman run --rm ghcr.io/xymaxim/ypb version
+</code></pre>
+<p>To run commands with access to your current directory:</p>
+<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+</code></pre>
+<blockquote>
+<p>See <a href="#container-image">Container image</a> for creating <a href="#recommended-aliases">recommended
+aliases</a> and more details.</p>
+</blockquote>
+<h2 id="download-excerpts"><a class="header" href="#download-excerpts">Download excerpts</a></h2>
+<p>Let’s start by downloading a small excerpt from a live stream.</p>
+<p>If you are not sure what to watch, the <a href="https://www.allaboutbirds.org/cams/">Cornell Lab Bird
+Cams</a> project provides access to beatiful
+bird cam streams across the world. As an example, let’s watch at the <a href="https://www.allaboutbirds.org/cams/royal-albatross/">Northern
+Royal Albatross nesting</a> at
+Taiaroa Head, New Zealand.</p>
+<p>To get the last one-minute excerpt from the <a href="https://www.youtube.com/live/Mm_zVDDUeNA">YouTube
+stream</a>, run this command by providing
+the rewind interval (<code>-i/--interval</code>) and YouTube video ID (required
+argument):</p>
+<pre><code class="language-shell">$ ypb download --interval 1m/now Mm_zVDDUeNA
+(&lt;&lt;) Collecting info about https://www.youtube.com/live/Mm_zVDDUeNA...
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
+enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
+your command/config. YouTube extraction without a JS runtime has been
+deprecated, and some formats may be missing. See
+https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
+Stream 'Live &amp; Just Hatched! Royal Albatross Cam - NZ Dept. of Conservation | Cornell Lab' is alive!
+
+(&lt;&lt;) Locating start and end moments...
+Actual start: Sun, 08 Feb 2026 11:22:50 +0000 (-2s), sq=1647523
+  Actual end: Sun, 08 Feb 2026 11:23:55 +0000, sq=1647535
+
+(&lt;&lt;) Downloading and merging media...
+yt-dlp: [generic] Extracting URL: http://localhost:8080/mpd
+yt-dlp: [generic] mpd: Downloading webpage
+yt-dlp: WARNING: [generic] Falling back on generic information extractor
+yt-dlp: [generic] mpd: Extracting information
+yt-dlp: [info] mpd: Downloading 1 format(s): 137+140
+yt-dlp: [dashsegments] Total fragments: 13
+yt-dlp: [download] Destination: Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4
+yt-dlp: [download] 100.0% of ~   1.00KiB at      0.00B/s ETA Unknown (frag 0/13)
+...
+yt-dlp: [Merger] Merging formats into "Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4"
+yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4 (pass -k to keep)
+yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f140.m4a (pass -k to keep)
+</code></pre>
+<blockquote class="blockquote-tag blockquote-tag-warning">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
+<p>You may see warnings about a missing JavaSript runtime, if you have not
+installed or enabled it:</p>
+<pre><code class="language-shell">WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
+enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
+your command/config. YouTube extraction without a JS runtime has been
+deprecated, and some formats may be missing. See
+https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
+</code></pre>
+<p>You may also get HTTP 403 errors (approximately every 30 seconds) during the
+download:</p>
+<pre><code class="language-shell">time=2026-02-08T11:23:05.127+00:00 level=WARN msg="got transient HTTP error,
+retrying" status=403 method=GET url=...
+</code></pre>
+<p>While this currently works by retrying and collecting video info again, it is
+highly recommended to set up the <a href="#additional-dependencies">additional
+dependencies</a> to help avoid
+such errors.</p>
+</blockquote>
+<p>As you can see, downloading consists of three steps: (1) collecting video
+information, (2) locating start and end moments, and (3) the download itself
+with audio and video merging at the end. The first and third stages are carried
+out by <code>yt-dlp</code>.</p>
+<p>Once the download finished, a single MP4 file can be found in the current
+working directory:</p>
+<pre><code>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
+</code></pre>
+<h3 id="specify-formats"><a class="header" href="#specify-formats">Specify formats</a></h3>
+<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically (it
+selects the best available quality). This gives you the flexibility to use
+familiar <code>yt-dlp</code> options or even your existing configuration file.</p>
+<p>You can pass options directly to <code>yt-dlp</code> by adding them after the <code>--</code>
+separator.</p>
+<blockquote>
+<p>See <a href="#ytdlp-options">Pass options to yt-dlp</a> for more details
+and examples.</p>
+</blockquote>
+<p>For example, let’s use the <code>yt-dlp</code>’s <code>-f</code> option to download only the best
+quality audio:</p>
+<pre><code class="language-shell">$ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
+</code></pre>
+<p>Running <code>yt-dlp -F ...</code> can be helpful here to list all available formats:</p>
+<pre><code class="language-shell">$ yt-dlp -F --live-from-start Mm_zVDDUeNA
+[youtube] Extracting URL: Mm_zVDDUeNA
+[youtube] Mm_zVDDUeNA: Downloading webpage
+[youtube] Mm_zVDDUeNA: Downloading android sdkless player API JSON
+[youtube] Mm_zVDDUeNA: Downloading web safari player API JSON
+[youtube] Mm_zVDDUeNA: Downloading MPD manifest
+[info] Available formats for Mm_zVDDUeNA:
+ID  EXT RESOLUTION FPS │   TBR PROTO │ VCODEC        VBR ACODEC      ABR ASR MORE INFO
+─────────────────────────────────────────────────────────────────────────────────────────────────
+139 m4a audio only     │   64k dashG │ audio only        mp4a.40.5   64k 22k DASH audio, m4a_dash
+140 m4a audio only     │  144k dashG │ audio only        mp4a.40.2  144k 44k DASH audio, m4a_dash
+160 mp4 256x144     15 │  212k dashG │ avc1.42c00b  212k video only          DASH video, mp4_dash
+133 mp4 426x240     30 │  456k dashG │ avc1.4d4015  456k video only          DASH video, mp4_dash
+134 mp4 640x360     30 │ 1008k dashG │ avc1.4d401e 1008k video only          DASH video, mp4_dash
+135 mp4 854x480     30 │ 1350k dashG │ avc1.4d401f 1350k video only          DASH video, mp4_dash
+136 mp4 1280x720    30 │ 2684k dashG │ avc1.4d401f 2684k video only          DASH video, mp4_dash
+137 mp4 1920x1080   30 │ 5019k dashG │ avc1.640028 5019k video only          DASH video, mp4_dash
+</code></pre>
+<blockquote>
+<p>See <code>yt-dlp</code>’s <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#format-selection">Format
+selection</a>
+for the option syntax and some examples.</p>
+</blockquote>
+<h3 id="specify-start-and-end"><a class="header" href="#specify-start-and-end">Specify start and end</a></h3>
+<p>The interval start and end moments supports flexible formats including date and
+times, durations, keywords, and even time arithmetic expressions.</p>
+<p>The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
+might be nighttime on the stream depending on your location. For example, let’s
+see what’s on the stream at noon:</p>
+<pre><code class="language-shell"># If it is already noon there
+$ ypb download -i '12:00+13/1m' Mm_zVDDUeNA
+
+# Or noon yesterday
+$ ypb download -i '12:00+13 - 1d/1m' Mm_zVDDUeNA
+</code></pre>
+<blockquote>
+<p>See <a href="#specifying-the-rewind-interval">Specifying the rewind
+interval</a> for the reference
+on interval part formats.</p>
+</blockquote>
+<h2 id="serve-and-play-excerpts"><a class="header" href="#serve-and-play-excerpts">Serve and play excerpts</a></h2>
+<p>Now let’s explore another feature: play without downloading.</p>
+<h3 id="start-a-playback-server"><a class="header" href="#start-a-playback-server">Start a playback server</a></h3>
+<p>This requires us to start a playback in serve mode:</p>
+<pre><code class="language-shell">$ ypb serve Mm_zVDDUeNA
+(&lt;&lt;) Served started and listening on http://localhost:8080
+</code></pre>
+<p>As you see, we are not using the interval option here. Format selection is also
+not applicable. The playback server is now running and waiting for our requests.</p>
+<h3 id="send-rewind-requests"><a class="header" href="#send-rewind-requests">Send rewind requests</a></h3>
+<p>To rewind an excerpt, open another terminal and type:</p>
+<pre><code class="language-shell">$ curl localhost:8080/rewind/30m--now
+</code></pre>
+<p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
+<p>The rewind path parameter <code>/rewind/{interval}</code> has the same format as the
+<code>-i/--interval</code> option except that it should be properly URL escaped: use <code>--</code>
+instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
+<blockquote>
+<p>See the <a href="#api">API</a> reference for available endpoints.</p>
+</blockquote>
+<h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
+<p>Now the intriguing part: playing the excerpt.</p>
+<pre><code class="language-shell">ffplay -protocol_whitelist file,http,https,tcp,tls \
+  localhost:8080/rewind/30m--now
+</code></pre>
+<p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
+manifest and fetching media segments.</p>
+<p>However, the choice is not limited to <code>ffplay</code>: you can use any MPEG-DASH
+compatible player you prefer.</p>
+<h3 id="download-media"><a class="header" href="#download-media">Download media</a></h3>
+<p>As a bonus, let’s see how to download media content from the composed manifest.</p>
+<p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
+<pre><code class="language-shell">yt-dlp -o output.mp4 http://localhost:8080/rewind/30m--now
+</code></pre>
+<blockquote>
+<p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC’s
+<a href="https://github.com/gpac/gpac/wiki/MP4Box/">MP4Box</a>, or
+<a href="https://emarsden.github.io/dash-mpd-cli/">dash-mpd-cli</a>.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="install"><a class="header" href="#install">Install</a></h1>
+<p>Ypb works on Linux, macOS, and Windows.</p>
+<p>There are two installation methods available:</p>
+<ol>
+<li><a href="#pre-built-binaries"><strong>Pre-built binaries</strong></a>: Install platform-specific binaries
+and along with additional dependencies</li>
+<li><a href="#container-image"><strong>Container image</strong></a>: Run in a container with all dependencies
+bundled</li>
+</ol>
+<h2 id="choosing-installation-method"><a class="header" href="#choosing-installation-method">Choosing installation method</a></h2>
+<p>The choice depends on your current setup and usage:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th>Pre-built binaries</th><th>Container image</th></tr>
+</thead>
+<tbody>
+<tr><td>Setup</td><td>You already have yt-dlp and FFmpeg installed with additional dependencies</td><td>You want a self-contained setup with all dependencies</td></tr>
+<tr><td>Installation</td><td>Manual installation of binaries and dependencies</td><td>Requires Podman or Docker</td></tr>
+<tr><td>Updates</td><td>Manual updating of all dependencies</td><td>Updating container image</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
+<p>While <code>ypb</code> itself is lightweight, it relies on <code>yt-dlp</code>:</p>
+<ul>
+<li>
+<p><a href="https://github.com/yt-dlp/yt-dlp/wiki/Installation">yt-dlp</a>: For video info
+extraction and downloading. Nightly builds are recommended. If you use
+binaries, update with: <code>yt-dlp --update-to nightly</code></p>
+</li>
+<li>
+<p><a href="https://ffmpeg.org/">FFmpeg</a> (<em>optional</em>): For muxing downloads with <code>ypb download</code>.</p>
+</li>
+</ul>
+<h3 id="additional-dependencies"><a class="header" href="#additional-dependencies">Additional dependencies</a></h3>
+<p>The following dependencies are optional but strongly recommended:</p>
+<ul>
+<li>
+<p><a href="https://github.com/yt-dlp/yt-dlp/issues/15012">External JavaScript runtime</a>:
+Required for full YouTube support</p>
+</li>
+<li>
+<p>Proof-of-Origin (PO) token <a href="https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide">provider
+plugin</a>: Required to
+avoid HTTP 403 errors</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="pre-built-binaries"><a class="header" href="#pre-built-binaries">Pre-built binaries</a></h1>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Ensure the following <a href="#requirements">requirements</a> are installed based
+on your intended usage:</p>
+<ul>
+<li><code>ypb serve</code>: yt-dlp with additional dependencies (to avoid 403 HTTP errors)</li>
+<li><code>ypb download</code>: All of the above plus FFmpeg (for muxing during downloads)</li>
+</ul>
+<h2 id="install-from-binaries-1"><a class="header" href="#install-from-binaries-1">Install from binaries</a></h2>
+<p>Pre-built binaries for different platforms are available on the GitHub <a href="https://github.com/xymaxim/ypb/releases/latest">latest
+release</a> page.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>Linux</th><th>macOS</th><th>Windows</th></tr>
+</thead>
+<tbody>
+<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-linux-amd64.zip">ypb-v2026.2.10-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-darwin-amd64.zip">ypb-v2026.2.10-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-windows-amd64.zip">ypb-v2026.2.10-windows-amd64.zip</a></td></tr>
+<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-linux-arm64.zip">ypb-v2026.2.10-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-darwin-arm64.zip">ypb-v2026.2.10-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.2.10/ypb-v2026.2.10-windows-arm64.zip">ypb-v2026.2.10-windows-arm64.zip</a></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="linuxmacos"><a class="header" href="#linuxmacos">Linux/macOS</a></h3>
+<p>Download the binary for your operating system using the links above, and place
+it to a directory that is in your <code>PATH</code>. Make the binary executable with <code>chmod +x</code>.</p>
+<p>Once installed, verify the installation:</p>
+<pre><code class="language-shell">ypb version
+</code></pre>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
+<p>Download the binary using the links above, and extract it to a permanent
+location such as <code>C:\Program Files\ypb\</code>. Add this directory to your system
+<code>PATH</code> via Environment Variables settings to make the binary accessible from any
+location in PowerShell.</p>
+<h2 id="install-from-source"><a class="header" href="#install-from-source">Install from source</a></h2>
+<p>If you have Go installed, you can build <code>ypb</code> from source:</p>
+<pre><code class="language-shell">go install github.com/xymaxim/ypb@latest
+</code></pre>
+<p>Note: this is not recommended unless you need a development version.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="container-image"><a class="header" href="#container-image">Container image</a></h1>
+<h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
+<p>No additional dependencies required: the container image includes all necessary
+components (yt-dlp, FFmpeg, and additional dependencies).</p>
+<p>You’ll need either <a href="https://podman.io/getting-started/installation">Podman</a>
+(recommended) or <a href="https://docs.docker.com/get-docker/">Docker</a>.</p>
+<h3 id="initial-setup"><a class="header" href="#initial-setup">Initial setup</a></h3>
+<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start it
+once:</p>
+<pre><code class="language-shell">podman machine init
+podman machine start
+</code></pre>
+<p>The machine will automatically start on reboots. You can verify it is running:</p>
+<pre><code class="language-shell">podman machine list
+</code></pre>
+<h2 id="pull-the-image"><a class="header" href="#pull-the-image">Pull the image</a></h2>
+<p>Pull the latest container image from GitHub Container Registry:</p>
+<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+</code></pre>
+<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
+<h3 id="basic-commands"><a class="header" href="#basic-commands">Basic commands</a></h3>
+<p>Run <code>ypb</code> commands directly with the container:</p>
+<pre><code class="language-shell">podman run --rm ghcr.io/xymaxim/ypb version
+</code></pre>
+<h3 id="recommended-aliases"><a class="header" href="#recommended-aliases">Recommended aliases</a></h3>
+<p>For easier usage, add these aliases to your shell configuration file:</p>
+<pre><code class="language-shell"># General commands like ypb version
+alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
+
+# Downloads videos to current directory (mounts volume)
+alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
+
+# Starts server accessible at `http://localhost:8080` (exposes port)
+alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
+</code></pre>
+<h3 id="manual-usage-without-aliases"><a class="header" href="#manual-usage-without-aliases">Manual usage without aliases</a></h3>
+<p>If you prefer not to use aliases or need custom configurations:</p>
+<p><strong>Download videos to current directory:</strong></p>
+<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
+</code></pre>
+<p><strong>Start server on port 8080:</strong></p>
+<pre><code class="language-shell">podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve
+</code></pre>
+<p><strong>Use custom port (e.g., 3000):</strong></p>
+<pre><code class="language-shell">podman run --rm -p 3000:8080 ghcr.io/xymaxim/ypb serve
+</code></pre>
+<h2 id="update-the-image"><a class="header" href="#update-the-image">Update the image</a></h2>
+<p>To update <code>ypb</code> and all dependecies to the latest version:</p>
+<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command Line Interface</a></h1>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<pre><code class="language-shell">Usage: ypb &lt;command&gt; [flags]
+
+A playback for YouTube live streams
+
+Flags:
+  -h, --help       Show context-sensitive help.
+  -v, --verbose    Show verbose output.
+
+Commands:
+  download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
+    Download stream excerpts
+
+  serve &lt;stream&gt; [flags]
+    Start playback server
+
+  version [flags]
+    Show version info and exit
+</code></pre>
+<h2 id="commands"><a class="header" href="#commands">Commands</a></h2>
+<h3 id="serve"><a class="header" href="#serve">serve</a></h3>
+<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [flags]
+
+Start playback server
+
+Arguments:
+  &lt;stream&gt;    YouTube video ID
+
+Flags:
+  -h, --help         Show context-sensitive help.
+  -v, --verbose      Show verbose output.
+
+  -p, --port=8080    Port to start playback on
+</code></pre>
+<h3 id="download"><a class="header" href="#download">download</a></h3>
+<pre><code class="language-shell">Usage: ypb download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
+
+Download stream excerpts
+
+Arguments:
+  &lt;stream&gt;                 YouTube video ID
+  [&lt;ytdlp-options&gt; ...]    Options to pass to yt-dlp (use after --)
+
+Flags:
+  -h, --help               Show context-sensitive help.
+  -v, --verbose            Show verbose output.
+
+  -i, --interval=STRING    Time or segment interval
+  -p, --port=8080          Port to start playback on
+</code></pre>
+<h4 id="passing-options-to-yt-dlp"><a class="header" href="#passing-options-to-yt-dlp">Passing options to yt-dlp</a></h4>
+<p>Additional options can be passed directly to <code>yt-dlp</code> using the <code>--</code>
+separator. Everything after <code>--</code> is forwarded to the underlying
+<code>yt-dlp</code> process.</p>
+<p>Behind the scences, <code>ypb</code> calls <code>yt-dlp</code> with a custom <code>-o/--output</code> template:
+the only option that is overriden by default. This behavior can be changed as
+follows:</p>
+<pre><code>ypb download -i &lt;interval&gt; &lt;stream&gt; -- -o output.mp4
+</code></pre>
+<p>For a complete list of available options, see the <a href="https://github.com/yt-dlp/yt-dlp#usage-and-options">yt-dlp
+documentation</a>.</p>
+<blockquote>
+<p>[!IMPORTANT] Not all <code>yt-dlp</code> options are compatible with <code>ypb</code>’s
+workflow. Such options will not have any effect. For example, <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options">the network
+options</a>
+are not supported.</p>
+</blockquote>
+<h2 id="specifying-the-rewind-interval"><a class="header" href="#specifying-the-rewind-interval">Specifying the rewind interval</a></h2>
+<p>The rewind interval is specified using the<code>-i/--interval</code> option. An
+interval consists of start and end parts by either <code>/</code> or <code>--</code>:</p>
+<pre><code class="language-shell">$ ypb download -i &lt;start&gt;/&lt;end&gt;
+$ ypb download -i &lt;start&gt;--&lt;end&gt;
+</code></pre>
+<h3 id="absolute-and-relative-moments"><a class="header" href="#absolute-and-relative-moments">Absolute and relative moments</a></h3>
+<p>The interval parts refer to absolute or relative points (moments) in a
+stream. Absolute moments independently indicate a specific point in time, while
+relative moments are specified in relation to other moments.</p>
+<p>Absolute moments can be further divided into direct and indirect types. Direct
+moments correspond to exact stream media segments, while indirect moments
+require locating a segment.</p>
+<ul>
+<li>
+<p><strong>Absolute moments</strong></p>
+<ul>
+<li><em>Direct</em>: sequence numbers, the <code>now</code> keyword</li>
+<li><em>Indirect</em>: date and times, Unix timestamps, time arithmetic expressions</li>
+</ul>
+</li>
+<li>
+<p><strong>Relative moments</strong></p>
+<ul>
+<li>Time durations</li>
+</ul>
+</li>
+</ul>
+<h3 id="moment-values"><a class="header" href="#moment-values">Moment values</a></h3>
+<h4 id="date-and-time"><a class="header" href="#date-and-time">Date and time</a></h4>
+<ul>
+<li><code>&lt;date-time&gt; = &lt;date&gt;"T"&lt;time&gt;"±"&lt;offset&gt;</code>,</li>
+</ul>
+<p>where <code>&lt;date&gt; = YYYY"-"MM"-"DD</code>, <code>&lt;time&gt; = "hh":"mm":"ss</code>,
+and <code>&lt;offset&gt; = "±"hh":"mm</code>.</p>
+<p>This format follows the extended ISO 8601 format or
+<a href="https://datatracker.ietf.org/doc/html/rfc3339.">RFC3339</a></p>
+<p>Here is an example of the complete representation with full time and partial
+time offset in UTC:</p>
+<pre><code>2026-01-02T10:20:30+00
+</code></pre>
+<p>The time component can be provided with reduced precision by omitting
+lower-order components, which are assumed to be “00” (the date part must always
+be complete):</p>
+<pre><code class="language-shell"># Complete date plus hours and minutes
+2026-01-02T10:20+00
+
+# Complete date plus hours only
+2026-01-02T10+00
+</code></pre>
+<h5 id="zulu-time"><a class="header" href="#zulu-time">Zulu time</a></h5>
+<p>Zulu time refers to UTC and is denoted by the letter “Z”
+used as a suffix instead of a time offset:</p>
+<pre><code>2026-01-02T10:20:30Z
+</code></pre>
+<h5 id="local-time"><a class="header" href="#local-time">Local time</a></h5>
+<p>To represent local time, omit the time offset. For example, if
+you’re in the UTC+02 time zone, the above example would be:</p>
+<pre><code>2026-01-02T12:20:30
+</code></pre>
+<h5 id="time-of-today"><a class="header" href="#time-of-today">Time of today</a></h5>
+<p>To refer to a time of the current day, you can omit the date and time offset:</p>
+<pre><code class="language-shell"># Full time with time offset
+10:20:30+00
+
+# Full time in local time zone
+10:20:30
+
+# Hours and minutes only
+10:20
+</code></pre>
+<h4 id="time-duration"><a class="header" href="#time-duration">Time duration</a></h4>
+<ul>
+<li><code>-i/--interval &lt;start&gt;/&lt;duration&gt;</code> or</li>
+<li><code>-i/--interval &lt;duration&gt;/&lt;end&gt;</code>,</li>
+</ul>
+<p>where <code>&lt;duration&gt; = dd"d"hh"h"mm"m"ss"s"</code>.</p>
+<p>Sometimes it is more convenient to specify an interval using a duration. Duration strings
+use single-letter designators for time components: days (<code>d</code>), hours
+(<code>h</code>), minutes (<code>h</code>), and seconds (<code>s</code>).</p>
+<p>The following examples represent the same interval from 10:30 to 12:00 (local time):</p>
+<pre><code class="language-shell"># Specified by start time and duration
+--interval 10:30/1h30m ...
+
+# Specified by duration and end time
+--interval 1h30m/12:00 ...
+</code></pre>
+<h4 id="time-arithmetic-expression"><a class="header" href="#time-arithmetic-expression">Time arithmetic expression</a></h4>
+<ul>
+<li><code>&lt;expression&gt;</code></li>
+</ul>
+<p>where <code>&lt;expression&gt; = &lt;operand&gt; "±" &lt;duration&gt;</code> and <code>&lt;operand&gt;</code> is any absolute
+moment. The expression also accepts the <code>now</code> keyword:
+<code>&lt;expression&gt; = "now" "-" &lt;duration&gt;</code>.</p>
+<p>Input moments can be represented as arithmetic expressions combining absolute
+moments and durations. Such temporal arithmetic supports both addition and
+subtraction. For example, the expression <code>10:30 - 30s</code> results in <code>10:00</code>. Use
+the <code>now</code> keyword to refer to the current time.</p>
+<p>Note that option values containing whitespace must be quoted.</p>
+<pre><code class="language-shell"># Subtraction between time and duration
+--interval '2026-01-02T10:20:30 - 1d2h30m/30m' ...
+
+# An excerpt centered around some specific time today
+--interval '12:00 - 1m/12:00 + 5m' ...
+
+# An excerpt spanning from yeasterday 23:00 to today 01:00
+--interval '23:00 - 1d/01:00' ...
+
+# A 30-minute excerpt starting from one hour ago
+--interval 'now - 1h/30m' ...
+</code></pre>
+<h4 id="sequence-numbers"><a class="header" href="#sequence-numbers">Sequence numbers</a></h4>
+<ul>
+<li><code>&lt;sequence-number&gt; = [0-9]+</code></li>
+</ul>
+<p>In addition to times, you can specify the sequence number (positive, starting
+from 0) of an MPEG-DASH <a href="https://wiki.gpac.io/Howtos/dash/DASH-basics/#dash-basics-mpd-and-segments">media
+segment</a>
+to reference a specific point in a live stream. Sequence numbers are typically
+used when a segment has already been identified.</p>
+<h4 id="keywords"><a class="header" href="#keywords">Keywords</a></h4>
+<h5 id="earliest-todo"><a class="header" href="#earliest-todo">‘Earliest’ (<em>TODO</em>)</a></h5>
+<ul>
+<li><code>-i/--interval earliest/&lt;end&gt;</code></li>
+</ul>
+<p>To reference the earliest available moment, use the <code>earliest</code>
+keyword for the start part:</p>
+<pre><code>--interval earliest/30m
+</code></pre>
+<p>This refers to either the beginning of the stream (the very first media segment)
+or the earliest available segment if the stream has been running longer than the
+available rewind window.</p>
+<h5 id="now"><a class="header" href="#now">‘Now’</a></h5>
+<ul>
+<li><code>-i/--interval &lt;start&gt;/now</code></li>
+</ul>
+<p>To reference the current moment, use the now keyword for the end part:</p>
+<pre><code>--interval 10:30/now
+</code></pre>
+<p>More precisely, this refers to the most recently available media segment, which
+typically corresponds to the current moment. However, if a live stream has
+stalled, new media segments are updated.</p>
+<h2 id="specifying-the-output-filename"><a class="header" href="#specifying-the-output-filename">Specifying the output filename</a></h2>
+<p>By default, downloaded files are saved in the current working directory with
+names composed of the adjusted title, YouTube video ID, start time, and
+duration:</p>
+<pre><code class="language-shell">$ ypb download -i 2026-01-02T10:20:30+00/30s abcdefgh123 &amp;&amp; ls
+Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
+</code></pre>
+<p>To customize output names, use the yt-dlp’s <code>-o/--output</code>
+<a href="https://github.com/ytdl-org/youtube-dl/#OUTPUT-TEMPLATE">option</a> by specifying
+a full filename:</p>
+<pre><code class="language-shell">$ ypb download ... -- -o output/path.mp4 &amp;&amp; ls output/*
+output/path.mp4
+</code></pre>
+<p>Note that since <code>yt-dlp</code> downloads the MPEG-DASH manifest via the general
+extractor rather than the YouTube extractor, YouTube-specific template
+variables are not available.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="api"><a class="header" href="#api">API</a></h1>
+<h2 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h2>
+<h3 id="rewindinterval"><a class="header" href="#rewindinterval">/rewind/{interval}</a></h3>
+<p>Returns a static MPEG-DASH manifest representing media for the rewind interval.</p>
+<p><em>Parameters</em></p>
+<dl>
+<dt id="interval"><a class="header" href="#interval">interval</a></dt>
+<dd>
+<p>The rewind interval to retrieve.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>See <a href="#specifying-the-rewind-interval">Specifying the rewind interval</a> for
+available format options. Note that the path parameter should be properly
+URL-encoded: use <code>--</code> instead of <code>/</code>, and avoid whitespaces or use percent
+encoding.</p>
+</blockquote>
+</dd>
+</dl>
+<p><em>Usage examples</em></p>
+<p>Rewind a 30-minute excerpt from one day:</p>
+<pre><code>$ curl localhost:8080/rewind/now-1d--30m
+</code></pre>
+<p><em>Response</em></p>
+<p>The raw content of the composed MPEG-DASH manifest.</p>
+<h3 id="videoplaybackitagitagsqsq"><a class="header" href="#videoplaybackitagitagsqsq">/videoplayback/itag/{itag}/sq/{sq}</a></h3>
+<p>Serves a media segment indentified by itag and sequence number.</p>
+<p><em>Parameters</em></p>
+<dl>
+<dt id="itag"><a class="header" href="#itag">itag</a></dt>
+<dd>The segment itag value.</dd>
+<dt id="sq"><a class="header" href="#sq">sq</a></dt>
+<dd>The segment sequence number.</dd>
+</dl>
+<p><em>Response</em></p>
+<p>The bytes of the requested media segment.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>
+<p>Versions follow <a href="https://calver.org">Calendar Versioning</a> with the <code>YYYY.M.D</code>
+scheme.</p>
+<h2 id="2026210"><a class="header" href="#2026210"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.10">2026.2.10</a></a></h2>
+<p>First release.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
