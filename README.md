@@ -25,8 +25,9 @@ download excerpts to local files with a single command.
 
 Ypb works on Linux, macOS, and Windows.
 
-Read the [Installation](https://xymaxim.github.io/ypb/guides/install/install.md)
-guide for different ways to install and run `ypb`.
+Read the
+[Installation](https://xymaxim.github.io/ypb/guides/install/install.html) guide
+for different ways to install and run `ypb`.
 
 ## Showcase
 
