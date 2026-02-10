@@ -17,8 +17,8 @@ your preferences.
 
 Ypb requires `yt-dlp` and the [related
 dependencies](guides/install/install.md#requirements). If you already have a
-working `yt-dlp` installation on your computer, the quickest way to start is to
-download the pre-built binaries.
+working `yt-dlp` installation on your computer (ensure it is in your `PATH`),
+the quickest way to start is to download the pre-built binaries.
 
 Use the links from the [latest
 release](https://github.com/xymaxim/ypb/releases/latest) below for your platform
