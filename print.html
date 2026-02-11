@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-f54ce08c.js";
+            window.path_to_searchindex_js = "searchindex-644f2b4f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-e2d41da3.js"></script>
@@ -419,7 +419,7 @@ compatible player you prefer.</p>
 <p>There are two installation methods available:</p>
 <ol>
 <li><a href="#pre-built-binaries"><strong>Pre-built binaries</strong></a>: Install platform-specific binaries
-and along with additional dependencies</li>
+along with additional dependencies</li>
 <li><a href="#container-image"><strong>Container image</strong></a>: Run in a container with all dependencies
 bundled</li>
 </ol>
@@ -537,6 +537,11 @@ alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
 # Starts server accessible at `http://localhost:8080` (exposes port)
 alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
 </code></pre>
+<blockquote class="blockquote-tag blockquote-tag-important">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
+<p>On SELinux-enabled systems add <code>:Z</code> to the volume mount to avoid permission
+errors.</p>
+</blockquote>
 <h3 id="manual-usage-without-aliases"><a class="header" href="#manual-usage-without-aliases">Manual usage without aliases</a></h3>
 <p>If you prefer not to use aliases or need custom configurations:</p>
 <p><strong>Download videos to current directory:</strong></p>
