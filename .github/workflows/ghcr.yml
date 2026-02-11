@@ -28,7 +28,7 @@ jobs:
           containerfiles: |
             ./Containerfile
 
-       - name: Log in to GHCR
+      - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
         with:
           registry: ghcr.io/${{ github.repository_owner }}
