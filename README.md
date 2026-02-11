@@ -1,5 +1,7 @@
 # Ypb — A playback for YouTube live streams
 
+[Project page](https://github.com/xymaxim/ypb) · [Documentation](https://xymaxim.github.io/ypb) · [Changelog](https://xymaxim.github.io/ypb/changelog.html)
+
 *Rewind to past moments in live streams and play or download excerpts*
 
 Ypb is a playback tool for YouTube live streams written in Go. It provides
