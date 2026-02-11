@@ -210,7 +210,7 @@ Note that option values containing whitespace must be quoted.
 # An excerpt centered around some specific time today
 --interval '12:00 - 1m/12:00 + 5m' ...
 
-# An excerpt spanning from yeasterday 23:00 to today 01:00
+# An excerpt spanning from yesterday 23:00 to today 01:00
 --interval '23:00 - 1d/01:00' ...
 
 # A 30-minute excerpt starting from one hour ago
