@@ -19,13 +19,18 @@ jobs:
 
       - name: Fetch all tags
         run: git fetch --prune --unshallow --tags
-    
+
+      - name: Get latest git tag
+        id: get-tag
+        run: |
+          echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+          
       - name: Build image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ github.repository }}
-          tags: latest
+          tags: latest ${{ steps.get-tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: true
           containerfiles: |
