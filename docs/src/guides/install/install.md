@@ -5,7 +5,7 @@ Ypb works on Linux, macOS, and Windows.
 There are two installation methods available:
 
 1. [**Pre-built binaries**](binaries.md): Install platform-specific binaries
-   and along with additional dependencies
+   along with additional dependencies
 2. [**Container image**](container.md): Run in a container with all dependencies
    bundled
 
