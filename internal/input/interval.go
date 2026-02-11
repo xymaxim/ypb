@@ -93,10 +93,7 @@ func ParseIntervalPart(input string) (MomentValue, error) {
 func parseKeyword(keyword MomentKeyword) func(string) ParserResult {
 	return func(input string) ParserResult {
 		return gomme.Map(
-			gomme.Terminated(
-				gomme.Token[string](string(keyword)),
-				eof[string](),
-			),
+			gomme.Token[string](string(keyword)),
 			func(k string) (MomentValue, error) {
 				return MomentKeyword(k), nil
 			},
@@ -300,10 +297,10 @@ func parseExpression(input string) ParserResult {
 	// Parse left operand
 	leftResult := gomme.Terminated(
 		gomme.Alternative(
+			parseKeyword(NowKeyword),
 			parseDateAndTime,
 			parseUnixTimestamp,
 			parseSequenceNumber,
-			parseKeyword(NowKeyword),
 		),
 		gomme.Whitespace0[string](),
 	)(input)

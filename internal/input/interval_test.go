@@ -299,6 +299,16 @@ func TestParseIntervalPart_Expressions(t *testing.T) {
 				Right:    time.Hour,
 			},
 		},
+		{
+			name:    "now minus duration",
+			input:   "now - 1h",
+			wantErr: false,
+			wantValue: input.MomentExpression{
+				Left:     input.NowKeyword,
+				Operator: input.OpMinus,
+				Right:    time.Hour,
+			},
+		},
 	}
 
 	// Expand test cases to include "without spaces" variants
