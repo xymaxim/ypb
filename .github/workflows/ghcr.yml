@@ -24,6 +24,11 @@ jobs:
         id: get-tag
         run: |
           echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Checkout latest tag (for manual dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git checkout ${{ steps.get-tag.outputs.tag }}
           
       - name: Build image
         id: build-image
