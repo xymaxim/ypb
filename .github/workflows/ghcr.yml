@@ -1,0 +1,43 @@
+name: Build and Push Container Image
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.repository }}
+          tags: latest
+          labels: ${{ steps.meta.outputs.labels }}
+          oci: true
+          containerfiles: |
+            ./Containerfile
+
+       - name: Log in to GHCR
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io/${{ github.repository_owner }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Push to GHCR
+        id: push-image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ghcr.io/${{ github.repository_owner }}
