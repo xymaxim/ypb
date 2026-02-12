@@ -17,8 +17,9 @@ import (
 
 type Frame struct {
 	commands.CommonFlags
-	Stream string `arg:"" help:"YouTube video ID"  required:""`
-	Moment string `       help:"Moment to capture" required:"" short:"m"`
+	Moment       string `       help:"Moment to capture"   required:"" short:"m"`
+	OutputFormat string `       help:"Output image format" required:""           name:"of" default:"png"`
+	Stream       string `arg:"" help:"YouTube video ID"    required:""`
 }
 
 func (c *Frame) Run() error {
@@ -66,10 +67,11 @@ func (c *Frame) Run() error {
 	}
 
 	outputPath := fmt.Sprintf(
-		"%s_%s_%s.png",
+		"%s_%s_%s.%s",
 		commands.AdjustForFilename(a.Playback.Info().Title, 0),
 		a.Playback.Info().ID,
 		commands.FormatTime(rewindMoment.TargetTime),
+		c.OutputFormat,
 	)
 	at := rewindMoment.TargetTime.Sub(rewindMoment.Metadata.Time()).Seconds()
 
