@@ -43,7 +43,7 @@ func TestAdjustForFilename(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, adjustForFilename(tc.s, tc.length))
+			assert.Equal(t, tc.expected, AdjustForFilename(tc.s, tc.length))
 		})
 	}
 }
@@ -73,7 +73,7 @@ func TestFormatTime(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parsing input time string: %v", err)
 			}
-			assert.Equal(t, tc.expected, formatTime(tt))
+			assert.Equal(t, tc.expected, FormatTime(tt))
 		})
 	}
 }
@@ -129,7 +129,7 @@ func TestFormatDuration(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.expected, formatDuration(tc.dur))
+			assert.Equal(t, tc.expected, FormatDuration(tc.dur))
 		})
 	}
 }
@@ -170,7 +170,7 @@ func TestFormatDifference(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.expected, formatDifference(tc.diff, tc.showPlus))
+			assert.Equal(t, tc.expected, FormatDifference(tc.diff, tc.showPlus))
 		})
 	}
 }

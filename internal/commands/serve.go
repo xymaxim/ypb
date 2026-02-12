@@ -20,7 +20,7 @@ func (c *Serve) Run() error {
 
 	a := app.NewApp()
 
-	if err := collectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := CollectVideoInfo(c.Stream, a, c.Port); err != nil {
 		return err
 	}
 

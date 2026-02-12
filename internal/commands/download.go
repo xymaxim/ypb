@@ -6,10 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
-
-	"github.com/gosimple/slug"
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/app"
@@ -40,7 +37,7 @@ func (c *Download) Run() error {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	if err := collectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := CollectVideoInfo(c.Stream, a, c.Port); err != nil {
 		return err
 	}
 
@@ -125,7 +122,7 @@ func formatActualLine(side string, moment *playback.RewindMoment) string {
 
 	diff := moment.TimeDifference()
 	if diff.Abs() >= time.Second {
-		diffPart = fmt.Sprintf(" (%s)", formatDifference(diff, true))
+		diffPart = fmt.Sprintf(" (%s)", FormatDifference(diff, true))
 	}
 
 	return fmt.Sprintf(
@@ -140,41 +137,9 @@ func formatActualLine(side string, moment *playback.RewindMoment) string {
 func buildOutputName(ctx *actions.LocateOutputContext) string {
 	return fmt.Sprintf(
 		"%s_%s_%s_%s.%%(ext)s",
-		adjustForFilename(ctx.Title, 0),
+		AdjustForFilename(ctx.Title, 0),
 		ctx.ID,
-		formatTime(ctx.InputStartTime),
-		formatDuration(ctx.InputDuration),
+		FormatTime(ctx.InputStartTime),
+		FormatDuration(ctx.InputDuration),
 	)
-}
-
-func adjustForFilename(s string, length int) string {
-	const maxAdjustedLength = 30
-
-	if length == 0 {
-		length = maxAdjustedLength
-	}
-
-	slug.MaxLength = length
-	slug.Lowercase = false
-
-	return slug.Make(s)
-}
-
-func formatTime(t time.Time) string {
-	return t.Format("20060102T030405-07")
-}
-
-func formatDuration(d time.Duration) string {
-	s := d.Truncate(time.Second).String()
-	s = strings.ReplaceAll(s, "m0s", "m")
-	s = strings.ReplaceAll(s, "h0m", "h")
-	return s
-}
-
-func formatDifference(diff time.Duration, showPlus bool) string {
-	sign := ""
-	if diff > 0 && showPlus {
-		sign = "+"
-	}
-	return sign + formatDuration(diff)
 }
