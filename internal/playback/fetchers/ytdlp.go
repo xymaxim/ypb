@@ -147,9 +147,13 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 func (fetcher *YtdlpFetcher) runDumpJSON() (string, error) {
 	var outBuf strings.Builder
 
-	err := fetcher.Runner.RunWithCallbacks(
-		func(line string) { outBuf.WriteString(line + "\n") },
-		fetcher.Runner.(*exec.CommandRunner).PrintCallback,
+	_, err := fetcher.Runner.RunWith(
+		[]exec.Option{
+			exec.WithCallbacks(
+				func(line string) { outBuf.WriteString(line + "\n") },
+				fetcher.Runner.(*exec.CommandRunner).PrintCallback,
+			),
+		},
 		"--dump-json",
 		"--live-from-start",
 		fetcher.VideoID,
