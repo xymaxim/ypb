@@ -16,16 +16,21 @@ import (
 )
 
 const (
-	SegmentPath     = "/videoplayback/itag/{itag}/sq/{sq}"
-	RewindPath      = "/rewind/{rewind}"
-	YtdlpBinaryPath = "yt-dlp"
+	SegmentPath = "/videoplayback/itag/{itag}/sq/{sq}"
+	RewindPath  = "/rewind/{rewind}"
+)
+
+const (
+	FFmpegBinaryPath = "ffmpeg"
+	YtdlpBinaryPath  = "yt-dlp"
 )
 
 type App struct {
-	Playback    playback.Playbacker
-	Server      *http.Server
-	Config      *Config
-	YtdlpRunner exec.Runner
+	Playback     playback.Playbacker
+	Server       *http.Server
+	Config       *Config
+	FFmpegRunner exec.Runner
+	YtdlpRunner  exec.Runner
 }
 
 type Config struct {
@@ -34,8 +39,9 @@ type Config struct {
 
 func NewApp() *App {
 	return &App{
-		Config:      &Config{},
-		YtdlpRunner: exec.NewCommandRunner(YtdlpBinaryPath),
+		Config:       &Config{},
+		FFmpegRunner: exec.NewCommandRunner(FFmpegBinaryPath),
+		YtdlpRunner:  exec.NewCommandRunner(YtdlpBinaryPath),
 	}
 }
 
