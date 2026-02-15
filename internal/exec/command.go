@@ -89,20 +89,16 @@ func (r *CommandRunner) RunWith(options []Option, args ...string) (*RunResult, e
 	}
 
 	err := r.runWithConfig(config, args...)
-	if err != nil {
-		return nil, err
-	}
 
-	// Return result if output was captured
+	var result *RunResult
 	if config.CaptureOutput {
-		return &RunResult{
+		result = &RunResult{
 			Stdout: config.stdout.String(),
 			Stderr: config.stderr.String(),
-		}, nil
+		}
 	}
 
-	//nolint: nilnil
-	return nil, nil
+	return result, err
 }
 
 // PrintCallback is a default callback for stdout and stderr.
