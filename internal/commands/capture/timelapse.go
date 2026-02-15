@@ -215,10 +215,15 @@ func (c *Timelapse) captureFrames(
 func printCapturePlan(times []time.Time, duration time.Duration) {
 	total := len(times)
 
+	frameWord := "frames"
+	if total == 1 {
+		frameWord = "frame"
+	}
 	fmt.Printf(
-		"Frames will be captured every %s (%d total):\n",
-		commands.FormatDuration(duration),
+		"Will capture %d %s at %s intervals:\n",
 		total,
+		frameWord,
+		commands.FormatDuration(duration),
 	)
 
 	formatTime := func(t time.Time) string {
@@ -226,13 +231,13 @@ func printCapturePlan(times []time.Time, duration time.Duration) {
 	}
 	if total <= 3 {
 		for i := range total {
-			fmt.Printf("  Frame %d: %s\n", i+1, formatTime(times[i]))
+			fmt.Printf("  Frame %d: %s\n", i, formatTime(times[i]))
 		}
 	} else {
-		pad := strings.Repeat(" ", len(strconv.Itoa(total))-1)
-		fmt.Printf("  %sFrame 1: %s\n", pad, formatTime(times[0]))
-		fmt.Printf("  %sFrame 2: %s\n", pad, formatTime(times[1]))
+		pad := strings.Repeat(" ", len(strconv.Itoa(total-1))-1)
+		fmt.Printf("  %sFrame 0: %s\n", pad, formatTime(times[0]))
+		fmt.Printf("  %sFrame 1: %s\n", pad, formatTime(times[1]))
 		fmt.Printf("  %s                       ...\n", pad)
-		fmt.Printf("  Frame %d: %s\n", total, formatTime(times[total-1]))
+		fmt.Printf("  Frame %d: %s\n", total-1, formatTime(times[total-1]))
 	}
 }
