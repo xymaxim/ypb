@@ -148,7 +148,7 @@ func (c *Timelapse) buildOutputPattern(
 	config *TimelapseConfig,
 ) string {
 	basename := fmt.Sprintf(
-		"%s_%s_%s_%s",
+		"%s_%s_%s_e%s",
 		commands.AdjustForFilename(a.Playback.Info().Title, 0),
 		a.Playback.Info().ID,
 		commands.FormatTime(captureTimes[0]),
