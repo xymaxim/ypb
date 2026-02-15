@@ -3,6 +3,17 @@
 Versions follow [Calendar Versioning](https://calver.org) with the `YYYY.M.D`
 scheme.
 
+## [2026.2.15](https://github.com/xymaxim/ypb/releases/tag/v2026.2.15)
+
+### Added
+
+- New `capture frame` command to capture a single frame
+- New `capture timelapse` command to capture multiple frames
+
+### Changed
+
+- Rework CommandRunner to accept functional options
+
 ## [2026.2.12](https://github.com/xymaxim/ypb/releases/tag/v2026.2.12)
 
 ### Fixed
