@@ -20,7 +20,8 @@ type CLI struct {
 }
 
 type CaptureCommands struct {
-	Frame capture.Frame `cmd:"" help:"Capture a single frame"`
+	Frame     capture.Frame     `cmd:"" help:"Capture a single frame"`
+	Timelapse capture.Timelapse `cmd:"" help:"Create a time-lapse"`
 }
 
 type VersionFlag string
