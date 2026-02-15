@@ -13,9 +13,9 @@ import (
 
 type Frame struct {
 	commands.CommonFlags
-	Moment       string `help:"Moment to capture"   required:"" short:"m"`
-	OutputFormat string `help:"Output image format" required:""           name:"of" default:"png"`
-	Stream       string `help:"YouTube video ID"    required:""                                   arg:""`
+	CommonCaptureFlags
+	Moment string `help:"Moment to capture" required:"" short:"m"`
+	Stream string `help:"YouTube video ID"  required:""           arg:""`
 }
 
 type FrameConfig struct {

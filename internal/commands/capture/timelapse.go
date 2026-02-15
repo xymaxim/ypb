@@ -21,10 +21,10 @@ import (
 
 type Timelapse struct {
 	commands.CommonFlags
-	Every        string `help:"Capture frame every duration" placeholder:"DURATION" required:"" short:"e"`
-	OutputFormat string `help:"Output image format"                                 required:""           name:"of" default:"png"`
-	Stream       string `help:"YouTube video ID"                                    required:""                                   arg:""`
-	Interval     string `help:"Time or segment interval"                            required:"" short:"i"`
+	CommonCaptureFlags
+	Every    string `help:"Capture frame every duration" placeholder:"DURATION" required:"" short:"e"`
+	Stream   string `help:"YouTube video ID"                                    required:""           arg:""`
+	Interval string `help:"Time or segment interval"                            required:"" short:"i"`
 }
 
 type TimelapseConfig struct {
