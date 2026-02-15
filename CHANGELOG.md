@@ -5,9 +5,9 @@ scheme.
 
 ## [2026.2.12](https://github.com/xymaxim/ypb/releases/tag/v2026.2.12)
 
-### Bug Fixes
+### Fixed
 
-- Fix incorrect parsing of 'now' in interval expressions (#1)
+- Incorrect parsing of 'now' in interval expressions (#1)
 
 ## [2026.2.10](https://github.com/xymaxim/ypb/releases/tag/v2026.2.10)
 
