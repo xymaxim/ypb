@@ -6,10 +6,22 @@
 
 ## Commands 
 
-### serve
+### capture
 
 ```shell
-<!-- cmdrun ../../../ypb serve --help -->
+<!-- cmdrun ../../../ypb capture --help -->
+```
+
+#### frame
+
+```shell
+<!-- cmdrun ../../../ypb capture frame --help -->
+```
+
+#### timelapse
+
+``` shell
+<!-- cmdrun ../../../ypb capture timelapse --help -->
 ```
 
 ### download 
@@ -39,22 +51,10 @@ documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
 > options](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options)
 > are not supported.
 
-### capture
+### serve
 
 ```shell
-<!-- cmdrun ../../../ypb capture --help -->
-```
-
-#### frame
-
-```shell
-<!-- cmdrun ../../../ypb capture frame --help -->
-```
-
-#### timelapse
-
-``` shell
-<!-- cmdrun ../../../ypb capture timelapse --help -->
+<!-- cmdrun ../../../ypb serve --help -->
 ```
 
 ## Specifying the rewind interval
