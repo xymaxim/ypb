@@ -52,7 +52,7 @@ func AdjustForFilename(s string, length int) string {
 }
 
 func FormatTime(t time.Time) string {
-	return t.Format("20060102T030405-07")
+	return t.Format("20060102T150405-07")
 }
 
 func FormatDuration(d time.Duration) string {
