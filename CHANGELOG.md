@@ -11,6 +11,10 @@ Versioning](https://calver.org).
 - New `capture frame` command to capture a single frame
 - New `capture timelapse` command to capture multiple frames
 
+### Fixed
+
+- Incorrect 12-hour format (changed to 24-hour) in output filenames
+
 ### Changed
 
 - Rework CommandRunner to accept functional options
