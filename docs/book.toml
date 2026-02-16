@@ -6,3 +6,6 @@ no-section-label = true
 
 [preprocessor.variables.variables]
 release_version = "v2026.2.12"
+
+[preprocessor.cmdrun]
+optional = true

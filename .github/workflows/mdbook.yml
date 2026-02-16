@@ -23,6 +23,15 @@ jobs:
       - name: Add mdBook variables
         run: cargo install mdbook-variables
 
+      - name: Add mdBook cmdrun
+        run: cargo install --git https://github.com/roberth/mdbook-cmdrun --branch mdbook-0.5
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod' 
+          cache: true
+        
       - name: Build docs
         run: mdbook build docs
 

@@ -1,25 +1,7 @@
 # Command Line Interface
 
-## Overview
-
 ```shell
-Usage: ypb <command> [flags]
-
-A playback for YouTube live streams
-
-Flags:
-  -h, --help       Show context-sensitive help.
-  -v, --verbose    Show verbose output.
-
-Commands:
-  download --interval=STRING <stream> [<ytdlp-options> ...] [flags]
-    Download stream excerpts
-
-  serve <stream> [flags]
-    Start playback server
-
-  version [flags]
-    Show version info and exit
+<!-- cmdrun ../../../ypb --help -->
 ```
 
 ## Commands 
@@ -27,37 +9,13 @@ Commands:
 ### serve
 
 ```shell
-Usage: ypb serve <stream> [flags]
-
-Start playback server
-
-Arguments:
-  <stream>    YouTube video ID
-
-Flags:
-  -h, --help         Show context-sensitive help.
-  -v, --verbose      Show verbose output.
-
-  -p, --port=8080    Port to start playback on
+<!-- cmdrun ../../../ypb serve --help -->
 ```
 
 ### download 
 
 ```shell
-Usage: ypb download --interval=STRING <stream> [<ytdlp-options> ...] [flags]
-
-Download stream excerpts
-
-Arguments:
-  <stream>                 YouTube video ID
-  [<ytdlp-options> ...]    Options to pass to yt-dlp (use after --)
-
-Flags:
-  -h, --help               Show context-sensitive help.
-  -v, --verbose            Show verbose output.
-
-  -i, --interval=STRING    Time or segment interval
-  -p, --port=8080          Port to start playback on
+<!-- cmdrun ../../../ypb download --help -->
 ```
 
 #### Passing options to yt-dlp
@@ -80,6 +38,24 @@ documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
 > options will not have effect. For example, [the network
 > options](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options)
 > are not supported.
+
+### capture
+
+```shell
+<!-- cmdrun ../../../ypb capture --help -->
+```
+
+#### frame
+
+```shell
+<!-- cmdrun ../../../ypb capture frame --help -->
+```
+
+#### timelapse
+
+``` shell
+<!-- cmdrun ../../../ypb capture timelapse --help -->
+```
 
 ## Specifying the rewind interval
 
