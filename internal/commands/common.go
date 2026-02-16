@@ -14,7 +14,6 @@ import (
 
 type CommonFlags struct {
 	Port      int    `help:"Port to start playback on" short:"p" default:"8080"`
-	YtdlpPath string `help:"Path to the yt-dlp binary"           default:"yt-dlp"`
 }
 
 func checkYtdlp() error {
