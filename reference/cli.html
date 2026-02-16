@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-1c7f2fa8.js";
+            window.path_to_searchindex_js = "../searchindex-d2c78248.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-e2d41da3.js"></script>
@@ -175,7 +175,6 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command Line Interface</a></h1>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <pre><code class="language-shell">Usage: ypb &lt;command&gt; [flags]
 
 A playback for YouTube live streams
@@ -185,6 +184,12 @@ Flags:
   -v, --verbose    Show verbose output.
 
 Commands:
+  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+    Capture a single frame
+
+  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+    Create a time-lapse
+
   download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Download stream excerpts
 
@@ -193,21 +198,58 @@ Commands:
 
   version [flags]
     Show version info and exit
+
+Run "ypb &lt;command&gt; --help" for more information on a command.
 </code></pre>
 <h2 id="commands"><a class="header" href="#commands">Commands</a></h2>
-<h3 id="serve"><a class="header" href="#serve">serve</a></h3>
-<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [flags]
+<h3 id="capture"><a class="header" href="#capture">capture</a></h3>
+<pre><code class="language-shell">Usage: ypb capture &lt;command&gt; [flags]
 
-Start playback server
+Capture single frame or time-lapse sequence
+
+Flags:
+  -h, --help       Show context-sensitive help.
+  -v, --verbose    Show verbose output.
+
+Commands:
+  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+    Capture a single frame
+
+  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+    Create a time-lapse
+</code></pre>
+<h4 id="frame"><a class="header" href="#frame">frame</a></h4>
+<pre><code class="language-shell">Usage: ypb capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+
+Capture a single frame
 
 Arguments:
   &lt;stream&gt;    YouTube video ID
 
 Flags:
-  -h, --help         Show context-sensitive help.
-  -v, --verbose      Show verbose output.
+  -h, --help             Show context-sensitive help.
+  -v, --verbose          Show verbose output.
 
-  -p, --port=8080    Port to start playback on
+  -p, --port=8080        Port to start playback on
+      --of="png"         Output image format
+  -m, --moment=STRING    Moment to capture
+</code></pre>
+<h4 id="timelapse"><a class="header" href="#timelapse">timelapse</a></h4>
+<pre><code class="language-shell">Usage: ypb capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+
+Create a time-lapse
+
+Arguments:
+  &lt;stream&gt;    YouTube video ID
+
+Flags:
+  -h, --help               Show context-sensitive help.
+  -v, --verbose            Show verbose output.
+
+  -p, --port=8080          Port to start playback on
+      --of="png"           Output image format
+  -e, --every=DURATION     Capture frame every duration
+  -i, --interval=STRING    Time or segment interval
 </code></pre>
 <h3 id="download"><a class="header" href="#download">download</a></h3>
 <pre><code class="language-shell">Usage: ypb download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
@@ -222,8 +264,8 @@ Flags:
   -h, --help               Show context-sensitive help.
   -v, --verbose            Show verbose output.
 
-  -i, --interval=STRING    Time or segment interval
   -p, --port=8080          Port to start playback on
+  -i, --interval=STRING    Time or segment interval
 </code></pre>
 <h4 id="passing-options-to-yt-dlp"><a class="header" href="#passing-options-to-yt-dlp">Passing options to yt-dlp</a></h4>
 <p>Additional options can be passed directly to <code>yt-dlp</code> using the <code>--</code>
@@ -243,6 +285,20 @@ options will not have effect. For example, <a href="https://github.com/yt-dlp/yt
 options</a>
 are not supported.</p>
 </blockquote>
+<h3 id="serve"><a class="header" href="#serve">serve</a></h3>
+<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [flags]
+
+Start playback server
+
+Arguments:
+  &lt;stream&gt;    YouTube video ID
+
+Flags:
+  -h, --help         Show context-sensitive help.
+  -v, --verbose      Show verbose output.
+
+  -p, --port=8080    Port to start playback on
+</code></pre>
 <h2 id="specifying-the-rewind-interval"><a class="header" href="#specifying-the-rewind-interval">Specifying the rewind interval</a></h2>
 <p>The rewind interval is specified using the<code>-i/--interval</code> option. An
 interval consists of start and end parts by either <code>/</code> or <code>--</code>:</p>
