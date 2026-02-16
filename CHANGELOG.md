@@ -4,7 +4,7 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
-## [2026.2.15](https://github.com/xymaxim/ypb/releases/tag/v2026.2.15)
+## [2026.2.16](https://github.com/xymaxim/ypb/releases/tag/v2026.2.15)
 
 ### Added
 
