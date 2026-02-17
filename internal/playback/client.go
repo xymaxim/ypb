@@ -35,6 +35,11 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 	}
 
 	client.CheckRetry = func(_ context.Context, resp *http.Response, err error) (bool, error) {
+		if err != nil {
+			slog.Warn("got connection error, retrying", "error", err)
+			return true, err
+		}
+
 		if resp == nil {
 			return false, errors.New("got nil response")
 		}
