@@ -103,7 +103,6 @@ func (c *Download) Run() error {
 	args := append(
 		[]string{
 			mpdURL,
-			"--newline",
 			"--force-generic-extractor",
 			"--output", buildOutputName(outputContext),
 		},
