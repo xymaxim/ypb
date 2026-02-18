@@ -1,11 +1,11 @@
 package fetchers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
@@ -46,7 +46,6 @@ func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, e
 		return nil, nil, fmt.Errorf("dumping video info: %w", err)
 	}
 
-	// var x = 2
 	var dump jsonDump
 	if err := json.Unmarshal([]byte(out), &dump); err != nil {
 		return nil, nil, fmt.Errorf("parsing info dump: %w", err)
@@ -145,12 +144,12 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 }
 
 func (fetcher *YtdlpFetcher) runDumpJSON() (string, error) {
-	var outBuf strings.Builder
+	var outBuf bytes.Buffer
 
 	_, err := fetcher.Runner.RunWith(
 		[]exec.Option{
 			exec.WithCallbacks(
-				func(line string) { outBuf.WriteString(line + "\n") },
+				func(chunk []byte) { outBuf.Write(chunk) },
 				fetcher.Runner.(*exec.CommandRunner).PrintCallback,
 			),
 		},
