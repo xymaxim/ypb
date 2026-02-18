@@ -109,6 +109,7 @@ func (c *Download) Run() error {
 		ytdlpOptions...,
 	)
 
+	fmt.Println("(<<) Downloading and merging media...")
 	if err := a.YtdlpRunner.Run(args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
