@@ -1,11 +1,11 @@
 package fetchers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
@@ -46,9 +46,8 @@ func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, e
 		return nil, nil, fmt.Errorf("dumping video info: %w", err)
 	}
 
-	// var x = 2
 	var dump jsonDump
-	if err := json.Unmarshal([]byte(out), &dump); err != nil {
+	if err := json.Unmarshal(out, &dump); err != nil {
 		return nil, nil, fmt.Errorf("parsing info dump: %w", err)
 	}
 
@@ -132,7 +131,7 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 			FragmentBaseURL string `json:"fragment_base_url"`
 		} `json:"formats"`
 	}
-	if err := json.Unmarshal([]byte(out), &dump); err != nil {
+	if err := json.Unmarshal(out, &dump); err != nil {
 		return nil, fmt.Errorf("parsing info dump: %w", err)
 	}
 
@@ -144,14 +143,15 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 	return baseURLs, nil
 }
 
-func (fetcher *YtdlpFetcher) runDumpJSON() (string, error) {
-	var outBuf strings.Builder
+func (fetcher *YtdlpFetcher) runDumpJSON() ([]byte, error) {
+	var outBuf bytes.Buffer
 
 	_, err := fetcher.Runner.RunWith(
 		[]exec.Option{
+			exec.WithStdoutMode(exec.StreamRaw),
 			exec.WithCallbacks(
-				func(line string) { outBuf.WriteString(line + "\n") },
-				fetcher.Runner.(*exec.CommandRunner).PrintCallback,
+				func(chunk []byte) { outBuf.Write(chunk) },
+				fetcher.Runner.(*exec.CommandRunner).PrintCallback(),
 			),
 		},
 		"--dump-json",
@@ -159,8 +159,8 @@ func (fetcher *YtdlpFetcher) runDumpJSON() (string, error) {
 		fetcher.VideoID,
 	)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return outBuf.String(), nil
+	return outBuf.Bytes(), nil
 }

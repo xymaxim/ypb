@@ -10,6 +10,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
@@ -103,14 +104,24 @@ func (c *Download) Run() error {
 	args := append(
 		[]string{
 			mpdURL,
-			"--newline",
 			"--force-generic-extractor",
 			"--output", buildOutputName(outputContext),
 		},
 		ytdlpOptions...,
 	)
 
-	if err := a.YtdlpRunner.Run(args...); err != nil {
+	_, err = a.YtdlpRunner.RunWith(
+		[]exec.Option{
+			exec.WithStdoutMode(exec.StreamLines),
+			exec.WithStderrMode(exec.StreamLines),
+			exec.WithCallbacks(
+				a.YtdlpRunner.(*exec.CommandRunner).PrintCallback(),
+				a.YtdlpRunner.(*exec.CommandRunner).PrintCallback(),
+			),
+		},
+		args...,
+	)
+	if err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
 

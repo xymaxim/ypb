@@ -2,11 +2,18 @@ package exec
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	execpkg "os/exec"
 	"path/filepath"
-	"strings"
+)
+
+type StreamMode int
+
+const (
+	StreamRaw StreamMode = iota
+	StreamLines
 )
 
 // Runner defines the interface for executing commands.
@@ -17,18 +24,20 @@ type Runner interface {
 
 // RunResult contains the captured output from a command.
 type RunResult struct {
-	Stdout string
-	Stderr string
+	Stdout []byte
+	Stderr []byte
 }
 
 // RunConfig configures command execution.
 type RunConfig struct {
 	Stdin         io.Reader
-	OnStdout      func(string)
-	OnStderr      func(string)
+	OnStdout      func([]byte)
+	OnStderr      func([]byte)
+	StdoutMode    StreamMode
+	StderrMode    StreamMode
 	CaptureOutput bool
-	stdout        *strings.Builder
-	stderr        *strings.Builder
+	stdout        *bytes.Buffer
+	stderr        *bytes.Buffer
 }
 
 // Option is a functional option for configuring RunConfig.
@@ -45,15 +54,31 @@ func WithStdin(r io.Reader) Option {
 func WithQuiet() Option {
 	return func(o *RunConfig) {
 		o.CaptureOutput = true
-		o.stdout = &strings.Builder{}
-		o.stderr = &strings.Builder{}
-		o.OnStdout = func(line string) { o.stdout.WriteString(line + "\n") }
-		o.OnStderr = func(line string) { o.stderr.WriteString(line + "\n") }
+		o.stdout = &bytes.Buffer{}
+		o.stderr = &bytes.Buffer{}
+		o.StdoutMode = StreamRaw
+		o.StderrMode = StreamRaw
+		o.OnStdout = func(chunk []byte) { o.stdout.Write(chunk) }
+		o.OnStderr = func(chunk []byte) { o.stderr.Write(chunk) }
+	}
+}
+
+// WithStdoutMode sets the stream mode for stdout.
+func WithStdoutMode(mode StreamMode) Option {
+	return func(o *RunConfig) {
+		o.StdoutMode = mode
+	}
+}
+
+// WithStderrMode sets the stream mode for stderr.
+func WithStderrMode(mode StreamMode) Option {
+	return func(o *RunConfig) {
+		o.StderrMode = mode
 	}
 }
 
 // WithCallbacks sets custom handlers for both stdout and stderr lines.
-func WithCallbacks(onStdout, onStderr func(string)) Option {
+func WithCallbacks(onStdout, onStderr func([]byte)) Option {
 	return func(o *RunConfig) {
 		o.OnStdout = onStdout
 		o.OnStderr = onStderr
@@ -80,8 +105,10 @@ func (r *CommandRunner) Run(args ...string) error {
 // RunWith executes the command with functional options and returns captured output if requested.
 func (r *CommandRunner) RunWith(options []Option, args ...string) (*RunResult, error) {
 	config := RunConfig{
-		OnStdout: r.PrintCallback,
-		OnStderr: r.PrintCallback,
+		OnStdout:   r.PrintCallback(),
+		OnStderr:   r.PrintCallback(),
+		StdoutMode: StreamLines,
+		StderrMode: StreamLines,
 	}
 
 	for _, o := range options {
@@ -93,17 +120,32 @@ func (r *CommandRunner) RunWith(options []Option, args ...string) (*RunResult, e
 	var result *RunResult
 	if config.CaptureOutput {
 		result = &RunResult{
-			Stdout: config.stdout.String(),
-			Stderr: config.stderr.String(),
+			Stdout: config.stdout.Bytes(),
+			Stderr: config.stderr.Bytes(),
 		}
 	}
 
 	return result, err
 }
 
-// PrintCallback is a default callback for stdout and stderr.
-func (r *CommandRunner) PrintCallback(line string) {
-	fmt.Printf("%s: %s\n", r.Name, line)
+func (r *CommandRunner) PrintCallback() func([]byte) {
+	lastWasCR := false
+	return func(b []byte) {
+		if len(b) == 0 {
+			return
+		}
+		if b[len(b)-1] == '\r' {
+			fmt.Printf("\r%s: %s", r.Name, b[:len(b)-1])
+			lastWasCR = true
+		} else {
+			if lastWasCR {
+				fmt.Printf("\r%s: %s\n", r.Name, b)
+				lastWasCR = false
+			} else {
+				fmt.Printf("%s: %s\n", r.Name, b)
+			}
+		}
+	}
 }
 
 // runWithOptions executes the command with the given config and arguments.
@@ -128,15 +170,23 @@ func (r *CommandRunner) runWithConfig(config RunConfig, args ...string) error {
 		return fmt.Errorf("starting command: %w", err)
 	}
 
-	handle := func(p io.ReadCloser, h func(string)) {
+	handle := func(p io.ReadCloser, h func([]byte), mode StreamMode) {
 		if h == nil {
 			go func() { io.Copy(io.Discard, p) }()
-		} else {
-			go func() { streamPipe(p, h) }()
+			return
 		}
+		go func() {
+			switch mode {
+			case StreamRaw:
+				streamRaw(p, h)
+			default:
+				streamLines(p, h)
+			}
+		}()
 	}
-	handle(stdout, config.OnStdout)
-	handle(stderr, config.OnStderr)
+
+	handle(stdout, config.OnStdout, config.StdoutMode)
+	handle(stderr, config.OnStderr, config.StderrMode)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("running command: %w", err)
@@ -144,10 +194,39 @@ func (r *CommandRunner) runWithConfig(config RunConfig, args ...string) error {
 	return nil
 }
 
-// streamPipe handles streams with simple line-by-line reading.
-func streamPipe(pipe io.ReadCloser, handler func(string)) {
-	scanner := bufio.NewScanner(pipe)
-	for scanner.Scan() {
-		handler(scanner.Text())
+func streamRaw(pipe io.ReadCloser, handler func([]byte)) {
+	buf := make([]byte, 4096)
+	for {
+		n, err := pipe.Read(buf)
+		if n > 0 {
+			handler(buf[:n])
+		}
+		if err != nil {
+			break
+		}
+	}
+}
+
+func streamLines(pipe io.ReadCloser, handler func([]byte)) {
+	reader := bufio.NewReader(pipe)
+	var buf bytes.Buffer
+	for {
+		b, err := reader.ReadByte()
+		if err != nil {
+			if buf.Len() > 0 {
+				handler(buf.Bytes())
+			}
+			break
+		}
+		switch b {
+		case '\n':
+			handler(buf.Bytes())
+			buf.Reset()
+		case '\r':
+			handler(append(buf.Bytes(), '\r'))
+			buf.Reset()
+		default:
+			buf.WriteByte(b)
+		}
 	}
 }
