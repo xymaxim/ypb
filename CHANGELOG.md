@@ -4,7 +4,14 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
-## [2026.2.16](https://github.com/xymaxim/ypb/releases/tag/v2026.2.15)
+## [2026.2.18](https://github.com/xymaxim/ypb/releases/tag/v2026.2.18)
+
+### Changed
+
+- Retry on connection errors ("connection reset by peer", "connection timed out", etc)
+- Print standard output and error from external commands directly (#2)
+
+## [2026.2.16](https://github.com/xymaxim/ypb/releases/tag/v2026.2.16)
 
 ### Added
 
