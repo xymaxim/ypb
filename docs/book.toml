@@ -5,6 +5,6 @@ title = "Ypb documentation"
 no-section-label = true
 
 [preprocessor.variables.variables]
-release_version = "v2026.2.16"
+release_version = "v2026.2.18"
 
 [preprocessor.cmdrun]
