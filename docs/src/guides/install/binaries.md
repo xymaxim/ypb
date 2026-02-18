@@ -13,17 +13,17 @@ on your intended usage:
 Pre-built binaries for different platforms are available on the GitHub [latest
 release](https://github.com/xymaxim/ypb/releases/latest) page.
 
-|       | Linux                            | macOS                             | Windows                            |
-|-------|----------------------------------|-----------------------------------|------------------------------------|
-| AMD64 | [ypb-v2026.2.10-linux-amd64.zip] | [ypb-v2026.2.10-darwin-amd64.zip] | [ypb-v2026.2.10-windows-amd64.zip] |
-| ARM64 | [ypb-v2026.2.10-linux-arm64.zip] | [ypb-v2026.2.10-darwin-arm64.zip] | [ypb-v2026.2.10-windows-arm64.zip] |
+|       | Linux                                       | macOS                                        | Windows                                       |
+|-------|---------------------------------------------|----------------------------------------------|-----------------------------------------------|
+| AMD64 | [ypb-{{ release_version }}-linux-amd64.zip] | [ypb-{{ release_version }}-darwin-amd64.zip] | [ypb-{{ release_version }}-windows-amd64.zip] |
+| ARM64 | [ypb-{{ release_version }}-linux-arm64.zip] | [ypb-{{ release_version }}-darwin-arm64.zip] | [ypb-{{ release_version }}-windows-arm64.zip] |
 
-[ypb-v2026.2.10-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-amd64.zip
-[ypb-v2026.2.10-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-arm64.zip
-[ypb-v2026.2.10-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-amd64.zip
-[ypb-v2026.2.10-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-arm64.zip
-[ypb-v2026.2.10-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-amd64.zip
-[ypb-v2026.2.10-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-arm64.zip
+[ypb-{{ release_version }}-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-amd64.zip
+[ypb-{{ release_version }}-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-arm64.zip
+[ypb-{{ release_version }}-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-amd64.zip
+[ypb-{{ release_version }}-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-arm64.zip
+[ypb-{{ release_version }}-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-amd64.zip
+[ypb-{{ release_version }}-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-arm64.zip
 
 ### Linux/macOS
 
