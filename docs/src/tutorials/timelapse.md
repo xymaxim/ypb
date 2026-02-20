@@ -132,10 +132,10 @@ Beautiful! This is the fragment we’ll use for the final video.
 Before capturing hundreds of frames, calculate the output video length.
 
 We want to cover 50 minutes of footage (3,000 seconds) and play the
-result back at 24 FPS. With a 5-second capture interval:
+result back at 24 fps. With a 5-second capture interval:
 
 1.  **Total frames**: 3,000 s / 5 s = 601 frames
-2.  **Output video length**: 601 frames / 24 FPS = 25 s
+2.  **Output video length**: 601 frames / 24 fps = 25 s
 
 25 seconds is a reasonable length for a time-lapse. If you want a longer
 or shorter video, adjust the interval or the playback rate accordingly.
@@ -205,7 +205,7 @@ Here is the output video: <https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg>
 
 The key options:
 
-- `-r 24` — set output frame rate (frames per second) to 24 FPS
+- `-r 24` — set output frame rate (frames per second) to 24 fps
 - `-pattern_type glob -i "*.png"` — match all PNG files in the current directory
 - `-c:v libsvtav1` — encode using the SVT-AV1 codec
 
