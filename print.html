@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9d7c9b93.js";
+            window.path_to_searchindex_js = "searchindex-86c98b84.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -665,10 +665,10 @@ aurora’s movement in more detail:</p>
 <h2 id="step-3-plan-the-final-capture"><a class="header" href="#step-3-plan-the-final-capture">Step 3: Plan the final capture</a></h2>
 <p>Before capturing hundreds of frames, calculate the output video length.</p>
 <p>We want to cover 50 minutes of footage (3,000 seconds) and play the
-result back at 24 FPS. With a 5-second capture interval:</p>
+result back at 24 fps. With a 5-second capture interval:</p>
 <ol>
 <li><strong>Total frames</strong>: 3,000 s / 5 s = 601 frames</li>
-<li><strong>Output video length</strong>: 601 frames / 24 FPS = 25 s</li>
+<li><strong>Output video length</strong>: 601 frames / 24 fps = 25 s</li>
 </ol>
 <p>25 seconds is a reasonable length for a time-lapse. If you want a longer
 or shorter video, adjust the interval or the playback rate accordingly.</p>
@@ -723,24 +723,25 @@ Output #0, mp4, to 'output.mp4':
 [out#0/mp4 @ 0x56502bfa4380] video:500KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.517067%
 frame=  601 fps= 67 q=35.0 Lsize=     503KiB time=00:00:25.00 bitrate= 164.8kbits/s speed=2.77x
 </code></pre>
+<p>Here is the output video: <a href="https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg">https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg</a></p>
+<iframe title="Aurores en accéléré à Reykjavik le 15 février" width="560" height="315" src="https://video.liberta.vip/videos/embed/6egVMr9pLwwGi32o3tg6Gg" allow="fullscreen" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="border: 0px;"></iframe>
+<p>The key options:</p>
+<ul>
+<li><code>-r 24</code> — set output frame rate (frames per second) to 24 fps</li>
+<li><code>-pattern_type glob -i "*.png"</code> — match all PNG files in the current directory</li>
+<li><code>-c:v libsvtav1</code> — encode using the SVT-AV1 codec</li>
+</ul>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
 <p>On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:</p>
 <pre><code>-i Live-Aurora-..._e5s_%04d.png
 </code></pre>
 </blockquote>
-<p>The key options:</p>
-<ul>
-<li><code>-r</code> — output frame rate (frames per second)</li>
-<li><code>-pattern_type glob -i "*.png"</code> — match all PNG files in the current directory</li>
-<li><code>-c:v libsvtav1</code> — encode using the SVT-AV1 codec</li>
-</ul>
 <p>We used the <a href="https://trac.ffmpeg.org/wiki/Encode/AV1">SVT-AV1 encoder</a>
 here for its excellent balance of compression and speed, but any encoder
 will work. To see what’s available on your machine:</p>
 <pre><code>ffmpeg -hide_banner -encoders
 </code></pre>
-<p>Your time-lapse video is now ready at <code>output.mp4</code>.</p>
 <h2 id="useful-links"><a class="header" href="#useful-links">Useful links</a></h2>
 <ol>
 <li><a href="https://en.vedur.is/weather/forecasts/aurora/">https://en.vedur.is/weather/forecasts/aurora/</a> — Aurora forecast from the Icelandic Met Office</li>
