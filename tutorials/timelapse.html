@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CLI - Ypb documentation</title>
+        <title>Create a time-lapse video - Ypb documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -176,299 +176,199 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command Line Interface</a></h1>
-<pre><code class="language-shell">Usage: ypb &lt;command&gt; [flags]
-
-A playback for YouTube live streams
-
-Flags:
-  -h, --help       Show context-sensitive help.
-  -v, --verbose    Show verbose output.
-
-Commands:
-  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
-    Capture a single frame
-
-  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
-    Create a time-lapse
-
-  download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
-    Download stream excerpts
-
-  serve &lt;stream&gt; [flags]
-    Start playback server
-
-  version [flags]
-    Show version info and exit
-
-Run "ypb &lt;command&gt; --help" for more information on a command.
+                        <h1 id="create-a-time-lapse-video"><a class="header" href="#create-a-time-lapse-video">Create a time-lapse video</a></h1>
+<p>In this tutorial, you will capture frames from a YouTube live stream and
+assemble them into a short time-lapse video. We’ll work through the full process
+from a single frame to a finished video using a <a href="https://www.youtube.com/live/0ujj4HexRpk/">live
+stream</a> from <a href="https://aurorareykjavik.is/">Aurora Reykjavik – The
+Northern Lights Center</a> as an example. Throughout,
+we’ll use the <a href="../reference/cli.html#capture">ypb capture</a> subcommands, which
+extract frames with per-second precision (unlike <a href="../reference/cli.html#download">ypb
+download</a>, which operates at the segment level).</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before you begin, make sure you have:</p>
+<ol>
+<li><code>ypb</code> <a href="../guides/install/install.html">installed</a> (from pre-built binaries or a container)</li>
+<li><code>ffmpeg</code> installed (required by <code>ypb</code>)</li>
+</ol>
+<h2 id="step-1-capture-the-first-frame"><a class="header" href="#step-1-capture-the-first-frame">Step 1. Capture the first frame</a></h2>
+<p>Let’s start with a single frame to confirm everything is working correctly using
+the <a href="../reference/cli.html#frame">capture frame</a> subcommand:</p>
+<pre><code class="language-shell">$ ypb capture frame --moment '20:00:00+00 - 1d' 0ujj4HexRpk
+(&lt;&lt;) Collecting info about https://www.youtube.com/live/0ujj4HexRpk...
+Stream 'Live Aurora stream from The Golden Circle in Iceland' is alive!
+(&lt;&lt;) Locating and capturing the moment...
+Frame to be captured: Sun, 15 Feb 2026 20:00:00 +0000, sq=38945
+Success! Saved to 'Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png'
 </code></pre>
-<h2 id="commands"><a class="header" href="#commands">Commands</a></h2>
-<h3 id="capture"><a class="header" href="#capture">capture</a></h3>
-<pre><code class="language-shell">Usage: ypb capture &lt;command&gt; [flags]
-
-Capture single frame or time-lapse sequence
-
-Flags:
-  -h, --help       Show context-sensitive help.
-  -v, --verbose    Show verbose output.
-
-Commands:
-  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
-    Capture a single frame
-
-  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
-    Create a time-lapse
-</code></pre>
-<h4 id="frame"><a class="header" href="#frame">frame</a></h4>
-<pre><code class="language-shell">Usage: ypb capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
-
-Capture a single frame
-
-Arguments:
-  &lt;stream&gt;    YouTube video ID
-
-Flags:
-  -h, --help             Show context-sensitive help.
-  -v, --verbose          Show verbose output.
-
-  -p, --port=8080        Port to start playback on
-      --of="png"         Output image format
-  -m, --moment=STRING    Moment to capture
-</code></pre>
-<h4 id="timelapse"><a class="header" href="#timelapse">timelapse</a></h4>
-<pre><code class="language-shell">Usage: ypb capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
-
-Create a time-lapse
-
-Arguments:
-  &lt;stream&gt;    YouTube video ID
-
-Flags:
-  -h, --help               Show context-sensitive help.
-  -v, --verbose            Show verbose output.
-
-  -p, --port=8080          Port to start playback on
-      --of="png"           Output image format
-  -e, --every=DURATION     Capture frame every duration
-  -i, --interval=STRING    Time or segment interval
-</code></pre>
-<h3 id="download"><a class="header" href="#download">download</a></h3>
-<pre><code class="language-shell">Usage: ypb download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
-
-Download stream excerpts
-
-Arguments:
-  &lt;stream&gt;                 YouTube video ID
-  [&lt;ytdlp-options&gt; ...]    Options to pass to yt-dlp (use after --)
-
-Flags:
-  -h, --help               Show context-sensitive help.
-  -v, --verbose            Show verbose output.
-
-  -p, --port=8080          Port to start playback on
-  -i, --interval=STRING    Time or segment interval
-</code></pre>
-<h4 id="passing-options-to-yt-dlp"><a class="header" href="#passing-options-to-yt-dlp">Passing options to yt-dlp</a></h4>
-<p>Additional options can be passed directly to <code>yt-dlp</code> using the <code>--</code>
-separator. Everything after <code>--</code> is forwarded to the underlying
-<code>yt-dlp</code> process.</p>
-<p>Behind the scences, <code>ypb</code> calls <code>yt-dlp</code> with a custom <code>-o/--output</code> template:
-the only option that is overriden by default. This behavior can be changed as
-follows:</p>
-<pre><code>ypb download -i &lt;interval&gt; &lt;stream&gt; -- -o output.mp4
-</code></pre>
-<p>For a complete list of available options, see the <a href="https://github.com/yt-dlp/yt-dlp#usage-and-options">yt-dlp
-documentation</a>.</p>
-<blockquote class="blockquote-tag blockquote-tag-important">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
-<p>Not all <code>yt-dlp</code> options are compatible with <code>ypb</code>’s workflow. Incompatible
-options will not have effect. For example, <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options">the network
-options</a>
-are not supported.</p>
+<figure>
+<img src="timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png" alt="Captured frame: --moment &#39;20:00:00+00 - 1d&#39;" />
+<figcaption aria-hidden="true">Captured frame:
+<code>--moment '20:00:00+00 - 1d'</code></figcaption>
+</figure>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>All commands in this tutorial were supposed to run on February
+16, 2026. The flag <code>20:00:00+00 - 1d</code> subtracts one day from the given time,
+so it means yesterday at 20:00 UTC.</p>
 </blockquote>
-<h3 id="serve"><a class="header" href="#serve">serve</a></h3>
-<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [flags]
-
-Start playback server
-
-Arguments:
-  &lt;stream&gt;    YouTube video ID
-
-Flags:
-  -h, --help         Show context-sensitive help.
-  -v, --verbose      Show verbose output.
-
-  -p, --port=8080    Port to start playback on
+<p>Notice that the in-video timestamp is about 3 seconds earlier than the
+moment we requested. This is a live stream delay. To get a frame where
+the on-screen clock reads exactly 20:00:00, we need to shift the
+requested moment forward by that amount:</p>
+<pre><code>ypb capture frame --moment '20:00:03+00 - 1d' 0ujj4HexRpk
 </code></pre>
-<h2 id="specifying-the-rewind-interval"><a class="header" href="#specifying-the-rewind-interval">Specifying the rewind interval</a></h2>
-<p>The rewind interval is specified using the<code>-i/--interval</code> option. An
-interval consists of start and end parts by either <code>/</code> or <code>--</code>:</p>
-<pre><code class="language-shell">$ ypb download -i &lt;start&gt;/&lt;end&gt;
-$ ypb download -i &lt;start&gt;--&lt;end&gt;
+<figure>
+<img src="timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200003+00.png" alt="Captured frame (shifted): --moment &#39;20:00:03+00 - 1d&#39;" />
+<figcaption aria-hidden="true">Captured frame (shifted):
+<code>--moment '20:00:03+00 - 1d'</code></figcaption>
+</figure>
+<p>Now the timestamp matches our request. We’ll apply this 3-second offset
+to all subsequent commands.</p>
+<h2 id="step-2-capture-all-night"><a class="header" href="#step-2-capture-all-night">Step 2. Capture all night</a></h2>
+<p>Nautical twilight in Reykjavík ran from 19:49 to 07:35 on February 15.  Let’s
+capture it using the <a href="../reference/cli.html#timelapse">capture timeline</a>
+subcommand with 30-minute intervals to get a quick overview of potential aurora
+activity. The <code>-e/--every</code> flag sets the interval between frames:</p>
+<pre><code class="language-shell">$ ypb capture timelapse -i '19:30:03+00 - 1d/07:30:03+00' -e 30m 0ujj4HexRpk
+(&lt;&lt;) Collecting info about https://www.youtube.com/live/0ujj4HexRpk...
+Stream 'Live Aurora stream from The Golden Circle in Iceland' is alive!
+
+(&lt;&lt;) Locating start and end moments... done.
+Will capture 25 frames at 30m intervals:
+   Frame 0: Sun, 15 Feb 2026 19:30:03 +0000
+   Frame 1: Sun, 15 Feb 2026 20:00:03 +0000
+                          ...
+  Frame 22: Mon, 16 Feb 2026 07:30:03 +0000
+  
+(&lt;&lt;) Capturing frames to 'Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m'...
+   0% |                                                | (0/23, 0 it/hr) [0s:0s]
 </code></pre>
-<h3 id="absolute-and-relative-moments"><a class="header" href="#absolute-and-relative-moments">Absolute and relative moments</a></h3>
-<p>The interval parts refer to absolute or relative points (moments) in a
-stream. Absolute moments independently indicate a specific point in time, while
-relative moments are specified in relation to other moments.</p>
-<p>Absolute moments can be further divided into direct and indirect types. Direct
-moments correspond to exact stream media segments, while indirect moments
-require locating a segment.</p>
+<figure>
+<img src="timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m_grid.jpg" alt="All frames: 2026-02-15 19:30:00 UTC–2026-02-16 07:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">All frames: 2026-02-15 19:30:00
+UTC–2026-02-16 07:30:00 UTC, every 30 min</figcaption>
+</figure>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p>The contact sheet above was created with ImageMagick:</p>
+<pre><code>montage *.png -tile 5x5 -mode concatenate grid.jpg
+</code></pre>
+</blockquote>
+<p>It was a clear, moonless night with active aurora. The bright flashes
+are cleary visible, but it would be more interesting to get more detailed
+frames. One of the brightest activities appears to be around 22:30 to
+00:30:</p>
+<figure>
+<img src="timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e30m_grid.jpg" alt="Selected moment: 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">Selected moment: 2026-02-15 22:30:00
+UTC–2026-02-16 00:30:00 UTC, every 30 min</figcaption>
+</figure>
+<p>Let’s capture this fragment at finer intervals of 5 minutes to see the
+aurora’s movement in more detail:</p>
+<pre><code class="language-shell">ypb capture timelapse -i '22:30:03+00 - 1d/00:30:03+00' -e 5m 0ujj4HexRpk
+</code></pre>
+<figure>
+<img src="timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e5m_grid.jpg" alt="Selected moment (detailed): 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min" />
+<figcaption aria-hidden="true">Selected moment (detailed): 2026-02-15
+22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min</figcaption>
+</figure>
+<p>Beautiful! This is the fragment we’ll use for the final video.</p>
+<h2 id="step-3-plan-the-final-capture"><a class="header" href="#step-3-plan-the-final-capture">Step 3: Plan the final capture</a></h2>
+<p>Before capturing hundreds of frames, calculate the output video length.</p>
+<p>We want to cover 50 minutes of footage (3,000 seconds) and play the
+result back at 24 FPS. With a 5-second capture interval:</p>
+<ol>
+<li><strong>Total frames</strong>: 3,000 s / 5 s = 601 frames</li>
+<li><strong>Output video length</strong>: 601 frames / 24 FPS = 25 s</li>
+</ol>
+<p>25 seconds is a reasonable length for a time-lapse. If you want a longer
+or shorter video, adjust the interval or the playback rate accordingly.</p>
+<h2 id="step-4-capture-the-final-frames"><a class="header" href="#step-4-capture-the-final-frames">Step 4. Capture the final frames</a></h2>
+<p>Now run the full capture over the 50-minute fragment at 5-second
+intervals:</p>
+<pre><code class="language-shell">$ ypb capture timelapse -i '22:50:03+00 - 1d/23:40:03+00' -e 5s 0ujj4HexRpk
+$ tree Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0000.png
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0001.png
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0002.png
+    ...
+└── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0600.png
+
+1 directory, 601 files
+</code></pre>
+<h2 id="step-5-assemble-the-video"><a class="header" href="#step-5-assemble-the-video">Step 5. Assemble the video</a></h2>
+<p>With all frames captured, use <code>ffmpeg</code> to convert the frames into a
+video:</p>
+<pre><code class="language-shell">$ ffmpeg -r 24 -i pattern_type glob -i "*.png" -c:v libsvtav1 -y output.mp4
+Input #0, image2, from '*.png':
+  Duration: 00:00:25.04, start: 0.000000, bitrate: N/A
+  Stream #0:0: Video: png, rgb24(pc, gbr/unknown/unknown), 640x360, 24 fps, 24 tbr, 24 tbn
+Stream mapping:
+  Stream #0:0 -&gt; #0:0 (png (native) -&gt; av1 (libsvtav1))
+Press [q] to stop, [?] for help
+Svt[info]: -------------------------------------------
+Svt[info]: SVT [version]:       SVT-AV1 Encoder Lib v3.1.2
+Svt[info]: SVT [build]  :       GCC 15.2.1 20250924 (Red Hat 15.2.1-2)   64 bit
+Svt[info]: -------------------------------------------
+Svt[info]: Level of Parallelism: 4
+Svt[info]: Number of PPCS 107
+Svt[info]: [asm level on system : up to sse4_1]
+Svt[info]: [asm level selected : up to sse4_1]
+Svt[info]: -------------------------------------------
+Svt[info]: SVT [config]: main profile   tier (auto)     level (auto)
+Svt[info]: SVT [config]: width / height / fps numerator / fps denominator               : 640 / 360 / 24 / 1
+Svt[info]: SVT [config]: bit-depth / color format                                       : 8 / YUV420
+Svt[info]: SVT [config]: preset / tune / pred struct                                    : 8 / PSNR / random access
+Svt[info]: SVT [config]: gop size / mini-gop size / key-frame type                      : 161 / 32 / key frame
+Svt[info]: SVT [config]: BRC mode / rate factor                                         : CRF / 35
+Svt[info]: SVT [config]: AQ mode / Variance Boost                                       : 2 / 0
+Svt[info]: SVT [config]: sharpness / luminance-based QP bias                            : 0 / 0
+Svt[info]: -------------------------------------------
+Output #0, mp4, to 'output.mp4':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (av01 / 0x31307661), yuv420p(tv, progressive), 640x360, q=2-31, 24 fps, 12288 tbn
+      Metadata:
+        encoder         : Lavc61.19.101 libsvtav1
+[out#0/mp4 @ 0x56502bfa4380] video:500KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.517067%
+frame=  601 fps= 67 q=35.0 Lsize=     503KiB time=00:00:25.00 bitrate= 164.8kbits/s speed=2.77x
+</code></pre>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:</p>
+<pre><code>-i Live-Aurora-..._e5s_%04d.png
+</code></pre>
+</blockquote>
+<p>The key options:</p>
 <ul>
-<li>
-<p><strong>Absolute moments</strong></p>
-<ul>
-<li><em>Direct</em>: sequence numbers, the <code>now</code> keyword</li>
-<li><em>Indirect</em>: date and times, Unix timestamps, time arithmetic expressions</li>
+<li><code>-r</code> — output frame rate (frames per second)</li>
+<li><code>-pattern_type glob -i "*.png"</code> — match all PNG files in the current directory</li>
+<li><code>-c:v libsvtav1</code> — encode using the SVT-AV1 codec</li>
 </ul>
-</li>
-<li>
-<p><strong>Relative moments</strong></p>
-<ul>
-<li>Time durations</li>
-</ul>
-</li>
-</ul>
-<h3 id="moment-values"><a class="header" href="#moment-values">Moment values</a></h3>
-<h4 id="date-and-time"><a class="header" href="#date-and-time">Date and time</a></h4>
-<ul>
-<li><code>&lt;date-time&gt; = &lt;date&gt;"T"&lt;time&gt;"±"&lt;offset&gt;</code>,</li>
-</ul>
-<p>where <code>&lt;date&gt; = YYYY"-"MM"-"DD</code>, <code>&lt;time&gt; = "hh":"mm":"ss</code>,
-and <code>&lt;offset&gt; = "±"hh":"mm</code>.</p>
-<p>This format follows the extended ISO 8601 format or
-<a href="https://datatracker.ietf.org/doc/html/rfc3339.">RFC3339</a></p>
-<p>Here is an example of the complete representation with full time and partial
-time offset in UTC:</p>
-<pre><code>2026-01-02T10:20:30+00
+<p>We used the <a href="https://trac.ffmpeg.org/wiki/Encode/AV1">SVT-AV1 encoder</a>
+here for its excellent balance of compression and speed, but any encoder
+will work. To see what’s available on your machine:</p>
+<pre><code>ffmpeg -hide_banner -encoders
 </code></pre>
-<p>The time component can be provided with reduced precision by omitting
-lower-order components, which are assumed to be “00” (the date part must always
-be complete):</p>
-<pre><code class="language-shell"># Complete date plus hours and minutes
-2026-01-02T10:20+00
-
-# Complete date plus hours only
-2026-01-02T10+00
-</code></pre>
-<h5 id="zulu-time"><a class="header" href="#zulu-time">Zulu time</a></h5>
-<p>Zulu time refers to UTC and is denoted by the letter “Z”
-used as a suffix instead of a time offset:</p>
-<pre><code>2026-01-02T10:20:30Z
-</code></pre>
-<h5 id="local-time"><a class="header" href="#local-time">Local time</a></h5>
-<p>To represent local time, omit the time offset. For example, if
-you’re in the UTC+02 time zone, the above example would be:</p>
-<pre><code>2026-01-02T12:20:30
-</code></pre>
-<h5 id="time-of-today"><a class="header" href="#time-of-today">Time of today</a></h5>
-<p>To refer to a time of the current day, you can omit the date and time offset:</p>
-<pre><code class="language-shell"># Full time with time offset
-10:20:30+00
-
-# Full time in local time zone
-10:20:30
-
-# Hours and minutes only
-10:20
-</code></pre>
-<h4 id="time-duration"><a class="header" href="#time-duration">Time duration</a></h4>
-<ul>
-<li><code>-i/--interval &lt;start&gt;/&lt;duration&gt;</code> or</li>
-<li><code>-i/--interval &lt;duration&gt;/&lt;end&gt;</code>,</li>
-</ul>
-<p>where <code>&lt;duration&gt; = dd"d"hh"h"mm"m"ss"s"</code>.</p>
-<p>Sometimes it is more convenient to specify an interval using a duration. Duration strings
-use single-letter designators for time components: days (<code>d</code>), hours
-(<code>h</code>), minutes (<code>h</code>), and seconds (<code>s</code>).</p>
-<p>The following examples represent the same interval from 10:30 to 12:00 (local time):</p>
-<pre><code class="language-shell"># Specified by start time and duration
---interval 10:30/1h30m ...
-
-# Specified by duration and end time
---interval 1h30m/12:00 ...
-</code></pre>
-<h4 id="time-arithmetic-expression"><a class="header" href="#time-arithmetic-expression">Time arithmetic expression</a></h4>
-<ul>
-<li><code>&lt;expression&gt;</code></li>
-</ul>
-<p>where <code>&lt;expression&gt; = &lt;operand&gt; "±" &lt;duration&gt;</code> and <code>&lt;operand&gt;</code> is any absolute
-moment. The expression also accepts the <code>now</code> keyword:
-<code>&lt;expression&gt; = "now" "-" &lt;duration&gt;</code>.</p>
-<p>Input moments can be represented as arithmetic expressions combining absolute
-moments and durations. Such temporal arithmetic supports both addition and
-subtraction. For example, the expression <code>10:30 - 30s</code> results in <code>10:00</code>. Use
-the <code>now</code> keyword to refer to the current time.</p>
-<p>Note that option values containing whitespace must be quoted.</p>
-<pre><code class="language-shell"># Subtraction between time and duration
---interval '2026-01-02T10:20:30 - 1d2h30m/30m' ...
-
-# An excerpt centered around some specific time today
---interval '12:00 - 1m/12:00 + 5m' ...
-
-# An excerpt spanning from yesterday 23:00 to today 01:00
---interval '23:00 - 1d/01:00' ...
-
-# A 30-minute excerpt starting from one hour ago
---interval 'now - 1h/30m' ...
-</code></pre>
-<h4 id="sequence-numbers"><a class="header" href="#sequence-numbers">Sequence numbers</a></h4>
-<ul>
-<li><code>&lt;sequence-number&gt; = [0-9]+</code></li>
-</ul>
-<p>In addition to times, you can specify the sequence number (positive, starting
-from 0) of an MPEG-DASH <a href="https://wiki.gpac.io/Howtos/dash/DASH-basics/#dash-basics-mpd-and-segments">media
-segment</a>
-to reference a specific point in a live stream. Sequence numbers are typically
-used when a segment has already been identified.</p>
-<h4 id="keywords"><a class="header" href="#keywords">Keywords</a></h4>
-<h5 id="earliest-todo"><a class="header" href="#earliest-todo">‘Earliest’ (<em>TODO</em>)</a></h5>
-<ul>
-<li><code>-i/--interval earliest/&lt;end&gt;</code></li>
-</ul>
-<p>To reference the earliest available moment, use the <code>earliest</code>
-keyword for the start part:</p>
-<pre><code>--interval earliest/30m
-</code></pre>
-<p>This refers to either the beginning of the stream (the very first media segment)
-or the earliest available segment if the stream has been running longer than the
-available rewind window.</p>
-<h5 id="now"><a class="header" href="#now">‘Now’</a></h5>
-<ul>
-<li><code>-i/--interval &lt;start&gt;/now</code></li>
-</ul>
-<p>To reference the current moment, use the now keyword for the end part:</p>
-<pre><code>--interval 10:30/now
-</code></pre>
-<p>More precisely, this refers to the most recently available media segment, which
-typically corresponds to the current moment. However, if a live stream has
-stalled, new media segments are updated.</p>
-<h2 id="specifying-the-output-filename"><a class="header" href="#specifying-the-output-filename">Specifying the output filename</a></h2>
-<p>By default, downloaded files are saved in the current working directory with
-names composed of the adjusted title, YouTube video ID, start time, and
-duration:</p>
-<pre><code class="language-shell">$ ypb download -i 2026-01-02T10:20:30+00/30s abcdefgh123 &amp;&amp; ls
-Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
-</code></pre>
-<p>To customize output names, use the yt-dlp’s <code>-o/--output</code>
-<a href="https://github.com/ytdl-org/youtube-dl/#OUTPUT-TEMPLATE">option</a> by specifying
-a full filename:</p>
-<pre><code class="language-shell">$ ypb download ... -- -o output/path.mp4 &amp;&amp; ls output/*
-output/path.mp4
-</code></pre>
-<p>Note that since <code>yt-dlp</code> downloads the MPEG-DASH manifest via the general
-extractor rather than the YouTube extractor, YouTube-specific template
-variables are not available.</p>
+<p>Your time-lapse video is now ready at <code>output.mp4</code>.</p>
+<h2 id="useful-links"><a class="header" href="#useful-links">Useful links</a></h2>
+<ol>
+<li><a href="https://en.vedur.is/weather/forecasts/aurora/">https://en.vedur.is/weather/forecasts/aurora/</a> — Aurora forecast from the Icelandic Met Office</li>
+<li><a href="https://aurorareykjavik.is/aurora-forecast/">https://aurorareykjavik.is/aurora-forecast/</a> — Aurora forecast on Aurora Reykjavik</li>
+<li><a href="https://www.youtube.com/@aurorareykjavik/">https://www.youtube.com/@aurorareykjavik/</a> — Aurora Reykjavik on YouTube</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../tutorials/timelapse.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../guides/install/container.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../reference/api.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../reference/cli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -478,11 +378,11 @@ variables are not available.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../tutorials/timelapse.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../guides/install/container.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../reference/api.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../reference/cli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

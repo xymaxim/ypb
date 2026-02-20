@@ -30,16 +30,18 @@
 
         <!-- Custom theme stylesheets -->
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-afd5b26a.js";
+            window.path_to_searchindex_js = "searchindex-9d7c9b93.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-e2d41da3.js"></script>
+        <script src="toc-0c2dce08.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -188,6 +190,10 @@ player, or download them as local files.</p>
 <li><a href="#get-started-with-ypb"><strong>Quickstart</strong></a> — Showcase of main usage scenarios</li>
 <li><a href="#install"><strong>Installation guide</strong></a> — How to install and run
 ypb</li>
+</ul>
+<p><strong>Tutorials</strong></p>
+<ul>
+<li><a href="#create-a-time-lapse-video"><strong>Create a time-lapse video</strong></a> — Capture frames and assemble them into a video</li>
 </ul>
 <p><strong>Reference</strong></p>
 <ul>
@@ -557,6 +563,190 @@ errors.</p>
 <p>To update <code>ypb</code> and all dependecies to the latest version:</p>
 <pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="create-a-time-lapse-video"><a class="header" href="#create-a-time-lapse-video">Create a time-lapse video</a></h1>
+<p>In this tutorial, you will capture frames from a YouTube live stream and
+assemble them into a short time-lapse video. We’ll work through the full process
+from a single frame to a finished video using a <a href="https://www.youtube.com/live/0ujj4HexRpk/">live
+stream</a> from <a href="https://aurorareykjavik.is/">Aurora Reykjavik – The
+Northern Lights Center</a> as an example. Throughout,
+we’ll use the <a href="#capture">ypb capture</a> subcommands, which
+extract frames with per-second precision (unlike <a href="#download">ypb
+download</a>, which operates at the segment level).</p>
+<h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
+<p>Before you begin, make sure you have:</p>
+<ol>
+<li><code>ypb</code> <a href="#install">installed</a> (from pre-built binaries or a container)</li>
+<li><code>ffmpeg</code> installed (required by <code>ypb</code>)</li>
+</ol>
+<h2 id="step-1-capture-the-first-frame"><a class="header" href="#step-1-capture-the-first-frame">Step 1. Capture the first frame</a></h2>
+<p>Let’s start with a single frame to confirm everything is working correctly using
+the <a href="#frame">capture frame</a> subcommand:</p>
+<pre><code class="language-shell">$ ypb capture frame --moment '20:00:00+00 - 1d' 0ujj4HexRpk
+(&lt;&lt;) Collecting info about https://www.youtube.com/live/0ujj4HexRpk...
+Stream 'Live Aurora stream from The Golden Circle in Iceland' is alive!
+(&lt;&lt;) Locating and capturing the moment...
+Frame to be captured: Sun, 15 Feb 2026 20:00:00 +0000, sq=38945
+Success! Saved to 'Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png'
+</code></pre>
+<figure>
+<img src="tutorials/timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png" alt="Captured frame: --moment &#39;20:00:00+00 - 1d&#39;" />
+<figcaption aria-hidden="true">Captured frame:
+<code>--moment '20:00:00+00 - 1d'</code></figcaption>
+</figure>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>All commands in this tutorial were supposed to run on February
+16, 2026. The flag <code>20:00:00+00 - 1d</code> subtracts one day from the given time,
+so it means yesterday at 20:00 UTC.</p>
+</blockquote>
+<p>Notice that the in-video timestamp is about 3 seconds earlier than the
+moment we requested. This is a live stream delay. To get a frame where
+the on-screen clock reads exactly 20:00:00, we need to shift the
+requested moment forward by that amount:</p>
+<pre><code>ypb capture frame --moment '20:00:03+00 - 1d' 0ujj4HexRpk
+</code></pre>
+<figure>
+<img src="tutorials/timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200003+00.png" alt="Captured frame (shifted): --moment &#39;20:00:03+00 - 1d&#39;" />
+<figcaption aria-hidden="true">Captured frame (shifted):
+<code>--moment '20:00:03+00 - 1d'</code></figcaption>
+</figure>
+<p>Now the timestamp matches our request. We’ll apply this 3-second offset
+to all subsequent commands.</p>
+<h2 id="step-2-capture-all-night"><a class="header" href="#step-2-capture-all-night">Step 2. Capture all night</a></h2>
+<p>Nautical twilight in Reykjavík ran from 19:49 to 07:35 on February 15.  Let’s
+capture it using the <a href="#timelapse">capture timeline</a>
+subcommand with 30-minute intervals to get a quick overview of potential aurora
+activity. The <code>-e/--every</code> flag sets the interval between frames:</p>
+<pre><code class="language-shell">$ ypb capture timelapse -i '19:30:03+00 - 1d/07:30:03+00' -e 30m 0ujj4HexRpk
+(&lt;&lt;) Collecting info about https://www.youtube.com/live/0ujj4HexRpk...
+Stream 'Live Aurora stream from The Golden Circle in Iceland' is alive!
+
+(&lt;&lt;) Locating start and end moments... done.
+Will capture 25 frames at 30m intervals:
+   Frame 0: Sun, 15 Feb 2026 19:30:03 +0000
+   Frame 1: Sun, 15 Feb 2026 20:00:03 +0000
+                          ...
+  Frame 22: Mon, 16 Feb 2026 07:30:03 +0000
+  
+(&lt;&lt;) Capturing frames to 'Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m'...
+   0% |                                                | (0/23, 0 it/hr) [0s:0s]
+</code></pre>
+<figure>
+<img src="tutorials/timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m_grid.jpg" alt="All frames: 2026-02-15 19:30:00 UTC–2026-02-16 07:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">All frames: 2026-02-15 19:30:00
+UTC–2026-02-16 07:30:00 UTC, every 30 min</figcaption>
+</figure>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p>The contact sheet above was created with ImageMagick:</p>
+<pre><code>montage *.png -tile 5x5 -mode concatenate grid.jpg
+</code></pre>
+</blockquote>
+<p>It was a clear, moonless night with active aurora. The bright flashes
+are cleary visible, but it would be more interesting to get more detailed
+frames. One of the brightest activities appears to be around 22:30 to
+00:30:</p>
+<figure>
+<img src="tutorials/timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e30m_grid.jpg" alt="Selected moment: 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">Selected moment: 2026-02-15 22:30:00
+UTC–2026-02-16 00:30:00 UTC, every 30 min</figcaption>
+</figure>
+<p>Let’s capture this fragment at finer intervals of 5 minutes to see the
+aurora’s movement in more detail:</p>
+<pre><code class="language-shell">ypb capture timelapse -i '22:30:03+00 - 1d/00:30:03+00' -e 5m 0ujj4HexRpk
+</code></pre>
+<figure>
+<img src="tutorials/timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e5m_grid.jpg" alt="Selected moment (detailed): 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min" />
+<figcaption aria-hidden="true">Selected moment (detailed): 2026-02-15
+22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min</figcaption>
+</figure>
+<p>Beautiful! This is the fragment we’ll use for the final video.</p>
+<h2 id="step-3-plan-the-final-capture"><a class="header" href="#step-3-plan-the-final-capture">Step 3: Plan the final capture</a></h2>
+<p>Before capturing hundreds of frames, calculate the output video length.</p>
+<p>We want to cover 50 minutes of footage (3,000 seconds) and play the
+result back at 24 FPS. With a 5-second capture interval:</p>
+<ol>
+<li><strong>Total frames</strong>: 3,000 s / 5 s = 601 frames</li>
+<li><strong>Output video length</strong>: 601 frames / 24 FPS = 25 s</li>
+</ol>
+<p>25 seconds is a reasonable length for a time-lapse. If you want a longer
+or shorter video, adjust the interval or the playback rate accordingly.</p>
+<h2 id="step-4-capture-the-final-frames"><a class="header" href="#step-4-capture-the-final-frames">Step 4. Capture the final frames</a></h2>
+<p>Now run the full capture over the 50-minute fragment at 5-second
+intervals:</p>
+<pre><code class="language-shell">$ ypb capture timelapse -i '22:50:03+00 - 1d/23:40:03+00' -e 5s 0ujj4HexRpk
+$ tree Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0000.png
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0001.png
+├── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0002.png
+    ...
+└── Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0600.png
+
+1 directory, 601 files
+</code></pre>
+<h2 id="step-5-assemble-the-video"><a class="header" href="#step-5-assemble-the-video">Step 5. Assemble the video</a></h2>
+<p>With all frames captured, use <code>ffmpeg</code> to convert the frames into a
+video:</p>
+<pre><code class="language-shell">$ ffmpeg -r 24 -i pattern_type glob -i "*.png" -c:v libsvtav1 -y output.mp4
+Input #0, image2, from '*.png':
+  Duration: 00:00:25.04, start: 0.000000, bitrate: N/A
+  Stream #0:0: Video: png, rgb24(pc, gbr/unknown/unknown), 640x360, 24 fps, 24 tbr, 24 tbn
+Stream mapping:
+  Stream #0:0 -&gt; #0:0 (png (native) -&gt; av1 (libsvtav1))
+Press [q] to stop, [?] for help
+Svt[info]: -------------------------------------------
+Svt[info]: SVT [version]:       SVT-AV1 Encoder Lib v3.1.2
+Svt[info]: SVT [build]  :       GCC 15.2.1 20250924 (Red Hat 15.2.1-2)   64 bit
+Svt[info]: -------------------------------------------
+Svt[info]: Level of Parallelism: 4
+Svt[info]: Number of PPCS 107
+Svt[info]: [asm level on system : up to sse4_1]
+Svt[info]: [asm level selected : up to sse4_1]
+Svt[info]: -------------------------------------------
+Svt[info]: SVT [config]: main profile   tier (auto)     level (auto)
+Svt[info]: SVT [config]: width / height / fps numerator / fps denominator               : 640 / 360 / 24 / 1
+Svt[info]: SVT [config]: bit-depth / color format                                       : 8 / YUV420
+Svt[info]: SVT [config]: preset / tune / pred struct                                    : 8 / PSNR / random access
+Svt[info]: SVT [config]: gop size / mini-gop size / key-frame type                      : 161 / 32 / key frame
+Svt[info]: SVT [config]: BRC mode / rate factor                                         : CRF / 35
+Svt[info]: SVT [config]: AQ mode / Variance Boost                                       : 2 / 0
+Svt[info]: SVT [config]: sharpness / luminance-based QP bias                            : 0 / 0
+Svt[info]: -------------------------------------------
+Output #0, mp4, to 'output.mp4':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (av01 / 0x31307661), yuv420p(tv, progressive), 640x360, q=2-31, 24 fps, 12288 tbn
+      Metadata:
+        encoder         : Lavc61.19.101 libsvtav1
+[out#0/mp4 @ 0x56502bfa4380] video:500KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.517067%
+frame=  601 fps= 67 q=35.0 Lsize=     503KiB time=00:00:25.00 bitrate= 164.8kbits/s speed=2.77x
+</code></pre>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:</p>
+<pre><code>-i Live-Aurora-..._e5s_%04d.png
+</code></pre>
+</blockquote>
+<p>The key options:</p>
+<ul>
+<li><code>-r</code> — output frame rate (frames per second)</li>
+<li><code>-pattern_type glob -i "*.png"</code> — match all PNG files in the current directory</li>
+<li><code>-c:v libsvtav1</code> — encode using the SVT-AV1 codec</li>
+</ul>
+<p>We used the <a href="https://trac.ffmpeg.org/wiki/Encode/AV1">SVT-AV1 encoder</a>
+here for its excellent balance of compression and speed, but any encoder
+will work. To see what’s available on your machine:</p>
+<pre><code>ffmpeg -hide_banner -encoders
+</code></pre>
+<p>Your time-lapse video is now ready at <code>output.mp4</code>.</p>
+<h2 id="useful-links"><a class="header" href="#useful-links">Useful links</a></h2>
+<ol>
+<li><a href="https://en.vedur.is/weather/forecasts/aurora/">https://en.vedur.is/weather/forecasts/aurora/</a> — Aurora forecast from the Icelandic Met Office</li>
+<li><a href="https://aurorareykjavik.is/aurora-forecast/">https://aurorareykjavik.is/aurora-forecast/</a> — Aurora forecast on Aurora Reykjavik</li>
+<li><a href="https://www.youtube.com/@aurorareykjavik/">https://www.youtube.com/@aurorareykjavik/</a> — Aurora Reykjavik on YouTube</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command Line Interface</a></h1>
 <pre><code class="language-shell">Usage: ypb &lt;command&gt; [flags]
@@ -952,7 +1142,9 @@ Versioning</a>.</p>
 
         <script>
         window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
         });
         </script>
 
