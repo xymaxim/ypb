@@ -199,25 +199,27 @@ Output #0, mp4, to 'output.mp4':
 frame=  601 fps= 67 q=35.0 Lsize=     503KiB time=00:00:25.00 bitrate= 164.8kbits/s speed=2.77x
 ```
 
+Here is the output video: <https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg>
+
+<iframe title="Aurores en accéléré à Reykjavik le 15 février" width="560" height="315" src="https://video.liberta.vip/videos/embed/6egVMr9pLwwGi32o3tg6Gg" allow="fullscreen" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="border: 0px;"></iframe>
+
+The key options:
+
+- `-r 24` — set output frame rate (frames per second) to 24 FPS
+- `-pattern_type glob -i "*.png"` — match all PNG files in the current directory
+- `-c:v libsvtav1` — encode using the SVT-AV1 codec
+
 > [!NOTE]
 > On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:
 >
 >     -i Live-Aurora-..._e5s_%04d.png
-
-The key options:
-
-- `-r` — output frame rate (frames per second)
-- `-pattern_type glob -i "*.png"` — match all PNG files in the current directory
-- `-c:v libsvtav1` — encode using the SVT-AV1 codec
 
 We used the [SVT-AV1 encoder](https://trac.ffmpeg.org/wiki/Encode/AV1)
 here for its excellent balance of compression and speed, but any encoder
 will work. To see what’s available on your machine:
 
     ffmpeg -hide_banner -encoders
-
-Your time-lapse video is now ready at `output.mp4`.
-
+    
 ## Useful links
 
 1. <https://en.vedur.is/weather/forecasts/aurora/> — Aurora forecast from the Icelandic Met Office
