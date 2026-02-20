@@ -15,6 +15,10 @@ player, or download them as local files.
 * [**Installation guide**](guides/install/install.md) --- How to install and run
   ypb
 
+**Tutorials**
+
+- [**Create a time-lapse video**](tutorials/timelapse.md) --- Capture frames and assemble them into a video
+
 **Reference**
 
 * [**Command Line Interface**](reference/cli.md) --- Overview of the command
