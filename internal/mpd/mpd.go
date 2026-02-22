@@ -21,7 +21,7 @@ type MPD struct {
 	Xmlns                     string              `xml:"xmlns,attr"`
 	Profiles                  string              `xml:"profiles,attr"`
 	Type                      string              `xml:"type,attr"`
-	AvailabilityStartTime     string              `xml:"availabilityStartTime,attr"`
+	AvailabilityStartTime     string              `xml:"availabilityStartTime,attr,omitempty"`
 	MediaPresentationDuration string              `xml:"mediaPresentationDuration,attr"`
 	ProgramInformation        *ProgramInformation `xml:"ProgramInformation"`
 	Periods                   []Period            `xml:"Period"`
@@ -111,7 +111,6 @@ func ComposeStaticMPD(
 		Xmlns:                     mpdNamespace,
 		Profiles:                  mpdProfiles,
 		Type:                      "static",
-		AvailabilityStartTime:     mpdInfo.AvailabilityStartTime.Format(time.RFC3339),
 		MediaPresentationDuration: mediaDuration,
 		ProgramInformation: &ProgramInformation{
 			Title:  videoInfo.Title,

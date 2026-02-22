@@ -18,7 +18,6 @@ func ComposeStatic(
 	timescale := time.Millisecond
 	segmentDuration := pb.Info().SegmentDuration
 	mpdInfo := mpd.Information{
-		AvailabilityStartTime:     interval.Start.Metadata.Time(),
 		MediaPresentationDuration: interval.Duration(),
 		RepresentationBaseURL:     baseURL,
 		SegmentTemplate: &mpd.SegmentTemplate{
