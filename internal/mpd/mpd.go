@@ -3,7 +3,7 @@ package mpd
 import (
 	"encoding/xml"
 	"fmt"
-	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,9 +12,30 @@ import (
 )
 
 const (
-	mpdNamespace = "urn:mpeg:DASH:schema:MPD:2011"
-	mpdProfiles  = "urn:mpeg:dash:profile:isoff-main:2011"
+	mpdNamespace      = "urn:mpeg:DASH:schema:MPD:2011"
+	mpdProfilesStatic = "urn:mpeg:dash:profile:isoff-main:2011"
+	mpdProfilesLive   = "urn:mpeg:dash:profile:isoff-live:2011"
+	segmentMediaURL   = "videoplayback/itag/$RepresentationID$/sq/$Number$"
 )
+
+type CommonOptions struct {
+	BaseURL         string
+	StartNumber     int
+	SegmentDuration time.Duration
+	PTS             float64
+}
+
+type StaticOptions struct {
+	CommonOptions
+	MediaDuration time.Duration
+	SegmentCount  int
+}
+
+type DynamicOptions struct {
+	CommonOptions
+	AvailabilityStartTime time.Time
+	TimeShiftBufferDepth  time.Duration
+}
 
 type MPD struct {
 	XMLName                   xml.Name            `xml:"MPD"`
@@ -22,8 +43,10 @@ type MPD struct {
 	Profiles                  string              `xml:"profiles,attr"`
 	Type                      string              `xml:"type,attr"`
 	AvailabilityStartTime     string              `xml:"availabilityStartTime,attr,omitempty"`
-	MediaPresentationDuration string              `xml:"mediaPresentationDuration,attr"`
+	MediaPresentationDuration string              `xml:"mediaPresentationDuration,attr,omitempty"`
+	TimeShiftBufferDepth      string              `xml:"timeShiftBufferDepth,attr,omitempty"`
 	ProgramInformation        *ProgramInformation `xml:"ProgramInformation"`
+	BaseURL                   string              `xml:"BaseURL"`
 	Periods                   []Period            `xml:"Period"`
 }
 
@@ -38,10 +61,9 @@ type Period struct {
 }
 
 type AdaptationSet struct {
-	ID                  int              `xml:"id,attr"`
-	MimeType            string           `xml:"mimeType,attr"`
-	SubsegmentAlignment string           `xml:"subsegmentAlignment,attr"`
-	Representations     []Representation `xml:"Representation"`
+	ID              int              `xml:"id,attr"`
+	MimeType        string           `xml:"mimeType,attr"`
+	Representations []Representation `xml:"Representation"`
 }
 
 type Representation struct {
@@ -51,7 +73,6 @@ type Representation struct {
 	Width             *int            `xml:"width,attr,omitempty"`
 	Height            *int            `xml:"height,attr,omitempty"`
 	FrameRate         *int            `xml:"frameRate,attr,omitempty"`
-	BaseURL           string          `xml:"BaseURL"`
 	SegmentTemplate   SegmentTemplate `xml:"SegmentTemplate"`
 }
 
@@ -74,86 +95,126 @@ type S struct {
 	R string `xml:"r,attr"`
 }
 
-type Information struct {
-	AvailabilityStartTime     time.Time
-	MediaPresentationDuration time.Duration
-	RepresentationBaseURL     string
-	SegmentTemplate           *SegmentTemplate
+func ComposeStatic(opts StaticOptions, videoInfo info.VideoInformation) (string, error) {
+	m := newMPD(opts.BaseURL, videoInfo)
+	m.Type = "static"
+	m.Profiles = mpdProfilesStatic
+	m.MediaPresentationDuration = formatDuration(opts.MediaDuration)
+	m.Periods[0].AdaptationSets = buildAdaptationSets(
+		buildStaticSegmentTemplate(opts),
+		videoInfo,
+	)
+	return marshal(m)
 }
 
-func (period *Period) getOrCreateAdaptationSet(mimeType string) *AdaptationSet {
-	for i := range period.AdaptationSets {
-		set := &period.AdaptationSets[i]
-		if set.MimeType == mimeType {
-			return set
-		}
+func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (string, error) {
+	m := newMPD(opts.BaseURL, videoInfo)
+	m.Type = "dynamic"
+	m.Profiles = mpdProfilesLive
+	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)
+	if opts.TimeShiftBufferDepth > 0 {
+		m.TimeShiftBufferDepth = formatDuration(opts.TimeShiftBufferDepth)
 	}
-	set := AdaptationSet{
-		ID:                  len(period.AdaptationSets),
-		MimeType:            mimeType,
-		SubsegmentAlignment: "true",
-		Representations:     []Representation{},
-	}
-	period.AdaptationSets = append(period.AdaptationSets, set)
-	return &period.AdaptationSets[len(period.AdaptationSets)-1]
+	m.Periods[0].AdaptationSets = buildAdaptationSets(
+		buildDynamicSegmentTemplate(opts),
+		videoInfo,
+	)
+	return marshal(m)
 }
 
-func FormatDuration(dur time.Duration) string {
-	asString := dur.Round(100 * time.Millisecond).String()
-	return "PT" + strings.ToUpper(asString)
-}
-
-func ComposeStatic(
-	mpdInfo Information,
-	videoInfo info.VideoInformation,
-) string {
-	mediaDuration := FormatDuration(mpdInfo.MediaPresentationDuration)
-	mpd := MPD{
-		Xmlns:                     mpdNamespace,
-		Profiles:                  mpdProfiles,
-		Type:                      "static",
-		MediaPresentationDuration: mediaDuration,
+func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
+	return MPD{
+		Xmlns:   mpdNamespace,
+		BaseURL: baseURL,
 		ProgramInformation: &ProgramInformation{
 			Title:  videoInfo.Title,
 			Source: urlutil.BuildVideoLiveURL(videoInfo.ID),
 		},
 		Periods: []Period{{}},
 	}
+}
 
-	period := &mpd.Periods[0]
+func buildAdaptationSets(
+	template SegmentTemplate,
+	videoInfo info.VideoInformation,
+) []AdaptationSet {
+	period := Period{}
+
 	for _, stream := range videoInfo.AudioStreams {
 		set := period.getOrCreateAdaptationSet(stream.MimeType)
-		set.Representations = append(
-			set.Representations,
-			Representation{
-				ID:                stream.Itag,
-				Codecs:            stream.Codecs,
-				AudioSamplingRate: &stream.AudioSamplingRate,
-				BaseURL:           mpdInfo.RepresentationBaseURL,
-				SegmentTemplate:   *mpdInfo.SegmentTemplate,
-			},
-		)
+		set.Representations = append(set.Representations, Representation{
+			ID:                stream.Itag,
+			Codecs:            stream.Codecs,
+			AudioSamplingRate: &stream.AudioSamplingRate,
+			SegmentTemplate:   template,
+		})
 	}
 	for _, stream := range videoInfo.VideoStreams {
 		set := period.getOrCreateAdaptationSet(stream.MimeType)
-		set.Representations = append(
-			set.Representations,
-			Representation{
-				ID:              stream.Itag,
-				Codecs:          stream.Codecs,
-				Width:           &stream.Width,
-				Height:          &stream.Height,
-				FrameRate:       &stream.FrameRate,
-				BaseURL:         mpdInfo.RepresentationBaseURL,
-				SegmentTemplate: *mpdInfo.SegmentTemplate,
+		set.Representations = append(set.Representations, Representation{
+			ID:              stream.Itag,
+			Codecs:          stream.Codecs,
+			Width:           &stream.Width,
+			Height:          &stream.Height,
+			FrameRate:       &stream.FrameRate,
+			SegmentTemplate: template,
+		})
+	}
+
+	return period.AdaptationSets
+}
+
+func baseSegmentTemplate(opts CommonOptions) SegmentTemplate {
+	timescale := time.Second.Milliseconds()
+	return SegmentTemplate{
+		Media:                  segmentMediaURL,
+		StartNumber:            opts.StartNumber,
+		Timescale:              strconv.FormatInt(timescale, 10),
+		PresentationTimeOffset: fmt.Sprintf("%.0f", opts.PTS*float64(timescale)),
+	}
+}
+
+func buildStaticSegmentTemplate(opts StaticOptions) SegmentTemplate {
+	t := baseSegmentTemplate(opts.CommonOptions)
+	t.SegmentTimeline = &SegmentTimeline{
+		Timeline: []S{
+			{
+				T: t.PresentationTimeOffset,
+				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),
+				R: strconv.Itoa(opts.SegmentCount - 1),
 			},
-		)
+		},
 	}
+	return t
+}
 
-	output, err := xml.MarshalIndent(mpd, " ", "  ")
+func buildDynamicSegmentTemplate(opts DynamicOptions) SegmentTemplate {
+	t := baseSegmentTemplate(opts.CommonOptions)
+	t.Duration = strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10)
+	return t
+}
+
+func (period *Period) getOrCreateAdaptationSet(mimeType string) *AdaptationSet {
+	for i := range period.AdaptationSets {
+		if period.AdaptationSets[i].MimeType == mimeType {
+			return &period.AdaptationSets[i]
+		}
+	}
+	period.AdaptationSets = append(period.AdaptationSets, AdaptationSet{
+		ID:       len(period.AdaptationSets),
+		MimeType: mimeType,
+	})
+	return &period.AdaptationSets[len(period.AdaptationSets)-1]
+}
+
+func formatDuration(dur time.Duration) string {
+	return "PT" + strings.ToUpper(dur.Round(100*time.Millisecond).String())
+}
+
+func marshal(m MPD) (string, error) {
+	output, err := xml.MarshalIndent(m, " ", "  ")
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("marshaling mpd: %w", err)
 	}
-
-	return fmt.Sprintf("%s%s\n", xml.Header, string(output))
+	return fmt.Sprintf("%s%s\n", xml.Header, string(output)), nil
 }

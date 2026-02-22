@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/mpd"
 	"github.com/xymaxim/ypb/internal/playback"
 )
-
-const segmentMediaURL = "videoplayback/itag/$RepresentationID$/sq/$Number$"
 
 func ComposeStatic(
 	pb playback.Playbacker,
@@ -20,54 +17,68 @@ func ComposeStatic(
 	baseURL string,
 	runner exec.Runner,
 ) ([]byte, error) {
-	segmentDuration := pb.Info().SegmentDuration
+	startNumber := interval.Start.Metadata.SequenceNumber
 
-	var buf bytes.Buffer
-	err := pb.StreamSegment(pb.ProbeItag(), interval.Start.Metadata.SequenceNumber, &buf)
+	pts, err := probeSegmentPTS(pb, startNumber, runner)
 	if err != nil {
-		return nil, fmt.Errorf("downloading probe segment: %w", err)
+		return nil, fmt.Errorf("extracting pts: %w", err)
 	}
 
-	presentationTimestamp, err := extractPresentationTimestamp(&buf, runner)
-	if err != nil {
-		return nil, fmt.Errorf("extracting presentation timestamp: %w", err)
-	}
-	presentationTimeOffset := fmt.Sprintf(
-		"%.0f",
-		presentationTimestamp*float64(time.Second.Milliseconds()),
-	)
-
-	segmentsCount := interval.End.Metadata.SequenceNumber -
-		interval.Start.Metadata.SequenceNumber + 1
-	mpdInfo := mpd.Information{
-		MediaPresentationDuration: interval.Duration(),
-		RepresentationBaseURL:     baseURL,
-		SegmentTemplate: &mpd.SegmentTemplate{
-			Media:                  segmentMediaURL,
-			StartNumber:            interval.Start.Metadata.SequenceNumber,
-			Timescale:              strconv.FormatInt(time.Second.Milliseconds(), 10),
-			PresentationTimeOffset: presentationTimeOffset,
-			SegmentTimeline: &mpd.SegmentTimeline{
-				Timeline: []mpd.S{
-					{
-						T: presentationTimeOffset,
-						D: strconv.FormatInt(
-							segmentDuration.Milliseconds(),
-							10,
-						),
-						R: strconv.Itoa(segmentsCount - 1),
-					},
-				},
-			},
+	out, err := mpd.ComposeStatic(mpd.StaticOptions{
+		CommonOptions: mpd.CommonOptions{
+			BaseURL:         baseURL,
+			StartNumber:     startNumber,
+			SegmentDuration: pb.Info().SegmentDuration,
+			PTS:             pts,
 		},
+		MediaDuration: interval.Duration(),
+		SegmentCount:  interval.End.Metadata.SequenceNumber - startNumber + 1,
+	}, pb.Info())
+	if err != nil {
+		return nil, fmt.Errorf("composing mpd: %w", err)
 	}
-
-	out := mpd.ComposeStatic(mpdInfo, pb.Info())
 
 	return []byte(out), nil
 }
 
-func extractPresentationTimestamp(buf *bytes.Buffer, runner exec.Runner) (float64, error) {
+func ComposeDynamic(
+	pb playback.Playbacker,
+	moment *playback.RewindMoment,
+	baseURL string,
+	runner exec.Runner,
+) ([]byte, error) {
+	startNumber := moment.Metadata.SequenceNumber
+
+	pts, err := probeSegmentPTS(pb, startNumber, runner)
+	if err != nil {
+		return nil, fmt.Errorf("extracting pts: %w", err)
+	}
+
+	out, err := mpd.ComposeDynamic(mpd.DynamicOptions{
+		CommonOptions: mpd.CommonOptions{
+			BaseURL:         baseURL,
+			StartNumber:     startNumber,
+			SegmentDuration: pb.Info().SegmentDuration,
+			PTS:             pts,
+		},
+		AvailabilityStartTime: moment.ActualTime,
+	}, pb.Info())
+	if err != nil {
+		return nil, fmt.Errorf("composing mpd: %w", err)
+	}
+	return []byte(out), nil
+}
+
+func probeSegmentPTS(
+	pb playback.Playbacker,
+	sequenceNumber int,
+	runner exec.Runner,
+) (float64, error) {
+	var buf bytes.Buffer
+	if err := pb.StreamSegment(pb.ProbeItag(), sequenceNumber, &buf); err != nil {
+		return 0, fmt.Errorf("downloading probe segment: %w", err)
+	}
+
 	result, err := runner.RunWith(
 		[]exec.Option{
 			exec.WithQuiet(),
@@ -87,11 +98,11 @@ func extractPresentationTimestamp(buf *bytes.Buffer, runner exec.Runner) (float6
 		)
 	}
 
-	timestampString := strings.TrimRight(string(result.Stdout), "\r\n")
-	timestamp, err := strconv.ParseFloat(timestampString, 64)
+	ptsString := strings.TrimRight(string(result.Stdout), "\r\n")
+	pts, err := strconv.ParseFloat(ptsString, 64)
 	if err != nil {
-		return 0, fmt.Errorf("parsing timestamp: %w", err)
+		return 0, fmt.Errorf("parsing pts: %w", err)
 	}
 
-	return timestamp, nil
+	return pts, nil
 }
