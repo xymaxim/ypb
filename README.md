@@ -54,21 +54,21 @@ Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260207T054630+00_10m.mp4
 Start the playback server to enable rewind requests:
 
 ```shell
-$ ypb serve --port 8080 Mm_zVDDUeNA
+ypb serve --port 8080 Mm_zVDDUeNA
 ```
 
 With the server running, you can preview rewind excerpts, for example, with
 `ffplay`:
 
 ```shell
-$ ffplay -protocol_whitelist file,http,https,tcp,tls \
+ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
       http://localhost:8080/rewind/10m--now
 ```
 
 Or download them with `yt-dlp`:
 
 ```shell
-$ yt-dlp http://localhost:8080/rewind/10m--now
+yt-dlp http://localhost:8080/rewind/10m--now
 ```
 
 ## License
