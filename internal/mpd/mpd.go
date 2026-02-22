@@ -57,11 +57,12 @@ type Representation struct {
 }
 
 type SegmentTemplate struct {
-	Media           string           `xml:"media,attr"`
-	StartNumber     int              `xml:"startNumber,attr"`
-	Duration        string           `xml:"duration,attr,omitempty"`
-	Timescale       string           `xml:"timescale,attr"`
-	SegmentTimeline *SegmentTimeline `xml:"SegmentTimeline"`
+	Media                  string           `xml:"media,attr"`
+	StartNumber            int              `xml:"startNumber,attr"`
+	Timescale              string           `xml:"timescale,attr"`
+	Duration               string           `xml:"duration,attr,omitempty"`
+	PresentationTimeOffset string           `xml:"presentationTimeOffset,attr"`
+	SegmentTimeline        *SegmentTimeline `xml:"SegmentTimeline"`
 }
 
 type SegmentTimeline struct {

@@ -21,16 +21,18 @@ const (
 )
 
 const (
-	FFmpegBinaryPath = "ffmpeg"
-	YtdlpBinaryPath  = "yt-dlp"
+	FFmpegBinaryPath  = "ffmpeg"
+	FFprobeBinaryPath = "ffprobe"
+	YtdlpBinaryPath   = "yt-dlp"
 )
 
 type App struct {
-	Playback     playback.Playbacker
-	Server       *http.Server
-	Config       *Config
-	FFmpegRunner exec.Runner
-	YtdlpRunner  exec.Runner
+	Playback      playback.Playbacker
+	Server        *http.Server
+	Config        *Config
+	FFmpegRunner  exec.Runner
+	FFprobeRunner exec.Runner
+	YtdlpRunner   exec.Runner
 }
 
 type Config struct {
@@ -39,9 +41,10 @@ type Config struct {
 
 func NewApp() *App {
 	return &App{
-		Config:       &Config{},
-		FFmpegRunner: exec.NewCommandRunner(FFmpegBinaryPath),
-		YtdlpRunner:  exec.NewCommandRunner(YtdlpBinaryPath),
+		Config:        &Config{},
+		FFmpegRunner:  exec.NewCommandRunner(FFmpegBinaryPath),
+		FFprobeRunner: exec.NewCommandRunner(FFprobeBinaryPath),
+		YtdlpRunner:   exec.NewCommandRunner(YtdlpBinaryPath),
 	}
 }
 
@@ -98,9 +101,10 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
 		a.Playback,
 		interval,
 		urlutil.FormatServerAddress(a.Server.Addr),
+		a.FFprobeRunner,
 	)
 	if err != nil {
-		return fmt.Errorf("composing manifest: %w", err)
+		return fmt.Errorf("composing static manifest: %w", err)
 	}
 
 	w.Header().Set("Content-Type", "application/dash+xml")

@@ -67,9 +67,10 @@ func (c *Download) Run() error {
 				a.Playback,
 				interval,
 				urlutil.FormatServerAddress(a.Server.Addr),
+				a.FFprobeRunner,
 			)
 			if err != nil {
-				return fmt.Errorf("composing  manifest: %w", err)
+				return fmt.Errorf("composing manifest: %w", err)
 			}
 			w.Header().Set("Content-Type", "application/dash+xml")
 			_, err = w.Write(out)
