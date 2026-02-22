@@ -62,7 +62,7 @@ func ComposeStatic(
 		},
 	}
 
-	out := mpd.ComposeStaticMPD(mpdInfo, pb.Info())
+	out := mpd.ComposeStatic(mpdInfo, pb.Info())
 
 	return []byte(out), nil
 }

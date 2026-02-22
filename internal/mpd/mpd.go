@@ -103,7 +103,7 @@ func FormatDuration(dur time.Duration) string {
 	return "PT" + strings.ToUpper(asString)
 }
 
-func ComposeStaticMPD(
+func ComposeStatic(
 	mpdInfo Information,
 	videoInfo info.VideoInformation,
 ) string {
