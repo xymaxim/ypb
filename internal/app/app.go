@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	SegmentPath = "/videoplayback/itag/{itag}/sq/{sq}"
+	SegmentPath = "/segments/itag/{itag}/sq/{sq}"
 	RewindPath  = "/rewind/{rewind}"
 )
 

@@ -15,7 +15,7 @@ const (
 	mpdNamespace      = "urn:mpeg:DASH:schema:MPD:2011"
 	mpdProfilesStatic = "urn:mpeg:dash:profile:isoff-main:2011"
 	mpdProfilesLive   = "urn:mpeg:dash:profile:isoff-live:2011"
-	segmentMediaURL   = "videoplayback/itag/$RepresentationID$/sq/$Number$"
+	segmentMediaURL   = "segments/itag/$RepresentationID$/sq/$Number$"
 )
 
 type CommonOptions struct {
