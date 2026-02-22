@@ -34,7 +34,6 @@ type ProgramInformation struct {
 }
 
 type Period struct {
-	Duration       string          `xml:"duration,attr"`
 	AdaptationSets []AdaptationSet `xml:"AdaptationSet"`
 }
 
@@ -66,12 +65,13 @@ type SegmentTemplate struct {
 }
 
 type SegmentTimeline struct {
-	Timescale []S `xml:"S"`
+	Timeline []S `xml:"S"`
 }
 
 type S struct {
-	D int `xml:"d,attr"`
-	R int `xml:"r,attr"`
+	T string `xml:"t,attr"`
+	D string `xml:"d,attr"`
+	R string `xml:"r,attr"`
 }
 
 type Information struct {
@@ -117,7 +117,7 @@ func ComposeStaticMPD(
 			Title:  videoInfo.Title,
 			Source: urlutil.BuildVideoLiveURL(videoInfo.ID),
 		},
-		Periods: []Period{{Duration: mediaDuration}},
+		Periods: []Period{{}},
 	}
 
 	period := &mpd.Periods[0]
@@ -150,7 +150,7 @@ func ComposeStaticMPD(
 		)
 	}
 
-	output, err := xml.MarshalIndent(mpd, " ", " ")
+	output, err := xml.MarshalIndent(mpd, " ", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}

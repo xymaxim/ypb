@@ -32,17 +32,33 @@ func ComposeStatic(
 	if err != nil {
 		return nil, fmt.Errorf("extracting presentation timestamp: %w", err)
 	}
-	presentationTimeOffset := presentationTimestamp * float64(time.Second.Milliseconds())
+	presentationTimeOffset := fmt.Sprintf(
+		"%.0f",
+		presentationTimestamp*float64(time.Second.Milliseconds()),
+	)
 
+	segmentsCount := interval.End.Metadata.SequenceNumber -
+		interval.Start.Metadata.SequenceNumber + 1
 	mpdInfo := mpd.Information{
 		MediaPresentationDuration: interval.Duration(),
 		RepresentationBaseURL:     baseURL,
 		SegmentTemplate: &mpd.SegmentTemplate{
 			Media:                  segmentMediaURL,
 			StartNumber:            interval.Start.Metadata.SequenceNumber,
-			Timescale:              fmt.Sprintf("%d", time.Second.Milliseconds()),
-			Duration:               fmt.Sprintf("%d", segmentDuration.Milliseconds()),
-			PresentationTimeOffset: fmt.Sprintf("%.0f", presentationTimeOffset),
+			Timescale:              strconv.FormatInt(time.Second.Milliseconds(), 10),
+			PresentationTimeOffset: presentationTimeOffset,
+			SegmentTimeline: &mpd.SegmentTimeline{
+				Timeline: []mpd.S{
+					{
+						T: presentationTimeOffset,
+						D: strconv.FormatInt(
+							segmentDuration.Milliseconds(),
+							10,
+						),
+						R: strconv.Itoa(segmentsCount - 1),
+					},
+				},
+			},
 		},
 	}
 
