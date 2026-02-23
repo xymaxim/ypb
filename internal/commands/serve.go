@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/xymaxim/ypb/internal/app"
+	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -18,34 +18,30 @@ func (c *Serve) Run() error {
 		return err
 	}
 
-	a := app.NewApp()
+	app := apppkg.NewApp()
 
-	if err := CollectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := CollectVideoInfo(c.Stream, app, c.Port); err != nil {
 		return err
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(app.MPDPath, app.WithError(
-		(&app.MPDHandler{
-			Playback:      a.Playback,
-			FFprobeRunner: a.FFprobeRunner,
-			ServerAddr:    a.Server.Addr,
+	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
+		(&apppkg.MPDHandler{
+			Playback:      app.Playback,
+			FFprobeRunner: app.FFprobeRunner,
+			ServerAddr:    app.Server.Addr,
 		}).ServeHTTP),
 	)
-	mux.HandleFunc(app.SegmentPath, app.WithError(
-		(&app.SegmentHandler{Playback: a.Playback}).ServeHTTP),
+	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
+		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
 	)
 
-	a.Server.Handler = mux
+	app.Server.Handler = mux
 
 	fmt.Printf(
 		"(<<) Playback started and listening on %s...\n",
-		urlutil.FormatServerAddress(a.Server.Addr),
+		urlutil.FormatServerAddress(app.Server.Addr),
 	)
-	err := a.Server.ListenAndServe()
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return app.Server.ListenAndServe()
 }

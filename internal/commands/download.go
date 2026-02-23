@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
-	"github.com/xymaxim/ypb/internal/app"
+	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
@@ -27,7 +27,7 @@ func (c *Download) Run() error {
 		return err
 	}
 
-	a := app.NewApp()
+	app := apppkg.NewApp()
 
 	start, end, err := input.ParseInterval(c.Interval)
 	if err != nil {
@@ -37,18 +37,18 @@ func (c *Download) Run() error {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	if err := CollectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := CollectVideoInfo(c.Stream, app, c.Port); err != nil {
 		return err
 	}
 
 	fmt.Println("(<<) Locating start and end moments...")
-	locateContext, err := actions.NewLocateContext(a.Playback, nil)
+	locateContext, err := actions.NewLocateContext(app.Playback, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
 	interval, outputContext, err := actions.LocateInterval(
-		a.Playback,
+		app.Playback,
 		start,
 		end,
 		locateContext,
@@ -61,27 +61,27 @@ func (c *Download) Run() error {
 	fmt.Println(" ", formatActualLine("end", interval.End))
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/mpd", app.WithError(
+	mux.HandleFunc("/mpd", apppkg.WithError(
 		func(w http.ResponseWriter, r *http.Request) error {
-			return serveMPD(w, a, interval)
+			return serveMPD(w, app, interval)
 		}),
 	)
-	segmentHandler := &app.SegmentHandler{
-		Playback: a.Playback,
+	segmentHandler := &apppkg.SegmentHandler{
+		Playback: app.Playback,
 	}
-	mux.HandleFunc(app.SegmentPath, app.WithError(segmentHandler.ServeHTTP))
+	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(segmentHandler.ServeHTTP))
 
-	a.Server.Handler = mux
+	app.Server.Handler = mux
 
 	go func() {
-		slog.Debug("starting server", "addr", a.Server.Addr)
-		err = a.Server.ListenAndServe()
+		slog.Debug("starting server", "addr", app.Server.Addr)
+		err = app.Server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(a.Server.Addr), "mpd")
+	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(app.Server.Addr), "mpd")
 	if err != nil {
 		return fmt.Errorf("building URL: %w", err)
 	}
@@ -100,19 +100,19 @@ func (c *Download) Run() error {
 	)
 
 	fmt.Println("(<<) Downloading and merging media...")
-	if err := a.YtdlpRunner.Run(args...); err != nil {
+	if err := app.YtdlpRunner.Run(args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
 
 	return nil
 }
 
-func serveMPD(w http.ResponseWriter, a *app.App, interval *playback.RewindInterval) error {
+func serveMPD(w http.ResponseWriter, app *apppkg.App, interval *playback.RewindInterval) error {
 	out, err := actions.ComposeStatic(
-		a.Playback,
+		app.Playback,
 		interval,
-		urlutil.FormatServerAddress(a.Server.Addr),
-		a.FFprobeRunner,
+		urlutil.FormatServerAddress(app.Server.Addr),
+		app.FFprobeRunner,
 	)
 	if err != nil {
 		return fmt.Errorf("composing manifest: %w", err)

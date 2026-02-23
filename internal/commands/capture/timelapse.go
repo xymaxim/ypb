@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/message"
 
 	"github.com/xymaxim/ypb/internal/actions"
-	"github.com/xymaxim/ypb/internal/app"
+	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/commands"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/playback"
@@ -36,18 +36,18 @@ type TimelapseConfig struct {
 }
 
 func (c *Timelapse) Run() error {
-	a := app.NewApp()
+	app := apppkg.NewApp()
 
 	config, err := c.parseAndValidateInputs()
 	if err != nil {
 		return err
 	}
 
-	if err := commands.CollectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := commands.CollectVideoInfo(c.Stream, app, c.Port); err != nil {
 		return err
 	}
 
-	interval, locateContext, err := c.locateInterval(a.Playback, config)
+	interval, locateContext, err := c.locateInterval(app.Playback, config)
 	if err != nil {
 		return err
 	}
@@ -60,13 +60,13 @@ func (c *Timelapse) Run() error {
 
 	printCapturePlan(captureTimes, config.CaptureEvery)
 
-	config.OutputPattern = c.buildOutputPattern(a, captureTimes, config)
+	config.OutputPattern = c.buildOutputPattern(app, captureTimes, config)
 	outputDirectory := filepath.Dir(config.OutputPattern)
 	if err := os.Mkdir(outputDirectory, os.ModePerm); err != nil {
 		return fmt.Errorf("creating output directories: %w", err)
 	}
 
-	err = c.captureFrames(a, captureTimes, locateContext, config)
+	err = c.captureFrames(app, captureTimes, locateContext, config)
 	if err != nil {
 		return fmt.Errorf("capturing frames: %w", err)
 	}
@@ -137,14 +137,14 @@ func (c *Timelapse) calculateCaptureTimes(start, end time.Time, every time.Durat
 }
 
 func (c *Timelapse) buildOutputPattern(
-	a *app.App,
+	app *apppkg.App,
 	captureTimes []time.Time,
 	config *TimelapseConfig,
 ) string {
 	basename := fmt.Sprintf(
 		"%s_%s_%s_e%s",
-		commands.AdjustForFilename(a.Playback.Info().Title, 0),
-		a.Playback.Info().ID,
+		commands.AdjustForFilename(app.Playback.Info().Title, 0),
+		app.Playback.Info().ID,
 		commands.FormatTime(captureTimes[0]),
 		commands.FormatDuration(config.CaptureEvery),
 	)
@@ -155,7 +155,7 @@ func (c *Timelapse) buildOutputPattern(
 }
 
 func (c *Timelapse) captureFrames(
-	a *app.App,
+	app *apppkg.App,
 	times []time.Time,
 	locateContext *actions.LocateContext,
 	config *TimelapseConfig,
@@ -186,11 +186,11 @@ func (c *Timelapse) captureFrames(
 	}
 
 	captured, skipped, err := actions.CaptureFrames(
-		a.Playback,
+		app.Playback,
 		times,
 		locateContext,
 		config.OutputPattern,
-		a.FFmpegRunner,
+		app.FFmpegRunner,
 		onFrame,
 	)
 	if err != nil {

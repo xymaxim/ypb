@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
-	"github.com/xymaxim/ypb/internal/app"
+	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/commands"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/playback"
@@ -25,7 +25,7 @@ type FrameConfig struct {
 }
 
 func (c *Frame) Run() error {
-	a := app.NewApp()
+	app := apppkg.NewApp()
 
 	// Parse and validate inputs
 	config, err := c.parseAndValidateInputs()
@@ -34,12 +34,12 @@ func (c *Frame) Run() error {
 	}
 
 	// Collect video information and initialize the app
-	if err := commands.CollectVideoInfo(c.Stream, a, c.Port); err != nil {
+	if err := commands.CollectVideoInfo(c.Stream, app, c.Port); err != nil {
 		return err
 	}
 
 	// Locate the moment
-	rewindMoment, _, err := c.locateMoment(a.Playback, config)
+	rewindMoment, _, err := c.locateMoment(app.Playback, config)
 	if err != nil {
 		return err
 	}
@@ -58,12 +58,12 @@ func (c *Frame) Run() error {
 	// Capture the frame
 	config.OutputPath = fmt.Sprintf(
 		"%s_%s_%s.%s",
-		commands.AdjustForFilename(a.Playback.Info().Title, 0),
-		a.Playback.Info().ID,
+		commands.AdjustForFilename(app.Playback.Info().Title, 0),
+		app.Playback.Info().ID,
 		commands.FormatTime(rewindMoment.TargetTime),
 		c.OutputFormat,
 	)
-	err = actions.CaptureFrame(a.Playback, rewindMoment, config.OutputPath, a.FFmpegRunner)
+	err = actions.CaptureFrame(app.Playback, rewindMoment, config.OutputPath, app.FFmpegRunner)
 	if err != nil {
 		return fmt.Errorf("capturing frame: %w", err)
 	}
