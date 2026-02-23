@@ -25,7 +25,7 @@ func (c *Serve) Run() error {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(app.RewindPath, app.WithError(a.RewindHandler))
+	mux.HandleFunc(app.MPDPath, app.WithError(a.MPDHandler))
 	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))
 
 	a.Server.Handler = mux

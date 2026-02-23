@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -17,7 +18,7 @@ import (
 
 const (
 	SegmentPath = "/segments/itag/{itag}/sq/{sq}"
-	RewindPath  = "/rewind/{rewind}"
+	MPDPath     = "/mpd/{interval}"
 )
 
 const (
@@ -72,18 +73,25 @@ func (a *App) Initialize(videoID string, cfg *Config) error {
 	return nil
 }
 
-func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
-	rewindParam, err := url.PathUnescape(r.PathValue("rewind"))
+func (a *App) MPDHandler(w http.ResponseWriter, r *http.Request) error {
+	param, err := url.PathUnescape(r.PathValue("interval"))
 	if err != nil {
-		return fmt.Errorf("unescaping rewind parameter argument: %w", err)
+		return fmt.Errorf("unescaping interval parameter: %w", err)
 	}
 
-	startMoment, endMoment, err := input.ParseInterval(rewindParam)
+	if !strings.Contains(param, "/") && !strings.Contains(param, "--") {
+		return a.respondDynamicMPD(w, r, param)
+	}
+	return a.respondStaticMPD(w, r, param)
+}
+
+func (a *App) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
+	startParsed, endParsed, err := input.ParseInterval(param)
 	if err != nil {
-		return fmt.Errorf("parsing rewind parameter argument: %w", err)
+		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
-	if err := input.ValidateMoments(startMoment, endMoment); err != nil {
+	if err := input.ValidateMoments(startParsed, endParsed); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
@@ -92,34 +100,70 @@ func (a *App) RewindHandler(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
-	interval, _, err := actions.LocateInterval(a.Playback, startMoment, endMoment, locateCtx)
+	rewindInterval, _, err := actions.LocateInterval(
+		a.Playback,
+		startParsed,
+		endParsed,
+		locateCtx,
+	)
 	if err != nil {
 		return fmt.Errorf("locating interval: %w", err)
 	}
 
 	out, err := actions.ComposeStatic(
 		a.Playback,
-		interval,
+		rewindInterval,
 		urlutil.FormatServerAddress(a.Server.Addr),
 		a.FFprobeRunner,
 	)
 	if err != nil {
-		return fmt.Errorf("composing static manifest: %w", err)
+		return fmt.Errorf("composing static mpd: %w", err)
 	}
 
-	w.Header().Set("Content-Type", "application/dash+xml")
-	_, err = w.Write(out)
+	return a.serveMPD(w, r, out)
+}
+
+func (a *App) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
+	parsed, err := input.ParseIntervalPart(param)
 	if err != nil {
-		return fmt.Errorf("writing manifest: %w", err)
+		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
+	locateCtx, err := actions.NewLocateContext(a.Playback, nil)
+	if err != nil {
+		return fmt.Errorf("building locate context: %w", err)
+	}
+
+	rewindMoment, err := actions.LocateMoment(a.Playback, parsed, locateCtx)
+	if err != nil {
+		return fmt.Errorf("locating moment: %w", err)
+	}
+
+	out, err := actions.ComposeDynamic(
+		a.Playback,
+		rewindMoment,
+		urlutil.FormatServerAddress(a.Server.Addr),
+		a.FFprobeRunner,
+	)
+	if err != nil {
+		return fmt.Errorf("composing dynamic mpd: %w", err)
+	}
+
+	return a.serveMPD(w, r, out)
+}
+
+func (a *App) serveMPD(w http.ResponseWriter, r *http.Request, out []byte) error {
+	w.Header().Set("Content-Type", "application/dash+xml")
+	if _, err := w.Write(out); err != nil {
+		return fmt.Errorf("writing mpd: %w", err)
+	}
 	return nil
 }
 
 func (a *App) SegmentHandler(w http.ResponseWriter, r *http.Request) error {
 	sq, err := strconv.Atoi(r.PathValue("sq"))
 	if err != nil {
-		return fmt.Errorf("parsing sq parameter argument: %w", err)
+		return fmt.Errorf("parsing sq parameter: %w", err)
 	}
 
 	err = a.Playback.StreamSegment(r.PathValue("itag"), sq, w)

@@ -62,13 +62,13 @@ With the server running, you can preview rewind excerpts, for example, with
 
 ```shell
 ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
-      http://localhost:8080/rewind/10m--now
+  http://localhost:8080/mpd/10m--now
 ```
 
 Or download them with `yt-dlp`:
 
 ```shell
-yt-dlp http://localhost:8080/rewind/10m--now
+yt-dlp http://localhost:8080/mpd/10m--now
 ```
 
 ## License
