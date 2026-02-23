@@ -3,7 +3,6 @@ package capture
 import (
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -38,24 +37,20 @@ type TimelapseConfig struct {
 func (c *Timelapse) Run() error {
 	a := app.NewApp()
 
-	// Parse and validate inputs
 	config, err := c.parseAndValidateInputs()
 	if err != nil {
 		return err
 	}
 
-	// Collect video information and initialize the app
 	if err := commands.CollectVideoInfo(c.Stream, a, c.Port); err != nil {
 		return err
 	}
 
-	// Locate interval moments
 	interval, locateContext, err := c.locateInterval(a.Playback, config)
 	if err != nil {
 		return err
 	}
 
-	// Calculate frame times to capture
 	captureTimes := c.calculateCaptureTimes(
 		interval.Start.TargetTime,
 		interval.End.TargetTime,
@@ -64,14 +59,12 @@ func (c *Timelapse) Run() error {
 
 	printCapturePlan(captureTimes, config.CaptureEvery)
 
-	// Build output pattern and create output directories
 	config.OutputPattern = c.buildOutputPattern(a, captureTimes, config)
 	outputDirectory := filepath.Dir(config.OutputPattern)
 	if err := os.Mkdir(outputDirectory, os.ModePerm); err != nil {
 		return fmt.Errorf("creating output directories: %w", err)
 	}
 
-	// Capture all frames
 	err = c.captureFrames(a, captureTimes, locateContext, config)
 	if err != nil {
 		return fmt.Errorf("capturing frames: %w", err)
@@ -170,43 +163,17 @@ func (c *Timelapse) captureFrames(
 
 	bar := progressbar.Default(int64(len(times)))
 
-	var skippedCount int
-	reference := locateContext.Now
-	for frameIndex, t := range times {
-		rewindMoment, err := a.Playback.LocateMoment(t, *reference, false)
-		if err != nil {
-			return fmt.Errorf("locating moment: %w", err)
-		}
-
-		if rewindMoment.InGap {
-			slog.Warn(
-				"frame falls into a gap, skipping",
-				"frame",
-				frameIndex,
-				"time",
-				t,
-			)
-			skippedCount++
-			continue
-		}
-
-		outputPath := fmt.Sprintf(config.OutputPattern, frameIndex)
-		err = actions.CaptureFrame(a.Playback, rewindMoment, outputPath, a.FFmpegRunner)
-		if err != nil {
-			return fmt.Errorf("capturing frame %d at %s: %w", frameIndex, t, err)
-		}
-
-		reference = rewindMoment.Metadata
-
-		bar.Add(1)
+	captured, skipped, err := actions.CaptureFrames(
+		a.Playback, times, locateContext, config.OutputPattern, a.FFmpegRunner,
+		func(_ int, _ bool) { bar.Add(1) },
+	)
+	if err != nil {
+		return fmt.Errorf("capturing frames: %w", err)
 	}
 
-	total := len(times)
 	fmt.Printf(
 		"Success! %d of %d frames captured (%d skipped)\n",
-		total-skippedCount,
-		total,
-		skippedCount,
+		captured, len(times), skipped,
 	)
 
 	return nil

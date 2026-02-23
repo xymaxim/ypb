@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/playback"
@@ -32,7 +33,7 @@ func CaptureFrame(
 		)
 	}
 
-	err = extractFrame(moment, outputPath, &buf, runner)
+	err = extractFrame(moment, outputPath, buf.Bytes(), runner)
 	if err != nil {
 		return fmt.Errorf("extracting frame: %w", err)
 	}
@@ -40,10 +41,90 @@ func CaptureFrame(
 	return nil
 }
 
+func CaptureFrames(
+	pb playback.Playbacker,
+	times []time.Time,
+	locateContext *LocateContext,
+	outputPattern string,
+	runner exec.Runner,
+	onFrame func(index int, skipped bool),
+) (captured, skipped int, err error) {
+	var previousSq playback.SequenceNumber
+	var previousSegment []byte
+
+	reference := locateContext.Now
+
+	for frameIndex, t := range times {
+		rewindMoment, err := pb.LocateMoment(t, *reference, false)
+		if err != nil {
+			return captured, skipped, fmt.Errorf(
+				"frame %d at %s: locating moment: %w",
+				frameIndex,
+				t,
+				err,
+			)
+		}
+
+		if rewindMoment.InGap {
+			skipped++
+			if onFrame != nil {
+				onFrame(frameIndex, true)
+			}
+			continue
+		}
+
+		sq := rewindMoment.Metadata.SequenceNumber
+
+		// Download the segment only if it differs from the previous one
+		if previousSegment == nil || previousSq != sq {
+			var buf bytes.Buffer
+			if err := pb.StreamSegment(
+				pb.Info().BestVideo().Itag,
+				sq,
+				&buf,
+			); err != nil {
+				return captured, skipped, fmt.Errorf(
+					"frame %d at %s: downloading segment, sq=%d: %w",
+					frameIndex,
+					t,
+					sq,
+					err,
+				)
+			}
+			previousSq = sq
+			previousSegment = buf.Bytes()
+		}
+
+		outputPath := fmt.Sprintf(outputPattern, frameIndex)
+		if err := extractFrame(
+			rewindMoment,
+			outputPath,
+			previousSegment,
+			runner,
+		); err != nil {
+			return captured, skipped, fmt.Errorf(
+				"frame %d at %s: extracting frame: %w",
+				frameIndex,
+				t,
+				err,
+			)
+		}
+
+		captured++
+		reference = rewindMoment.Metadata
+
+		if onFrame != nil {
+			onFrame(frameIndex, false)
+		}
+	}
+
+	return captured, skipped, nil
+}
+
 func extractFrame(
 	moment *playback.RewindMoment,
 	outputPath string,
-	buf *bytes.Buffer,
+	segment []byte,
 	runner exec.Runner,
 ) error {
 	at := moment.TargetTime.Sub(moment.Metadata.Time()).Seconds()
@@ -52,7 +133,7 @@ func extractFrame(
 	result, err := runner.RunWith(
 		[]exec.Option{
 			exec.WithQuiet(),
-			exec.WithStdin(bytes.NewReader(buf.Bytes())),
+			exec.WithStdin(bytes.NewReader(segment)),
 		},
 		"-hide_banner", "-y",
 		"-i", "pipe:0",
@@ -72,7 +153,7 @@ func extractFrame(
 	// Frame not found, extract last frame as fallback
 	if _, statErr := os.Stat(outputPath); os.IsNotExist(statErr) {
 		slog.Debug("frame not found, extract last frame")
-		if err := extractLastFrame(outputPath, buf, runner); err != nil {
+		if err := extractLastFrame(outputPath, segment, runner); err != nil {
 			return fmt.Errorf("extracting last frame: %w", err)
 		}
 	}
@@ -80,7 +161,7 @@ func extractFrame(
 	return nil
 }
 
-func extractLastFrame(outputPath string, buf *bytes.Buffer, runner exec.Runner) error {
+func extractLastFrame(outputPath string, segment []byte, runner exec.Runner) error {
 	tempFile, err := os.CreateTemp("", "ypb-*.mp4")
 	if err != nil {
 		return fmt.Errorf("creating temp file: %w", err)
@@ -96,7 +177,7 @@ func extractLastFrame(outputPath string, buf *bytes.Buffer, runner exec.Runner) 
 	remuxResult, remuxErr := runner.RunWith(
 		[]exec.Option{
 			exec.WithQuiet(),
-			exec.WithStdin(bytes.NewReader(buf.Bytes())),
+			exec.WithStdin(bytes.NewReader(segment)),
 		},
 		"-hide_banner", "-y",
 		"-i", "pipe:0",
