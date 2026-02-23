@@ -4,6 +4,18 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## Unreleased
+
+### Added
+
+- Accept open-ended interval in /rewind/ endpoint to compose dynamic MPD
+
+### Changed
+
+- Rename /rewind/ endpoint to /mpd/
+- Rename /videoplayback/ endpoint to /segments/
+- Normalize MPDs to be playbable in Shaka player
+
 ## [2026.2.18](https://github.com/xymaxim/ypb/releases/tag/v2026.2.18)
 
 ### Changed
