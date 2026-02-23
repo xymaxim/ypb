@@ -9,7 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/schollz/progressbar/v3"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/app"
@@ -161,11 +162,36 @@ func (c *Timelapse) captureFrames(
 ) error {
 	fmt.Printf("(<<) Capturing frames to '%s'...\n", filepath.Dir(config.OutputPattern))
 
-	bar := progressbar.Default(int64(len(times)))
+	start := time.Now()
+	totalFrames := len(times)
+
+	p := message.NewPrinter(language.English)
+	onFrame := func(index int, _ bool) {
+		done := index + 1
+		elapsed := time.Since(start)
+		framesPerMin := float64(done) / elapsed.Minutes()
+		eta := time.Duration(
+			float64(totalFrames-done) / framesPerMin * float64(time.Minute),
+		)
+		fmt.Printf("\r%3.0f%% at %4.0f fr/min ETA %-10s (frame %s/%s)",
+			float64(done)/float64(totalFrames)*100,
+			framesPerMin,
+			eta.Round(time.Second),
+			p.Sprintf("%d", done),
+			p.Sprintf("%d", totalFrames),
+		)
+		if done == totalFrames {
+			fmt.Println()
+		}
+	}
 
 	captured, skipped, err := actions.CaptureFrames(
-		a.Playback, times, locateContext, config.OutputPattern, a.FFmpegRunner,
-		func(_ int, _ bool) { bar.Add(1) },
+		a.Playback,
+		times,
+		locateContext,
+		config.OutputPattern,
+		a.FFmpegRunner,
+		onFrame,
 	)
 	if err != nil {
 		return fmt.Errorf("capturing frames: %w", err)
