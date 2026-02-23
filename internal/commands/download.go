@@ -63,24 +63,13 @@ func (c *Download) Run() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mpd", app.WithError(
 		func(w http.ResponseWriter, r *http.Request) error {
-			out, err := actions.ComposeStatic(
-				a.Playback,
-				interval,
-				urlutil.FormatServerAddress(a.Server.Addr),
-				a.FFprobeRunner,
-			)
-			if err != nil {
-				return fmt.Errorf("composing manifest: %w", err)
-			}
-			w.Header().Set("Content-Type", "application/dash+xml")
-			_, err = w.Write(out)
-			if err != nil {
-				return fmt.Errorf("writing manifest: %w", err)
-			}
-			return nil
-		},
-	))
-	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))
+			return serveMPD(w, a, interval)
+		}),
+	)
+	segmentHandler := &app.SegmentHandler{
+		Playback: a.Playback,
+	}
+	mux.HandleFunc(app.SegmentPath, app.WithError(segmentHandler.ServeHTTP))
 
 	a.Server.Handler = mux
 
@@ -113,6 +102,25 @@ func (c *Download) Run() error {
 	fmt.Println("(<<) Downloading and merging media...")
 	if err := a.YtdlpRunner.Run(args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
+	}
+
+	return nil
+}
+
+func serveMPD(w http.ResponseWriter, a *app.App, interval *playback.RewindInterval) error {
+	out, err := actions.ComposeStatic(
+		a.Playback,
+		interval,
+		urlutil.FormatServerAddress(a.Server.Addr),
+		a.FFprobeRunner,
+	)
+	if err != nil {
+		return fmt.Errorf("composing manifest: %w", err)
+	}
+
+	w.Header().Set("Content-Type", "application/dash+xml")
+	if _, err := w.Write(out); err != nil {
+		return fmt.Errorf("writing manifest: %w", err)
 	}
 
 	return nil

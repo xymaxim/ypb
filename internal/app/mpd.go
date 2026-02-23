@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
+	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/input"
+	"github.com/xymaxim/ypb/internal/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -34,19 +36,25 @@ type mpdResponse struct {
 	MPD      string      `json:"mpd"`
 }
 
-func (a *App) MPDHandler(w http.ResponseWriter, r *http.Request) error {
+type MPDHandler struct {
+	Playback      playback.Playbacker
+	ServerAddr    string
+	FFprobeRunner exec.Runner
+}
+
+func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	param, err := url.PathUnescape(r.PathValue("interval"))
 	if err != nil {
 		return fmt.Errorf("unescaping interval parameter: %w", err)
 	}
 
 	if !strings.Contains(param, "/") && !strings.Contains(param, "--") {
-		return a.respondDynamicMPD(w, r, param)
+		return h.respondDynamicMPD(w, r, param)
 	}
-	return a.respondStaticMPD(w, r, param)
+	return h.respondStaticMPD(w, r, param)
 }
 
-func (a *App) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
+func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
 	startParsed, endParsed, err := input.ParseInterval(param)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
@@ -56,13 +64,13 @@ func (a *App) respondStaticMPD(w http.ResponseWriter, r *http.Request, param str
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	locateCtx, err := actions.NewLocateContext(a.Playback, nil)
+	locateCtx, err := actions.NewLocateContext(h.Playback, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
 	rewindInterval, _, err := actions.LocateInterval(
-		a.Playback,
+		h.Playback,
 		startParsed,
 		endParsed,
 		locateCtx,
@@ -72,16 +80,16 @@ func (a *App) respondStaticMPD(w http.ResponseWriter, r *http.Request, param str
 	}
 
 	mpd, err := actions.ComposeStatic(
-		a.Playback,
+		h.Playback,
 		rewindInterval,
-		urlutil.FormatServerAddress(a.Server.Addr),
-		a.FFprobeRunner,
+		urlutil.FormatServerAddress(h.ServerAddr),
+		h.FFprobeRunner,
 	)
 	if err != nil {
 		return fmt.Errorf("composing static mpd: %w", err)
 	}
 
-	return a.serveMPD(w, r, mpd, intervalInfo{
+	return h.serveMPD(w, r, mpd, intervalInfo{
 		StartActualTime: rewindInterval.Start.ActualTime,
 		StartTargetTime: rewindInterval.Start.TargetTime,
 		EndActualTime:   &rewindInterval.End.ActualTime,
@@ -89,47 +97,47 @@ func (a *App) respondStaticMPD(w http.ResponseWriter, r *http.Request, param str
 	})
 }
 
-func (a *App) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
+func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
 	parsed, err := input.ParseIntervalPart(param)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
-	locateCtx, err := actions.NewLocateContext(a.Playback, nil)
+	locateCtx, err := actions.NewLocateContext(h.Playback, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
-	rewindMoment, err := actions.LocateMoment(a.Playback, parsed, locateCtx)
+	rewindMoment, err := actions.LocateMoment(h.Playback, parsed, locateCtx)
 	if err != nil {
 		return fmt.Errorf("locating moment: %w", err)
 	}
 
 	out, err := actions.ComposeDynamic(
-		a.Playback,
+		h.Playback,
 		rewindMoment,
-		urlutil.FormatServerAddress(a.Server.Addr),
-		a.FFprobeRunner,
+		urlutil.FormatServerAddress(h.ServerAddr),
+		h.FFprobeRunner,
 	)
 	if err != nil {
 		return fmt.Errorf("composing dynamic mpd: %w", err)
 	}
 
-	return a.serveMPD(w, r, out, intervalInfo{
+	return h.serveMPD(w, r, out, intervalInfo{
 		StartActualTime: rewindMoment.ActualTime,
 		StartTargetTime: rewindMoment.TargetTime,
 	})
 }
 
-func (a *App) serveMPD(
+func (h *MPDHandler) serveMPD(
 	w http.ResponseWriter,
 	r *http.Request,
 	mpd []byte,
 	info intervalInfo,
 ) error {
 	metadata := mpdMetadata{
-		VideoTitle:      a.Playback.Info().Title,
-		VideoURL:        urlutil.BuildVideoLiveURL(a.Playback.Info().ID),
+		VideoTitle:      h.Playback.Info().Title,
+		VideoURL:        urlutil.BuildVideoLiveURL(h.Playback.Info().ID),
 		StartActualTime: info.StartActualTime,
 		StartTargetTime: info.StartTargetTime,
 		EndActualTime:   info.EndActualTime,

@@ -25,8 +25,16 @@ func (c *Serve) Run() error {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(app.MPDPath, app.WithError(a.MPDHandler))
-	mux.HandleFunc(app.SegmentPath, app.WithError(a.SegmentHandler))
+	mux.HandleFunc(app.MPDPath, app.WithError(
+		(&app.MPDHandler{
+			Playback:      a.Playback,
+			FFprobeRunner: a.FFprobeRunner,
+			ServerAddr:    a.Server.Addr,
+		}).ServeHTTP),
+	)
+	mux.HandleFunc(app.SegmentPath, app.WithError(
+		(&app.SegmentHandler{Playback: a.Playback}).ServeHTTP),
+	)
 
 	a.Server.Handler = mux
 
