@@ -36,8 +36,26 @@ Playback starting from ten minutes ago, continuing live (dynamic):
 #### Response
 
 By default, returns the raw MPEG-DASH manifest as `application/dash+xml`. To
-receive a JSON representation including the raw content and metadata, use the
-`Accept: application/json` header.
+receive a JSON representation including the raw manifest and metadata, set
+the `Accept: application/json` header.
+
+The JSON response has the following structure:
+
+```json
+{
+    "metadata": {
+        "videoTitle": "Stream title",
+        "videoUrl": "https://www.youtube.com/live/...",
+        "startActualTime": "2026-01-02T10:00:02Z",
+        "startTargetTime": "2026-01-02T10:00:00Z",
+        "endActualTime": "2026-01-02T10:30:03Z",
+        "endTargetTime": "2026-01-02T10:30:00Z",
+    },
+    "mpd": "<?xml version=\"1.0\" ...>"
+}
+```
+
+For dynamic manifests, `endActualTime` and `endTargetTime` are omitted.
 
 ### /segments/itag/\{itag\}/sq/\{sq\}
 
