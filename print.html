@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-7ffb422e.js";
+            window.path_to_searchindex_js = "searchindex-d86bb9f1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -1082,14 +1082,25 @@ receive a JSON representation including the raw content and metadata, use the
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
 Changelog</a>. Versions follow <a href="https://calver.org">Calendar
 Versioning</a>.</p>
-<h2 id="2026218"><a class="header" href="#2026218"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.18">2026.2.18</a></a></h2>
+<h2 id="unreleased"><a class="header" href="#unreleased">Unreleased</a></h2>
+<h3 id="added"><a class="header" href="#added">Added</a></h3>
+<ul>
+<li>Accept open-ended interval in /rewind/ endpoint to compose dynamic MPD</li>
+</ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
+<ul>
+<li>Rename /rewind/ endpoint to /mpd/</li>
+<li>Rename /videoplayback/ endpoint to /segments/</li>
+<li>Normalize MPDs to be playbable in Shaka player</li>
+</ul>
+<h2 id="2026218"><a class="header" href="#2026218"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.18">2026.2.18</a></a></h2>
+<h3 id="changed-1"><a class="header" href="#changed-1">Changed</a></h3>
 <ul>
 <li>Retry on connection errors (“connection reset by peer”, “connection timed out”, etc)</li>
 <li>Print standard output and error from external commands directly (#2)</li>
 </ul>
 <h2 id="2026216"><a class="header" href="#2026216"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.16">2026.2.16</a></a></h2>
-<h3 id="added"><a class="header" href="#added">Added</a></h3>
+<h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
 <ul>
 <li>New <code>capture frame</code> command to capture a single frame</li>
 <li>New <code>capture timelapse</code> command to capture multiple frames</li>
@@ -1098,7 +1109,7 @@ Versioning</a>.</p>
 <ul>
 <li>Incorrect 12-hour format (changed to 24-hour) in output filenames</li>
 </ul>
-<h3 id="changed-1"><a class="header" href="#changed-1">Changed</a></h3>
+<h3 id="changed-2"><a class="header" href="#changed-2">Changed</a></h3>
 <ul>
 <li>Rework CommandRunner to accept functional options</li>
 </ul>
