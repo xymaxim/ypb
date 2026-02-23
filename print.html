@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-86c98b84.js";
+            window.path_to_searchindex_js = "searchindex-7ffb422e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -246,14 +246,14 @@ and architecture:</p>
 <p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
 <p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a></p>
 <p><strong>macOS/Windows only:</strong> Initialize the Podman machine (one-time setup):</p>
-<pre><code class="language-shell">podman machine init &amp;&amp; podman machine start
+<pre><code>podman machine init &amp;&amp; podman machine start
 </code></pre>
 <p>Pull the container image and verify the version:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+<pre><code>podman pull ghcr.io/xymaxim/ypb
 podman run --rm ghcr.io/xymaxim/ypb version
 </code></pre>
 <p>To run commands with access to your current directory:</p>
-<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+<pre><code>podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
 </code></pre>
 <blockquote>
 <p>See <a href="#container-image">Container image</a> for creating <a href="#recommended-aliases">recommended
@@ -391,10 +391,10 @@ on interval part formats.</p>
 not applicable. The playback server is now running and waiting for our requests.</p>
 <h3 id="send-rewind-requests"><a class="header" href="#send-rewind-requests">Send rewind requests</a></h3>
 <p>To rewind an excerpt, open another terminal and type:</p>
-<pre><code class="language-shell">$ curl localhost:8080/rewind/30m--now
+<pre><code>curl localhost:8080/mpd/30m--now
 </code></pre>
 <p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
-<p>The rewind path parameter <code>/rewind/{interval}</code> has the same format as the
+<p>The rewind path parameter <code>/mpd/{interval}</code> has the same format as the
 <code>-i/--interval</code> option except that it should be properly URL escaped: use <code>--</code>
 instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <blockquote>
@@ -403,7 +403,7 @@ instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
 <p>Now the intriguing part: playing the excerpt.</p>
 <pre><code class="language-shell">ffplay -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/rewind/30m--now
+  localhost:8080/mpd/30m--now
 </code></pre>
 <p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
 manifest and fetching media segments.</p>
@@ -412,7 +412,7 @@ compatible player you prefer.</p>
 <h3 id="download-media"><a class="header" href="#download-media">Download media</a></h3>
 <p>As a bonus, let’s see how to download media content from the composed manifest.</p>
 <p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
-<pre><code class="language-shell">yt-dlp -o output.mp4 http://localhost:8080/rewind/30m--now
+<pre><code>yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
 </code></pre>
 <blockquote>
 <p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC’s
@@ -1035,38 +1035,47 @@ variables are not available.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="api"><a class="header" href="#api">API</a></h1>
 <h2 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h2>
-<h3 id="rewindinterval"><a class="header" href="#rewindinterval">/rewind/{interval}</a></h3>
-<p>Returns a static MPEG-DASH manifest representing media for the rewind interval.</p>
-<p><em>Parameters</em></p>
+<h3 id="mpdinterval"><a class="header" href="#mpdinterval">/mpd/{interval}</a></h3>
+<p>Returns an MPEG-DASH manifest for the given interval. The manifest is <em>static</em>
+when a bounded interval is provided, or <em>dynamic</em> when an open-ended interval
+is provided.</p>
+<h4 id="parameters"><a class="header" href="#parameters">Parameters</a></h4>
 <dl>
 <dt id="interval"><a class="header" href="#interval">interval</a></dt>
 <dd>
 <p>The rewind interval to retrieve.</p>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>See <a href="#specifying-the-rewind-interval">Specifying the rewind interval</a> for
-available format options. Note that the path parameter should be properly
-URL-encoded: use <code>--</code> instead of <code>/</code>, and avoid whitespaces or use percent
-encoding.</p>
+<p>See <a href="#specifying-the-rewind-interval">Specifying the rewind interval</a>
+for all available interval format options. When using absolute timestamps,
+prefer the <code>Z</code> suffix for UTC (e.g., <code>2026-01-02T10:20:30Z</code>) over <code>+00:00</code>,
+since <code>+</code> must be percent-encoded as <code>%2B</code>. In general, ensure the path
+parameter is properly URL-encoded: use <code>--</code> as the interval separator
+instead of <code>/</code> and avoid unencoded whitespace.</p>
 </blockquote>
 </dd>
 </dl>
-<p><em>Usage examples</em></p>
-<p>Rewind a 30-minute excerpt from one day:</p>
-<pre><code>$ curl localhost:8080/rewind/now-1d--30m
+<h4 id="usage-examples"><a class="header" href="#usage-examples">Usage examples</a></h4>
+<p>Rewind a 30-minute excerpt from one day ago (static):</p>
+<pre><code>$ curl localhost:8080/mpd/now-1d--30m
 </code></pre>
-<p><em>Response</em></p>
-<p>The raw content of the composed MPEG-DASH manifest.</p>
-<h3 id="videoplaybackitagitagsqsq"><a class="header" href="#videoplaybackitagitagsqsq">/videoplayback/itag/{itag}/sq/{sq}</a></h3>
+<p>Playback starting from ten minutes ago, continuing live (dynamic):</p>
+<pre><code>curl localhost:8080/mpd/now-10m
+</code></pre>
+<h4 id="response"><a class="header" href="#response">Response</a></h4>
+<p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To
+receive a JSON representation including the raw content and metadata, use the
+<code>Accept: application/json</code> header.</p>
+<h3 id="segmentsitagitagsqsq"><a class="header" href="#segmentsitagitagsqsq">/segments/itag/{itag}/sq/{sq}</a></h3>
 <p>Serves a media segment indentified by itag and sequence number.</p>
-<p><em>Parameters</em></p>
+<h4 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h4>
 <dl>
 <dt id="itag"><a class="header" href="#itag">itag</a></dt>
 <dd>The segment itag value.</dd>
 <dt id="sq"><a class="header" href="#sq">sq</a></dt>
 <dd>The segment sequence number.</dd>
 </dl>
-<p><em>Response</em></p>
+<h4 id="response-1"><a class="header" href="#response-1">Response</a></h4>
 <p>The bytes of the requested media segment.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>

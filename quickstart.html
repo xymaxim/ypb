@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-86c98b84.js";
+            window.path_to_searchindex_js = "searchindex-7ffb422e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -221,14 +221,14 @@ and architecture:</p>
 <p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
 <p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a></p>
 <p><strong>macOS/Windows only:</strong> Initialize the Podman machine (one-time setup):</p>
-<pre><code class="language-shell">podman machine init &amp;&amp; podman machine start
+<pre><code>podman machine init &amp;&amp; podman machine start
 </code></pre>
 <p>Pull the container image and verify the version:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+<pre><code>podman pull ghcr.io/xymaxim/ypb
 podman run --rm ghcr.io/xymaxim/ypb version
 </code></pre>
 <p>To run commands with access to your current directory:</p>
-<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+<pre><code>podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
 </code></pre>
 <blockquote>
 <p>See <a href="guides/install/container.html">Container image</a> for creating <a href="guides/install/container.html#recommended-aliases">recommended
@@ -366,10 +366,10 @@ on interval part formats.</p>
 not applicable. The playback server is now running and waiting for our requests.</p>
 <h3 id="send-rewind-requests"><a class="header" href="#send-rewind-requests">Send rewind requests</a></h3>
 <p>To rewind an excerpt, open another terminal and type:</p>
-<pre><code class="language-shell">$ curl localhost:8080/rewind/30m--now
+<pre><code>curl localhost:8080/mpd/30m--now
 </code></pre>
 <p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
-<p>The rewind path parameter <code>/rewind/{interval}</code> has the same format as the
+<p>The rewind path parameter <code>/mpd/{interval}</code> has the same format as the
 <code>-i/--interval</code> option except that it should be properly URL escaped: use <code>--</code>
 instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <blockquote>
@@ -378,7 +378,7 @@ instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
 <p>Now the intriguing part: playing the excerpt.</p>
 <pre><code class="language-shell">ffplay -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/rewind/30m--now
+  localhost:8080/mpd/30m--now
 </code></pre>
 <p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
 manifest and fetching media segments.</p>
@@ -387,7 +387,7 @@ compatible player you prefer.</p>
 <h3 id="download-media"><a class="header" href="#download-media">Download media</a></h3>
 <p>As a bonus, let’s see how to download media content from the composed manifest.</p>
 <p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
-<pre><code class="language-shell">yt-dlp -o output.mp4 http://localhost:8080/rewind/30m--now
+<pre><code>yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
 </code></pre>
 <blockquote>
 <p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC’s
