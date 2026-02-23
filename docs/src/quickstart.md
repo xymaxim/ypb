@@ -60,22 +60,16 @@ Running in a container allows you to try `ypb` in an isolated environment with a
 
 **macOS/Windows only:** Initialize the Podman machine (one-time setup):
 
-```shell
-podman machine init && podman machine start
-```
+    podman machine init && podman machine start
 
 Pull the container image and verify the version:
 
-```shell
-podman pull ghcr.io/xymaxim/ypb
-podman run --rm ghcr.io/xymaxim/ypb version
-```
+    podman pull ghcr.io/xymaxim/ypb
+    podman run --rm ghcr.io/xymaxim/ypb version
 
 To run commands with access to your current directory:
 
-```shell
-podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
-```
+    podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
 
 > See [Container image](guides/install/container.md) for creating [recommended
 > aliases](guides/install/container.md#recommended-aliases) and more details.
@@ -245,13 +239,11 @@ not applicable. The playback server is now running and waiting for our requests.
 
 To rewind an excerpt, open another terminal and type:
 
-```shell
-$ curl localhost:8080/rewind/30m--now
-```
+    curl localhost:8080/mpd/30m--now
 
 This should return the raw content of the composed static MPEG-DASH manifest.
 
-The rewind path parameter `/rewind/{interval}` has the same format as the
+The rewind path parameter `/mpd/{interval}` has the same format as the
 `-i/--interval` option except that it should be properly URL escaped: use `--`
 instead of `/`, avoid whitespaces or use percent encoding.
 
@@ -263,7 +255,7 @@ Now the intriguing part: playing the excerpt.
 
 ``` shell
 ffplay -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/rewind/30m--now
+  localhost:8080/mpd/30m--now
 ```
 
 The option `-protocol_whitelist` is required to allow `ffplay` openining the
@@ -278,9 +270,7 @@ As a bonus, let's see how to download media content from the composed manifest.
 
 This is actually almost how `ypb download` works behind the scenes:
 
-```shell
-yt-dlp -o output.mp4 http://localhost:8080/rewind/30m--now
-```
+    yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
 
 > Other downloader options: [FFmpeg](https://www.ffmpeg.org/), GPAC's
 > [MP4Box](https://github.com/gpac/gpac/wiki/MP4Box/), or
