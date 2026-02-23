@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d86bb9f1.js";
+            window.path_to_searchindex_js = "searchindex-92a46a27.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -1064,8 +1064,22 @@ instead of <code>/</code> and avoid unencoded whitespace.</p>
 </code></pre>
 <h4 id="response"><a class="header" href="#response">Response</a></h4>
 <p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To
-receive a JSON representation including the raw content and metadata, use the
-<code>Accept: application/json</code> header.</p>
+receive a JSON representation including the raw manifest and metadata, set
+the <code>Accept: application/json</code> header.</p>
+<p>The JSON response has the following structure:</p>
+<pre><code class="language-json">{
+    "metadata": {
+        "videoTitle": "Stream title",
+        "videoUrl": "https://www.youtube.com/live/...",
+        "startActualTime": "2026-01-02T10:00:02Z",
+        "startTargetTime": "2026-01-02T10:00:00Z",
+        "endActualTime": "2026-01-02T10:30:03Z",
+        "endTargetTime": "2026-01-02T10:30:00Z",
+    },
+    "mpd": "&lt;?xml version=\"1.0\" ...&gt;"
+}
+</code></pre>
+<p>For dynamic manifests, <code>endActualTime</code> and <code>endTargetTime</code> are omitted.</p>
 <h3 id="segmentsitagitagsqsq"><a class="header" href="#segmentsitagitagsqsq">/segments/itag/{itag}/sq/{sq}</a></h3>
 <p>Serves a media segment indentified by itag and sequence number.</p>
 <h4 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h4>
