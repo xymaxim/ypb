@@ -4,17 +4,23 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
-## Unreleased
+## [2026.2.24](https://github.com/xymaxim/ypb/releases/tag/v2026.2.24)
 
 ### Added
 
-- Accept open-ended interval in /rewind/ endpoint to compose dynamic MPD
+- Accept open-ended interval in `/mpd/` endpoint to compose dynamic MPD
+
+### Fixed
+
+- Pin start-up time as `now` in strict mode (`download` and `capture` commands) (#5)
 
 ### Changed
 
-- Rename /rewind/ endpoint to /mpd/
-- Rename /videoplayback/ endpoint to /segments/
+- Rename `/rewind/` endpoint to `/mpd/`
+- Rename `/videoplayback/` endpoint to `/segments/`
 - Normalize MPDs to be playbable in Shaka player
+- Avoid downloading same segment in capture timelapse with small intervals
+- Switch to custom text progress bar in capture timelapse
 
 ## [2026.2.18](https://github.com/xymaxim/ypb/releases/tag/v2026.2.18)
 
