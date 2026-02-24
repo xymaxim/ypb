@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-92a46a27.js";
+            window.path_to_searchindex_js = "../searchindex-0116fb71.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-0c2dce08.js"></script>
@@ -437,12 +437,19 @@ available rewind window.</p>
 <ul>
 <li><code>-i/--interval &lt;start&gt;/now</code></li>
 </ul>
-<p>To reference the current moment, use the now keyword for the end part:</p>
-<pre><code>--interval 10:30/now
-</code></pre>
-<p>More precisely, this refers to the most recently available media segment, which
-typically corresponds to the current moment. However, if a live stream has
-stalled, new media segments are updated.</p>
+<p>To reference the current moment, use the <code>now</code> keyword.</p>
+<p>Its exact meaning depends on the running mode:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Mode</th><th>Commands</th><th>Resolves to</th></tr>
+</thead>
+<tbody>
+<tr><td>Strict</td><td><code>download</code>, <code>capture</code></td><td>App start-up time</td></tr>
+<tr><td>Non-strict</td><td><code>serve</code></td><td>End of the most recently available segment</td></tr>
+</tbody>
+</table>
+</div>
 <h2 id="specifying-the-output-filename"><a class="header" href="#specifying-the-output-filename">Specifying the output filename</a></h2>
 <p>By default, downloaded files are saved in the current working directory with
 names composed of the adjusted title, YouTube video ID, start time, and

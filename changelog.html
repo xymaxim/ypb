@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-92a46a27.js";
+            window.path_to_searchindex_js = "searchindex-0116fb71.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -180,16 +180,22 @@
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
 Changelog</a>. Versions follow <a href="https://calver.org">Calendar
 Versioning</a>.</p>
-<h2 id="unreleased"><a class="header" href="#unreleased">Unreleased</a></h2>
+<h2 id="2026224"><a class="header" href="#2026224"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.24">2026.2.24</a></a></h2>
 <h3 id="added"><a class="header" href="#added">Added</a></h3>
 <ul>
-<li>Accept open-ended interval in /rewind/ endpoint to compose dynamic MPD</li>
+<li>Accept open-ended interval in <code>/mpd/</code> endpoint to compose dynamic MPD</li>
+</ul>
+<h3 id="fixed"><a class="header" href="#fixed">Fixed</a></h3>
+<ul>
+<li>Pin start-up time as <code>now</code> in strict mode (<code>download</code> and <code>capture</code> commands) (#5)</li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
-<li>Rename /rewind/ endpoint to /mpd/</li>
-<li>Rename /videoplayback/ endpoint to /segments/</li>
+<li>Rename <code>/rewind/</code> endpoint to <code>/mpd/</code></li>
+<li>Rename <code>/videoplayback/</code> endpoint to <code>/segments/</code></li>
 <li>Normalize MPDs to be playbable in Shaka player</li>
+<li>Avoid downloading same segment in capture timelapse with small intervals</li>
+<li>Switch to custom text progress bar in capture timelapse</li>
 </ul>
 <h2 id="2026218"><a class="header" href="#2026218"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.18">2026.2.18</a></a></h2>
 <h3 id="changed-1"><a class="header" href="#changed-1">Changed</a></h3>
@@ -203,7 +209,7 @@ Versioning</a>.</p>
 <li>New <code>capture frame</code> command to capture a single frame</li>
 <li>New <code>capture timelapse</code> command to capture multiple frames</li>
 </ul>
-<h3 id="fixed"><a class="header" href="#fixed">Fixed</a></h3>
+<h3 id="fixed-1"><a class="header" href="#fixed-1">Fixed</a></h3>
 <ul>
 <li>Incorrect 12-hour format (changed to 24-hour) in output filenames</li>
 </ul>
@@ -212,7 +218,7 @@ Versioning</a>.</p>
 <li>Rework CommandRunner to accept functional options</li>
 </ul>
 <h2 id="2026212"><a class="header" href="#2026212"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.12">2026.2.12</a></a></h2>
-<h3 id="fixed-1"><a class="header" href="#fixed-1">Fixed</a></h3>
+<h3 id="fixed-2"><a class="header" href="#fixed-2">Fixed</a></h3>
 <ul>
 <li>Incorrect parsing of ‘now’ in interval expressions (#1)</li>
 </ul>
