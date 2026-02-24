@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9571e2e5.js";
+            window.path_to_searchindex_js = "../searchindex-f96dc9e5.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-0c2dce08.js"></script>
@@ -178,6 +178,17 @@
                     <main>
                         <h1 id="api"><a class="header" href="#api">API</a></h1>
 <h2 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h2>
+<h3 id="info"><a class="header" href="#info">/info</a></h3>
+<p>Returns information about the YouTube live stream being served.</p>
+<h4 id="response"><a class="header" href="#response">Response</a></h4>
+<pre><code class="language-json">{
+    "id": "0ujj4HexRpk",
+    "title": "Stream title",
+    "channelId": "UC6OWqjtFTsdtHAAuGWv1kPw",
+    "channelTitle": "Channel name",
+    "actualStartTime": "2026-01-02T10:20:30Z"
+}
+</code></pre>
 <h3 id="mpdinterval"><a class="header" href="#mpdinterval">/mpd/{interval}</a></h3>
 <p>Returns an MPEG-DASH manifest for the given interval. The manifest is <em>static</em>
 when a bounded interval is provided, or <em>dynamic</em> when an open-ended interval
@@ -205,7 +216,7 @@ instead of <code>/</code> and avoid unencoded whitespace.</p>
 <p>Playback starting from ten minutes ago, continuing live (dynamic):</p>
 <pre><code>curl localhost:8080/mpd/now-10m
 </code></pre>
-<h4 id="response"><a class="header" href="#response">Response</a></h4>
+<h4 id="response-1"><a class="header" href="#response-1">Response</a></h4>
 <p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To
 receive a JSON representation including the raw manifest and metadata, set
 the <code>Accept: application/json</code> header.</p>
@@ -232,7 +243,7 @@ the <code>Accept: application/json</code> header.</p>
 <dt id="sq"><a class="header" href="#sq">sq</a></dt>
 <dd>The segment sequence number.</dd>
 </dl>
-<h4 id="response-1"><a class="header" href="#response-1">Response</a></h4>
+<h4 id="response-2"><a class="header" href="#response-2">Response</a></h4>
 <p>The bytes of the requested media segment.</p>
 
                     </main>
