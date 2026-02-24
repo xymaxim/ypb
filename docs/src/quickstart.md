@@ -254,7 +254,7 @@ instead of `/`, avoid whitespaces or use percent encoding.
 Now the intriguing part: playing the excerpt.
 
 ``` shell
-ffplay -protocol_whitelist file,http,https,tcp,tls \
+ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
   localhost:8080/mpd/30m--now
 ```
 
