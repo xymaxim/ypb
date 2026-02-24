@@ -52,10 +52,10 @@ func CaptureFrames(
 	var previousSq playback.SequenceNumber
 	var previousSegment []byte
 
-	reference := locateContext.Now
+	reference := locateContext.Head
 
 	for frameIndex, t := range times {
-		rewindMoment, err := pb.LocateMoment(t, *reference, false)
+		rewindMoment, err := pb.LocateMoment(t, reference, false)
 		if err != nil {
 			return captured, skipped, fmt.Errorf(
 				"frame %d at %s: locating moment: %w",

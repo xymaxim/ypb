@@ -48,7 +48,11 @@ func (pb *fakePlayback) FetchSegmentMetadata(
 	_ string,
 	sq playback.SequenceNumber,
 ) (*segment.Metadata, error) {
-	return pb.fakeMetadata[sq], nil
+	m, ok := pb.fakeMetadata[sq]
+	if !ok {
+		return nil, fmt.Errorf("fetching segment metadata, sq=%d", sq)
+	}
+	return &m, nil
 }
 
 // LocateMoment returns the rewind moment corresponds the target time. For tests
@@ -166,7 +170,7 @@ func TestLocateMoment(t *testing.T) {
 
 	pb := newFakePlayback(fakeMetadata)
 	now := fakeMetadata[len(fakeMetadata)-1]
-	ctx := &actions.LocateContext{Now: now, Reference: now}
+	ctx := &actions.LocateContext{Head: now, Reference: now}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
@@ -202,7 +206,7 @@ func TestLocateMoment_BadMomentType(t *testing.T) {
 
 	pb := newFakePlayback(fakeMetadata)
 	now := fakeMetadata[len(fakeMetadata)-1]
-	ctx := &actions.LocateContext{Now: now, Reference: now}
+	ctx := &actions.LocateContext{Head: now, Reference: now}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -333,7 +337,7 @@ func TestLocateInterval(t *testing.T) {
 
 	pb := newFakePlayback(fakeMetadata)
 	now := fakeMetadata[len(fakeMetadata)-1]
-	ctx := &actions.LocateContext{Now: now, Reference: now}
+	ctx := &actions.LocateContext{Head: now, Reference: now}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -380,7 +384,7 @@ func TestLocateInterval_Failure(t *testing.T) {
 
 	pb := newFakePlayback(fakeMetadata)
 	now := fakeMetadata[len(fakeMetadata)-1]
-	ctx := &actions.LocateContext{Now: now, Reference: now}
+	ctx := &actions.LocateContext{Head: now, Reference: now}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

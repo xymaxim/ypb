@@ -25,6 +25,8 @@ type FrameConfig struct {
 }
 
 func (c *Frame) Run() error {
+	pinnedTime := time.Now().UTC()
+
 	app := apppkg.NewApp()
 
 	// Parse and validate inputs
@@ -39,7 +41,7 @@ func (c *Frame) Run() error {
 	}
 
 	// Locate the moment
-	rewindMoment, _, err := c.locateMoment(app.Playback, config)
+	rewindMoment, _, err := c.locateMoment(app.Playback, pinnedTime, config)
 	if err != nil {
 		return err
 	}
@@ -87,11 +89,12 @@ func (c *Frame) parseAndValidateInputs() (*FrameConfig, error) {
 
 func (c *Frame) locateMoment(
 	pb playback.Playbacker,
+	pinnedTime time.Time,
 	config *FrameConfig,
 ) (*playback.RewindMoment, *actions.LocateContext, error) {
 	fmt.Println("(<<) Locating and capturing the moment...")
 
-	locateContext, err := actions.NewLocateContext(pb, nil)
+	locateContext, err := actions.NewLocateContext(pb, nil, &pinnedTime)
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}

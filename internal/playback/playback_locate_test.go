@@ -22,13 +22,13 @@ import (
 
 func makeGapCaseHandler(
 	t *testing.T,
-	data map[playback.SequenceNumber]*segment.Metadata,
+	data map[playback.SequenceNumber]segment.Metadata,
 ) func(w http.ResponseWriter, r *http.Request) {
 	t.Helper()
 	return testutil.MakeSegmentMetadataHandler(t, data)
 }
 
-func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]*segment.Metadata {
+func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]segment.Metadata {
 	t.Helper()
 
 	f, err := os.Open(path) // #nosec G304
@@ -44,7 +44,7 @@ func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]
 		t.Fatal(err)
 	}
 
-	mapping := make(map[int]*segment.Metadata)
+	mapping := make(map[int]segment.Metadata)
 	for {
 		record, err := reader.Read()
 		if errors.Is(err, io.EOF) {
@@ -63,7 +63,7 @@ func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]
 			t.Fatal(err)
 		}
 
-		mapping[sequenceNumber] = &segment.Metadata{
+		mapping[sequenceNumber] = segment.Metadata{
 			SequenceNumber:    sequenceNumber,
 			IngestionWalltime: time.Unix(0, ingestionWalltimeUs*1e3).In(time.UTC),
 			Duration:          2 * time.Second,
@@ -78,7 +78,7 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 	t.Parallel()
 
 	// Synthetic test data
-	metadataMapping := map[playback.SequenceNumber]*segment.Metadata{
+	metadataMapping := map[playback.SequenceNumber]segment.Metadata{
 		0: {
 			SequenceNumber:    0,
 			IngestionWalltime: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
@@ -173,7 +173,7 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 		},
 	}
 
-	reference := *metadataMapping[1]
+	reference := metadataMapping[1]
 	for _, tc := range testCases { //nolint:paralleltest
 		t.Run(tc.name, func(t *testing.T) {
 			moment, err := pb.LocateMoment(tc.target, reference, tc.isEnd)
@@ -213,7 +213,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959630,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7959599,
 				},
 				InGap: false,
@@ -225,7 +225,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959630,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7959599,
 				},
 				InGap: false,
@@ -237,7 +237,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959600,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7959600,
 				},
 				InGap: false,
@@ -251,7 +251,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959601,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7959601,
 				},
 				InGap: false,
@@ -263,7 +263,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959600,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7959602,
 				},
 				InGap: false,
@@ -324,7 +324,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7947333,
 				},
 				InGap: false,
@@ -336,7 +336,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7947333,
 				},
 				InGap: false,
@@ -348,7 +348,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7947335,
 				},
 				InGap: true,
@@ -360,7 +360,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7947334,
 				},
 				InGap: true,
@@ -421,7 +421,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958102,
 				},
 				InGap: false,
@@ -433,7 +433,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958103,
 				},
 				InGap: false,
@@ -445,7 +445,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958104,
 				},
 				InGap: true,
@@ -457,7 +457,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958103,
 				},
 				InGap: true,
@@ -469,7 +469,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958104,
 				},
 				InGap: false,
@@ -481,7 +481,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: &segment.Metadata{
+				Metadata: segment.Metadata{
 					SequenceNumber: 7958106,
 				},
 				InGap: false,

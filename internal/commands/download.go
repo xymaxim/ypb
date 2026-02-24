@@ -23,6 +23,8 @@ type Download struct {
 }
 
 func (c *Download) Run() error {
+	pinnedTime := time.Now().UTC()
+
 	if err := checkYtdlp(); err != nil {
 		return err
 	}
@@ -42,7 +44,7 @@ func (c *Download) Run() error {
 	}
 
 	fmt.Println("(<<) Locating start and end moments...")
-	locateContext, err := actions.NewLocateContext(app.Playback, nil)
+	locateContext, err := actions.NewLocateContext(app.Playback, nil, &pinnedTime)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}

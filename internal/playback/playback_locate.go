@@ -37,7 +37,7 @@ const maxJumpSteps = 10
 
 // RewindMoment describes a specific point in time mapped to a segment-locate result.
 type RewindMoment struct {
-	Metadata   *segment.Metadata
+	Metadata   segment.Metadata
 	ActualTime time.Time
 	TargetTime time.Time
 	InGap      bool
@@ -47,7 +47,7 @@ type RewindMoment struct {
 // If isEnd is true, uses the segment's end time as the actual time.
 func NewRewindMoment(
 	target time.Time,
-	metadata *segment.Metadata,
+	metadata segment.Metadata,
 	isEnd, inGap bool,
 ) *RewindMoment {
 	var actual time.Time
@@ -135,7 +135,7 @@ func (pb *Playback) LocateMoment(
 		// Check if target time falls within current segment
 		maxAllowed := candidate.Duration + timeDiffTolerance
 		if 0 <= candidateTimeDiff && candidateTimeDiff <= maxAllowed {
-			moment := NewRewindMoment(targetTime, candidate, isEnd, false)
+			moment := NewRewindMoment(targetTime, *candidate, isEnd, false)
 			slog.Info(
 				"moment located via jump search",
 				slog.Int("sq", moment.Metadata.SequenceNumber),
@@ -228,7 +228,7 @@ func (pb *Playback) searchInRange(
 
 	// Step 3: Detect and handle gaps
 	if timeDiff-timeDiffTolerance <= candidate.Duration {
-		return NewRewindMoment(targetTime, candidate, isEnd, false), nil
+		return NewRewindMoment(targetTime, *candidate, isEnd, false), nil
 	}
 
 	slog.Info(
@@ -255,7 +255,7 @@ func (pb *Playback) searchInRange(
 		candidate = next
 	}
 
-	return NewRewindMoment(targetTime, candidate, isEnd, true), nil
+	return NewRewindMoment(targetTime, *candidate, isEnd, true), nil
 }
 
 // calculateSegmentOffset calculates the sequence number offset of the segment

@@ -70,36 +70,46 @@ type LocateOutputContext struct {
 	InputDuration       time.Duration
 }
 
-// LocateContext provides reference points for resolving relative moments.
-// Now represents the current moment in the playback, and Reference is used
-// as the base for relative time calculations.
+// LocateContext holds reference points used to locate and resolve moments.
+//
+// Head is the most recent segment available in the stream. Reference serves as
+// the base for relative time calculations. PinnedTime represents the time of
+// the 'now' keyword: in strict mode (downloads and capture), it is set to the
+// app start-up time; in non-strict mode (serve), it is nil and 'now' falls back
+// to the end of the most recent segment.
 type LocateContext struct {
-	Now       *segment.Metadata
-	Reference *segment.Metadata
+	Head         segment.Metadata
+	Reference    segment.Metadata
+	PinnedTime   *time.Time
+	PinnedMoment *playback.RewindMoment
 }
 
-// NewLocateContext creates a new LocateContext with the current moment and
-// an optional reference point. If reference is nil, the current moment is
-// used as the reference.
+// NewLocateContext creates a new LocateContext.
+//
+// If reference is nil, the most recent (head) segment will be used as the
+// reference.
 func NewLocateContext(
 	pb playback.Playbacker,
 	reference *segment.Metadata,
+	pinnedTime *time.Time,
 ) (*LocateContext, error) {
-	now, err := resolveMoment(pb, input.NowKeyword, nil, false)
+	head, err := fetchHeadMetadata(pb)
 	if err != nil {
-		return nil, NewResolveMomentError(input.NowKeyword, false, err)
+		return nil, fmt.Errorf("fetching head segment metadata: %w", err)
 	}
 
 	if reference == nil {
-		return &LocateContext{
-			Now:       now.Metadata,
-			Reference: now.Metadata,
-		}, nil
+		reference = head
+	}
+
+	if pinnedTime != nil {
+		slog.Info("pinned time", slog.Time("time", *pinnedTime))
 	}
 
 	return &LocateContext{
-		Now:       now.Metadata,
-		Reference: reference,
+		Head:       *head,
+		Reference:  *reference,
+		PinnedTime: pinnedTime,
 	}, nil
 }
 
@@ -149,22 +159,34 @@ func LocateInterval(
 	return interval, context, nil
 }
 
+func fetchHeadMetadata(pb playback.Playbacker) (*segment.Metadata, error) {
+	sq, err := pb.RequestHeadSeqNum()
+	if err != nil {
+		return nil, fmt.Errorf("requesting head segment: %w", err)
+	}
+	m, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+	if err != nil {
+		return nil, playback.NewSegmentMetadataFetchError(sq, err)
+	}
+	return m, nil
+}
+
 func validateMoments(start, end input.MomentValue, ctx *LocateContext) error {
 	switch s := start.(type) {
 	case time.Time:
-		if s.After(ctx.Now.EndTime()) {
+		if s.After(ctx.Head.EndTime()) {
 			return fmt.Errorf(
 				"start time is after head segment: %v > %v",
 				s,
-				ctx.Now.EndTime(),
+				ctx.Head.EndTime(),
 			)
 		}
 	case playback.SequenceNumber:
-		if s > ctx.Now.SequenceNumber {
+		if s > ctx.Head.SequenceNumber {
 			return fmt.Errorf(
 				"start segment %d is after head one %d",
 				s,
-				ctx.Now.SequenceNumber,
+				ctx.Head.SequenceNumber,
 			)
 		}
 	}
@@ -224,7 +246,7 @@ func locateWithAbsoluteStart(
 	// Handle duration end
 	if duration, ok := end.(time.Duration); ok {
 		endTime := startMoment.TargetTime.Add(duration)
-		endMoment, err := pb.LocateMoment(endTime, *ctx.Reference, true)
+		endMoment, err := pb.LocateMoment(endTime, ctx.Reference, true)
 		if err != nil {
 			return nil, fmt.Errorf("locating end moment: %w", err)
 		}
@@ -250,7 +272,7 @@ func locateWithDurationStart(
 			return nil, NewResolveMomentError(end, true, err)
 		}
 		startTime := endMoment.TargetTime.Add(-startDuration)
-		startMoment, err := pb.LocateMoment(startTime, *ctx.Reference, false)
+		startMoment, err := pb.LocateMoment(startTime, ctx.Reference, false)
 		if err != nil {
 			return nil, fmt.Errorf("locating start moment: %w", err)
 		}
@@ -287,10 +309,10 @@ func resolveTime(
 	ctx *LocateContext,
 	isEnd bool,
 ) (*playback.RewindMoment, error) {
-	if t.After(ctx.Now.EndTime()) {
+	if t.After(ctx.Head.EndTime()) {
 		return nil, fmt.Errorf("time %v is after current moment", t)
 	}
-	moment, err := pb.LocateMoment(t, *ctx.Reference, isEnd)
+	moment, err := pb.LocateMoment(t, ctx.Reference, isEnd)
 	if err != nil {
 		return nil, fmt.Errorf("locating moment at %v: %w", t, err)
 	}
@@ -304,11 +326,11 @@ func resolveSequenceNumber(
 	ctx *LocateContext,
 	isEnd bool,
 ) (*playback.RewindMoment, error) {
-	if sq > ctx.Now.SequenceNumber {
+	if sq > ctx.Head.SequenceNumber {
 		return nil, fmt.Errorf(
 			"segment %d is not yet available, current: %d",
 			sq,
-			ctx.Now.SequenceNumber,
+			ctx.Head.SequenceNumber,
 		)
 	}
 
@@ -322,7 +344,7 @@ func resolveSequenceNumber(
 		targetTime = metadata.EndTime()
 	}
 
-	return playback.NewRewindMoment(targetTime, metadata, isEnd, false), nil
+	return playback.NewRewindMoment(targetTime, *metadata, isEnd, false), nil
 }
 
 // resolveKeywordMoment resolves a keyword into a RewindMoment.
@@ -334,17 +356,37 @@ func resolveKeyword(
 ) (*playback.RewindMoment, error) {
 	switch keyword {
 	case input.NowKeyword:
-		sq, err := pb.RequestHeadSeqNum()
-		if err != nil {
-			return nil, fmt.Errorf("requesting head segment: %w", err)
+		if ctx.PinnedMoment != nil {
+			return ctx.PinnedMoment, nil
 		}
 
-		now, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
-		if err != nil {
-			return nil, playback.NewSegmentMetadataFetchError(sq, err)
+		if ctx.PinnedTime != nil {
+			m, err := resolveTime(pb, *ctx.PinnedTime, ctx, isEnd)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"resolving pinned time %q: %w",
+					ctx.PinnedTime,
+					err,
+				)
+			}
+			ctx.PinnedMoment = m
+		} else {
+			ctx.PinnedMoment = playback.NewRewindMoment(
+				ctx.Head.EndTime(),
+				ctx.Head,
+				isEnd,
+				false,
+			)
 		}
 
-		return playback.NewRewindMoment(now.EndTime(), now, isEnd, false), nil
+		slog.Debug(
+			"resolved now keyword",
+			slog.Int("sq", ctx.PinnedMoment.Metadata.SequenceNumber),
+			slog.Time("time", ctx.PinnedMoment.TargetTime),
+		)
+
+		return ctx.PinnedMoment, nil
+
 	default:
 		return nil, fmt.Errorf("unknown keyword: '%s'", keyword)
 	}
@@ -363,7 +405,7 @@ func resolveExpression(
 		if expr.Operator == input.OpPlus {
 			return nil, fmt.Errorf("'%s' cannot be used with plus", input.NowKeyword)
 		}
-		moment, err := resolveMoment(pb, expr.Left, nil, false)
+		moment, err := resolveMoment(pb, expr.Left, ctx, false)
 		if err != nil {
 			return nil, NewResolveMomentError(input.NowKeyword, isEnd, err)
 		}

@@ -64,7 +64,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	locateCtx, err := actions.NewLocateContext(h.Playback, nil)
+	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
@@ -103,7 +103,7 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
-	locateCtx, err := actions.NewLocateContext(h.Playback, nil)
+	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}

@@ -12,13 +12,13 @@ import (
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
-type MetadataMap = map[playback.SequenceNumber]*segment.Metadata
+type MetadataMap = map[playback.SequenceNumber]segment.Metadata
 
 func GenerateFakeSegmentMetadata(count int, duration time.Duration) MetadataMap {
 	t := time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)
 	out := make(MetadataMap, count)
 	for i := range count {
-		out[i] = &segment.Metadata{
+		out[i] = segment.Metadata{
 			SequenceNumber:    i,
 			IngestionWalltime: t.Add(time.Duration(i) * duration),
 			Duration:          duration,
@@ -37,8 +37,8 @@ func MakeSegmentMetadataHandler(
 		if err != nil {
 			t.Fatalf("parsing sq in request URL: %v", err)
 		}
-		testMetadata := data[sq]
-		if testMetadata == nil {
+		testMetadata, ok := data[sq]
+		if !ok {
 			t.Fatalf("no test metadata for sq=%d", sq)
 		}
 		w.Write(

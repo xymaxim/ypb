@@ -36,6 +36,8 @@ type TimelapseConfig struct {
 }
 
 func (c *Timelapse) Run() error {
+	pinnedTime := time.Now().UTC()
+
 	app := apppkg.NewApp()
 
 	config, err := c.parseAndValidateInputs()
@@ -47,7 +49,7 @@ func (c *Timelapse) Run() error {
 		return err
 	}
 
-	interval, locateContext, err := c.locateInterval(app.Playback, config)
+	interval, locateContext, err := c.locateInterval(app.Playback, pinnedTime, config)
 	if err != nil {
 		return err
 	}
@@ -104,11 +106,12 @@ func (c *Timelapse) parseAndValidateInputs() (*TimelapseConfig, error) {
 
 func (c *Timelapse) locateInterval(
 	playback playback.Playbacker,
+	pinnedTime time.Time,
 	config *TimelapseConfig,
 ) (*playback.RewindInterval, *actions.LocateContext, error) {
 	fmt.Print("(<<) Locating start and end moments... ")
 
-	locateContext, err := actions.NewLocateContext(playback, nil)
+	locateContext, err := actions.NewLocateContext(playback, nil, &pinnedTime)
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}
