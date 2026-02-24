@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-f96dc9e5.js";
+            window.path_to_searchindex_js = "searchindex-4fae83d9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -402,7 +402,7 @@ instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 </blockquote>
 <h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
 <p>Now the intriguing part: playing the excerpt.</p>
-<pre><code class="language-shell">ffplay -protocol_whitelist file,http,https,tcp,tls \
+<pre><code class="language-shell">ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
   localhost:8080/mpd/30m--now
 </code></pre>
 <p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
