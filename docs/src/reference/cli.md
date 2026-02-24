@@ -222,13 +222,14 @@ available rewind window.
 
 * `-i/--interval <start>/now`
 
-To reference the current moment, use the now keyword for the end part:
+To reference the current moment, use the `now` keyword.
 
-    --interval 10:30/now
+Its exact meaning depends on the running mode:
 
-More precisely, this refers to the most recently available media segment, which
-typically corresponds to the current moment. However, if a live stream has
-stalled, new media segments are updated.
+| Mode       | Commands              | Resolves to                                |
+|------------|-----------------------|--------------------------------------------|
+| Strict     | `capture`, `download` | App start-up time                          |
+| Non-strict | `serve`               | End of the most recently available segment |
 
 ## Specifying the output filename
 
