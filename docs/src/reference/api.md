@@ -2,6 +2,22 @@
 
 ## Endpoints
 
+### /info
+
+Returns information about the YouTube live stream being served.
+
+#### Response
+
+```json
+{
+    "id": "0ujj4HexRpk",
+    "title": "Stream title",
+    "channelId": "UC6OWqjtFTsdtHAAuGWv1kPw",
+    "channelTitle": "Channel name",
+    "actualStartTime": "2026-01-02T10:20:30Z"
+}
+```
+
 ### /mpd/\{interval\}
 
 Returns an MPEG-DASH manifest for the given interval. The manifest is *static*

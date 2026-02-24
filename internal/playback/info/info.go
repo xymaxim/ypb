@@ -7,7 +7,9 @@ import (
 type VideoInformation struct {
 	ID              string
 	Title           string
-	Channel         string
+	ChannelID       string
+	ChannelTitle    string
+	ActualStartTime time.Time
 	SegmentDuration time.Duration
 	AudioStreams    []AudioStream
 	VideoStreams    []VideoStream

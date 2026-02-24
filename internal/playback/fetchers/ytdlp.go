@@ -23,9 +23,11 @@ type YtdlpAdditionals struct {
 }
 
 type jsonDump struct {
-	Title   string   `json:"title"`
-	Channel string   `json:"channel"`
-	Formats []format `json:"formats"`
+	Title            string   `json:"title"`
+	ChannelID        string   `json:"channel_id"`
+	ChannelTitle     string   `json:"channel"`
+	ReleaseTimestamp int64    `json:"release_timestamp"`
+	Formats          []format `json:"formats"`
 }
 
 type format struct {
@@ -107,7 +109,9 @@ func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, e
 	information := &info.VideoInformation{
 		ID:              fetcher.VideoID,
 		Title:           dump.Title,
-		Channel:         dump.Channel,
+		ChannelID:       dump.ChannelID,
+		ChannelTitle:    dump.ChannelTitle,
+		ActualStartTime: time.Unix(dump.ReleaseTimestamp, 0).UTC(),
 		SegmentDuration: segmentDuration,
 		AudioStreams:    audioStreams,
 		VideoStreams:    videoStreams,

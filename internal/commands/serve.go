@@ -25,6 +25,9 @@ func (c *Serve) Run() error {
 	}
 
 	mux := http.NewServeMux()
+	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
+		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
+	)
 	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
 		(&apppkg.MPDHandler{
 			Playback:      app.Playback,

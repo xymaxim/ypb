@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	SegmentPath = "/segments/itag/{itag}/sq/{sq}"
+	InfoPath    = "/info"
 	MPDPath     = "/mpd/{interval}"
+	SegmentPath = "/segments/itag/{itag}/sq/{sq}"
 )
 
 const (

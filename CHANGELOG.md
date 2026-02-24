@@ -4,6 +4,12 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## Unreleased
+
+### Added
+
+- New `/info` endpoint returning basic info about YouTube live stream
+
 ## [2026.2.24](https://github.com/xymaxim/ypb/releases/tag/v2026.2.24)
 
 ### Added
