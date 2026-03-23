@@ -19,9 +19,13 @@ player, or download them as local files.
 
 ## Overview
 
-Ypb can run in two modes: serve or download. Run the streaming proxy server
-and make rewind requests to compose static or dynamic MPEG-DASH manifests, or
-download excerpts to local files with a single command.
+Ypb runs in two modes: serve and download. Serve mode runs a local proxy to
+locate the requested moments in the stream precisely, generates MPEG-DASH
+manifests, and serves media segments with retry handling for HTTP
+errors. Download mode saves excerpts to local files with a single command, using
+the same proxy internally to compose manifests before handing off to yt-dlp's
+general extractor. Both modes rely on yt-dlp for fetching video information and
+solving JavaScript challenges.
 
 ## Installation
 
