@@ -89,11 +89,14 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return fmt.Errorf("composing static mpd: %w", err)
 	}
 
+	ea := rewindInterval.End.ActualTime.UTC()
+	et := rewindInterval.End.TargetTime.UTC()
+
 	return h.serveMPD(w, r, mpd, intervalInfo{
-		StartActualTime: rewindInterval.Start.ActualTime,
-		StartTargetTime: rewindInterval.Start.TargetTime,
-		EndActualTime:   &rewindInterval.End.ActualTime,
-		EndTargetTime:   &rewindInterval.End.TargetTime,
+		StartActualTime: rewindInterval.Start.ActualTime.UTC(),
+		StartTargetTime: rewindInterval.Start.TargetTime.UTC(),
+		EndActualTime:   &ea,
+		EndTargetTime:   &et,
 	})
 }
 
@@ -122,10 +125,9 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 	if err != nil {
 		return fmt.Errorf("composing dynamic mpd: %w", err)
 	}
-
 	return h.serveMPD(w, r, out, intervalInfo{
-		StartActualTime: rewindMoment.ActualTime,
-		StartTargetTime: rewindMoment.TargetTime,
+		StartActualTime: rewindMoment.ActualTime.UTC(),
+		StartTargetTime: rewindMoment.TargetTime.UTC(),
 	})
 }
 
