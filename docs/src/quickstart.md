@@ -162,7 +162,7 @@ familiar `yt-dlp` options or even your existing configuration file.
 You can pass options directly to `yt-dlp` by adding them after the `--`
 separator.
 
-> See [Pass options to yt-dlp](reference/cli.md#ytdlp-options) for more details
+> See [Pass options to yt-dlp](reference/cli.md#passing-options-to-yt-dlp) for more details
 > and examples.
 
 For example, let's use the `yt-dlp`'s `-f` option to download only the best
