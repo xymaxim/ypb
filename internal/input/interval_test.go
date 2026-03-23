@@ -50,10 +50,44 @@ func TestParseIntervalPart(t *testing.T) {
 			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 0, time.Local),
 		},
 		{
+			name:    "local full date and time with 123 ms",
+			input:   "2026-01-02T10:20:30.123",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 123*1e6, time.Local),
+		},
+		{
+			name:    "local full date and time with 1 ms",
+			input:   "2026-01-02T10:20:30.001",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 1*1e6, time.Local),
+		},
+		{
+			name:    "local full date and time with 123.456 ms",
+			input:   "2026-01-02T10:20:30.123456",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 123456*1e3, time.Local),
+		},
+		{
+			name:    "local full date and time with 123.4567 ms",
+			input:   "2026-01-02T10:20:30.1234567",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 123456*1e3, time.Local),
+		},
+		{
 			name:      "zulu full date and time",
 			input:     "2026-01-02T10:20:30Z",
 			wantErr:   false,
 			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+		},
+		{
+			name:      "zulu full date and time with 123 ms",
+			input:     "2026-01-02T10:20:30.123Z",
+			wantErr:   false,
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 123*1e6, time.UTC),
 		},
 		{
 			name:    "local date and time with hours and minutes",

@@ -141,11 +141,29 @@ func parseDateAndTime(input string) ParserResult {
 	hours := digits(2)
 	minutes := gomme.Preceded(gomme.Char[string](':'), digits(2))
 	seconds := gomme.Optional(gomme.Preceded(gomme.Char[string](':'), digits(2)))
+	fractional := gomme.Optional(
+		gomme.Map(
+			gomme.Preceded(gomme.Char[string]('.'), gomme.Digit1[string]()),
+			func(s string) (int, error) {
+				if len(s) > 6 {
+					s = s[:6]
+				}
+				for len(s) < 9 {
+					s += "0"
+				}
+				ns, err := strconv.Atoi(s)
+				if err != nil {
+					return 0, err
+				}
+				return ns, nil
+			},
+		),
+	)
 
 	timeOnly := gomme.Map(
-		gomme.Sequence(hours, minutes, seconds),
+		gomme.Sequence(hours, minutes, seconds, fractional),
 		func(parts []int) (MomentValue, error) {
-			hh, mm, ss := parts[0], parts[1], parts[2]
+			hh, mm, ss, ns := parts[0], parts[1], parts[2], parts[3]
 			now := time.Now()
 			return time.Date(
 				now.Year(),
@@ -154,7 +172,7 @@ func parseDateAndTime(input string) ParserResult {
 				hh,
 				mm,
 				ss,
-				0,
+				ns,
 				time.UTC,
 			), nil
 		},
@@ -238,7 +256,7 @@ func parseDateAndTime(input string) ParserResult {
 						p.Right.(time.Time).Hour(),
 						p.Right.(time.Time).Minute(),
 						p.Right.(time.Time).Second(),
-						0,
+						p.Right.(time.Time).Nanosecond(),
 						time.UTC,
 					), nil
 				},
