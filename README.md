@@ -15,7 +15,7 @@ player, or download them as local files.
 - Rewind precisely to past moments far beyond the web player’s limits
 - Play excerpts immediately without downloading
 - Works with any MPEG-DASH compatible player or downloader
-- Leverages `yt-dlp` for reliable video info extraction and downloading
+- Uses [yt-dlp](https://github.com/yt-dlp/yt-dlp/) to reliably fetch info and download media
 
 ## Overview
 
