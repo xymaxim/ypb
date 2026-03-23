@@ -25,10 +25,10 @@ type intervalInfo struct {
 type mpdMetadata struct {
 	VideoTitle      string     `json:"videoTitle"`
 	VideoURL        string     `json:"videoUrl"`
-	StartActualTime time.Time  `json:"startActual"`
-	StartTargetTime time.Time  `json:"startTarget"`
-	EndActualTime   *time.Time `json:"endActual,omitempty"`
-	EndTargetTime   *time.Time `json:"endTarget,omitempty"`
+	StartActualTime time.Time  `json:"startActualTime"`
+	StartTargetTime time.Time  `json:"startTargetTime"`
+	EndActualTime   *time.Time `json:"endActualTime,omitempty"`
+	EndTargetTime   *time.Time `json:"endTargetTime,omitempty"`
 }
 
 type mpdResponse struct {
