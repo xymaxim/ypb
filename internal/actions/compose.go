@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/mpd"
@@ -61,7 +62,7 @@ func ComposeDynamic(
 			SegmentDuration: pb.Info().SegmentDuration,
 			PTS:             pts,
 		},
-		AvailabilityStartTime: moment.ActualTime,
+		AvailabilityStartTime: time.Now(),
 	}, pb.Info())
 	if err != nil {
 		return nil, fmt.Errorf("composing mpd: %w", err)
