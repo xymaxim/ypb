@@ -49,7 +49,7 @@ Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T054630+00_10m.mp4
 Or download a similar excerpt from one day ago:
 
 ```shell
-$ ypb download --interval now-1d10m/now-1d Mm_zVDDUeNA && ls
+$ ypb download --interval 'now - 1d10m/now - 1d' Mm_zVDDUeNA && ls
 Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260207T054630+00_10m.mp4
 ``` 
 
