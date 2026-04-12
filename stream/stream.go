@@ -30,7 +30,7 @@ func NewStream(ctx context.Context, videoID string, port int) (*Stream, error) {
 
 	app := apppkg.NewApp()
 
-	if err := app.Initialize(videoID, &apppkg.Config{Port: port}); err != nil {
+	if err := app.Initialize(ctx, videoID, &apppkg.Config{Port: port}); err != nil {
 		return nil, fmt.Errorf("initializing app: %w", err)
 	}
 

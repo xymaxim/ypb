@@ -2,6 +2,7 @@ package actions
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -130,8 +131,7 @@ func extractFrame(
 	at := moment.TargetTime.Sub(moment.Metadata.Time()).Seconds()
 	slog.Debug("extracting frame", "sq", moment.Metadata.SequenceNumber, "t", at)
 
-	result, err := runner.RunWith(
-		[]exec.Option{
+	result, err := runner.RunWith(context.Background(), []exec.Option{
 			exec.WithQuiet(),
 			exec.WithStdin(bytes.NewReader(segment)),
 		},
@@ -174,7 +174,7 @@ func extractLastFrame(outputPath string, segment []byte, runner exec.Runner) err
 	}
 
 	// Step 1. Remux a segment to a temp file
-	remuxResult, remuxErr := runner.RunWith(
+	remuxResult, remuxErr := runner.RunWith(context.Background(),
 		[]exec.Option{
 			exec.WithQuiet(),
 			exec.WithStdin(bytes.NewReader(segment)),
@@ -190,7 +190,7 @@ func extractLastFrame(outputPath string, segment []byte, runner exec.Runner) err
 	}
 
 	// Step 2. Extract the last frame from a temp file
-	extractResult, extractErr := runner.RunWith(
+	extractResult, extractErr := runner.RunWith(context.Background(),
 		[]exec.Option{exec.WithQuiet()},
 		"-hide_banner", "-y",
 		"-sseof", "-1",

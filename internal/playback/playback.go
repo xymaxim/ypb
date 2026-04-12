@@ -2,6 +2,7 @@ package playback
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -56,8 +57,8 @@ type Playback struct {
 	info     info.VideoInformation
 }
 
-func NewPlayback(videoID string, fetcher fetchers.Fetcher, client *http.Client) (*Playback, error) {
-	information, _, err := fetcher.FetchInfo()
+func NewPlayback(ctx context.Context, videoID string, fetcher fetchers.Fetcher, client *http.Client) (*Playback, error) {
+	information, _, err := fetcher.FetchInfo(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("fetching video info for playback: %w", err)
 	}
@@ -93,7 +94,7 @@ func (pb *Playback) Info() info.VideoInformation {
 
 func (pb *Playback) RefreshBaseURLs() error {
 	slog.Debug("refreshing base URLs")
-	baseURLs, err := pb.fetcher.FetchBaseURLs()
+	baseURLs, err := pb.fetcher.FetchBaseURLs(context.Background())
 	if err != nil {
 		return fmt.Errorf("fetching base URLs: %w", err)
 	}

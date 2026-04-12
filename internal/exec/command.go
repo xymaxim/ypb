@@ -2,6 +2,7 @@ package exec
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -12,7 +13,7 @@ import (
 // Runner defines the interface for executing commands.
 type Runner interface {
 	Run(args ...string) error
-	RunWith(options []Option, args ...string) (*RunResult, error)
+	RunWith(ctx context.Context, options []Option, args ...string) (*RunResult, error)
 }
 
 // RunResult contains the captured output from a command.
@@ -73,12 +74,13 @@ func NewCommandRunner(path string) *CommandRunner {
 
 // Run executes the command with the given arguments and prints output to stdout/stderr.
 func (r *CommandRunner) Run(args ...string) error {
-	_, err := r.RunWith(nil, args...)
+	_, err := r.RunWith(context.Background(), nil, args...)
 	return err
 }
 
-// RunWith executes the command with functional options and returns captured output if requested.
-func (r *CommandRunner) RunWith(options []Option, args ...string) (*RunResult, error) {
+// RunWith executes the command with a context, functional options, and returns captured output if requested.
+// The subprocess is killed when ctx is done.
+func (r *CommandRunner) RunWith(ctx context.Context, options []Option, args ...string) (*RunResult, error) {
 	config := RunConfig{
 		OnStdout: r.PrintCallback,
 		OnStderr: r.PrintCallback,
@@ -88,7 +90,7 @@ func (r *CommandRunner) RunWith(options []Option, args ...string) (*RunResult, e
 		o(&config)
 	}
 
-	err := r.runWithConfig(config, args...)
+	err := r.runWithConfig(ctx, config, args...)
 
 	var result *RunResult
 	if config.CaptureOutput {
@@ -106,9 +108,9 @@ func (r *CommandRunner) PrintCallback(b []byte) {
 	os.Stdout.Write(b)
 }
 
-// runWithOptions executes the command with the given config and arguments.
-func (r *CommandRunner) runWithConfig(config RunConfig, args ...string) error {
-	cmd := execpkg.Command(r.Path, args...) // #nosec: G204
+// runWithConfig executes the command with the given config and arguments.
+func (r *CommandRunner) runWithConfig(ctx context.Context, config RunConfig, args ...string) error {
+	cmd := execpkg.CommandContext(ctx, r.Path, args...) // #nosec: G204
 
 	// Setup stdin if provided
 	if config.Stdin != nil {
@@ -139,6 +141,9 @@ func (r *CommandRunner) runWithConfig(config RunConfig, args ...string) error {
 	handle(stderr, config.OnStderr)
 
 	if err := cmd.Wait(); err != nil {
+		if ctx.Err() != nil {
+			return fmt.Errorf("running command: %w (context: %v)", err, ctx.Err())
+		}
 		return fmt.Errorf("running command: %w", err)
 	}
 	return nil

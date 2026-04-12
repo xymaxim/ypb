@@ -1,6 +1,7 @@
 package playback_test
 
 import (
+	"context"
 	"encoding/csv"
 	"errors"
 	"io"
@@ -103,6 +104,7 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 	defer ts.Close()
 
 	pb, err := playback.NewPlayback(
+		context.Background(),
 		testutil.TestVideoID,
 		&testutil.MockFetcher{
 			VideoID: testutil.TestVideoID,
@@ -197,7 +199,7 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
 	// Test cases
 	testCases := []struct {
@@ -308,7 +310,7 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
 	// Test cases
 	testCases := []struct {
@@ -405,7 +407,7 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
 
 	// Test cases
 	testCases := []struct {

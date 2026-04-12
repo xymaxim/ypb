@@ -2,6 +2,7 @@ package fetchers
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -42,8 +43,8 @@ type format struct {
 	HTTPHeaders       map[string]string `json:"http_headers"`
 }
 
-func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, error) {
-	out, err := fetcher.runDumpJSON()
+func (fetcher *YtdlpFetcher) FetchInfo(ctx context.Context) (*info.VideoInformation, Additionals, error) {
+	out, err := fetcher.runDumpJSON(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("dumping video info: %w", err)
 	}
@@ -123,8 +124,8 @@ func (fetcher *YtdlpFetcher) FetchInfo() (*info.VideoInformation, Additionals, e
 	return information, additionals, nil
 }
 
-func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
-	out, err := fetcher.runDumpJSON()
+func (fetcher *YtdlpFetcher) FetchBaseURLs(ctx context.Context) (map[string]string, error) {
+	out, err := fetcher.runDumpJSON(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("dumping video info: %w", err)
 	}
@@ -147,10 +148,11 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs() (map[string]string, error) {
 	return baseURLs, nil
 }
 
-func (fetcher *YtdlpFetcher) runDumpJSON() (string, error) {
+func (fetcher *YtdlpFetcher) runDumpJSON(ctx context.Context) (string, error) {
 	var outBuf bytes.Buffer
 
 	_, err := fetcher.Runner.RunWith(
+		ctx,
 		[]exec.Option{
 			exec.WithCallbacks(
 				func(chunk []byte) { outBuf.Write(chunk) },

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -29,7 +30,7 @@ func CollectVideoInfo(id string, app *apppkg.App, port int) error {
 
 	fmt.Printf("(<<) Collecting info about %s...\n", url)
 	cfg := &apppkg.Config{Port: port}
-	if err := app.Initialize(id, cfg); err != nil {
+	if err := app.Initialize(context.Background(), id, cfg); err != nil {
 		return fmt.Errorf("initializing app: %w", err)
 	}
 

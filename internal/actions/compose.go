@@ -2,6 +2,7 @@ package actions
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -80,8 +81,7 @@ func probeSegmentPTS(
 		return 0, fmt.Errorf("downloading probe segment: %w", err)
 	}
 
-	result, err := runner.RunWith(
-		[]exec.Option{
+	result, err := runner.RunWith(context.Background(), []exec.Option{
 			exec.WithQuiet(),
 			exec.WithStdin(bytes.NewReader(buf.Bytes())),
 		},

@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"context"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/playback/fetchers"
@@ -20,7 +21,7 @@ var (
 	}
 )
 
-func (f *MockFetcher) FetchInfo() (*info.VideoInformation, fetchers.Additionals, error) {
+func (f *MockFetcher) FetchInfo(_ context.Context) (*info.VideoInformation, fetchers.Additionals, error) {
 	return &info.VideoInformation{
 		ID:              TestVideoID,
 		Title:           "Test title",
@@ -65,7 +66,7 @@ func (f *MockFetcher) FetchInfo() (*info.VideoInformation, fetchers.Additionals,
 	}, nil, nil
 }
 
-func (f *MockFetcher) FetchBaseURLs() (map[string]string, error) {
+func (f *MockFetcher) FetchBaseURLs(_ context.Context) (map[string]string, error) {
 	return map[string]string{
 		"136": "https://test/segments/itag/136/mime/video%2Fmp4/dur/2.000/new",
 		"137": "https://test/segments/itag/137/mime/video%2Fmp4/dur/2.000/new",

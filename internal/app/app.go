@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -45,10 +46,11 @@ func NewApp() *App {
 	}
 }
 
-func (a *App) Initialize(videoID string, cfg *Config) error {
+func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config) error {
 	a.Config = cfg
 
 	pb, err := playback.NewPlayback(
+		ctx,
 		videoID,
 		&fetchers.YtdlpFetcher{
 			VideoID: videoID,

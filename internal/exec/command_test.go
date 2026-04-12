@@ -2,6 +2,7 @@ package exec_test
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"os"
 	"runtime"
@@ -102,7 +103,7 @@ func TestCommandRunner_RunWith_Quiet(t *testing.T) {
 	runner := exec.NewCommandRunner(shell)
 
 	gotConsoleStdout, gotConsoleStderr := captureConsoleOutput(t, func() {
-		got, err := runner.RunWith([]exec.Option{exec.WithQuiet()}, args...)
+		got, err := runner.RunWith(context.Background(), []exec.Option{exec.WithQuiet()}, args...)
 		if err != nil {
 			t.Fatalf("RunWith() error = %v, want nil", err)
 		}
@@ -135,6 +136,7 @@ func TestCommandRunner_RunWith_Callbacks(t *testing.T) {
 	var buf bytes.Buffer
 	gotConsoleStdout, _ := captureConsoleOutput(t, func() {
 		_, err := runner.RunWith(
+			context.Background(),
 			[]exec.Option{
 				exec.WithCallbacks(
 					func(b []byte) { buf.Write(b) },
