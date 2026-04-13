@@ -24,13 +24,20 @@ type Stream struct {
 	done   chan struct{}
 }
 
-func NewStream(ctx context.Context, videoID string, port int) (*Stream, error) {
+type StreamConfig struct {
+	OnYtdlpStdout func([]byte)
+}
+
+func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	app := apppkg.NewApp()
 
-	if err := app.Initialize(ctx, videoID, &apppkg.Config{Port: port}); err != nil {
+	if err := app.Initialize(ctx, videoID, &apppkg.Config{
+		Port:          port,
+		OnYtdlpStdout: cfg.OnYtdlpStdout,
+	}); err != nil {
 		return nil, fmt.Errorf("initializing app: %w", err)
 	}
 

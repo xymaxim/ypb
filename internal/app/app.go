@@ -34,7 +34,8 @@ type App struct {
 }
 
 type Config struct {
-	Port int
+	Port          int
+	OnYtdlpStdout func([]byte)
 }
 
 func NewApp() *App {
@@ -53,8 +54,9 @@ func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config) error
 		ctx,
 		videoID,
 		&fetchers.YtdlpFetcher{
-			VideoID: videoID,
-			Runner:  a.YtdlpRunner,
+			VideoID:  videoID,
+			Runner:   a.YtdlpRunner,
+			OnStdout: cfg.OnYtdlpStdout,
 		},
 		nil,
 	)

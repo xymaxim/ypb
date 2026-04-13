@@ -15,8 +15,9 @@ import (
 )
 
 type YtdlpFetcher struct {
-	VideoID string
-	Runner  exec.Runner
+	VideoID  string
+	Runner   exec.Runner
+	OnStdout func([]byte)
 }
 
 type YtdlpAdditionals struct {
@@ -151,13 +152,18 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs(ctx context.Context) (map[string]stri
 func (fetcher *YtdlpFetcher) runDumpJSON(ctx context.Context) (string, error) {
 	var outBuf bytes.Buffer
 
+	stdoutFn := func(chunk []byte) { outBuf.Write(chunk) }
+	if fetcher.OnStdout != nil {
+		stdoutFn = func(chunk []byte) {
+			fetcher.OnStdout(chunk)
+			outBuf.Write(chunk)
+		}
+	}
+
 	_, err := fetcher.Runner.RunWith(
 		ctx,
 		[]exec.Option{
-			exec.WithCallbacks(
-				func(chunk []byte) { outBuf.Write(chunk) },
-				fetcher.Runner.(*exec.CommandRunner).PrintCallback,
-			),
+			exec.WithCallbacks(stdoutFn, fetcher.Runner.(*exec.CommandRunner).PrintCallback),
 		},
 		"--dump-json",
 		"--live-from-start",
