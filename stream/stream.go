@@ -30,7 +30,6 @@ type StreamConfig struct {
 
 func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	app := apppkg.NewApp()
 
