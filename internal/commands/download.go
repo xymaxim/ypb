@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -102,7 +103,7 @@ func (c *Download) Run() error {
 	)
 
 	fmt.Println("(<<) Downloading and merging media...")
-	if err := app.YtdlpRunner.Run(args...); err != nil {
+	if err := app.YtdlpRunner.Run(context.Background(), args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
 

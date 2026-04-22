@@ -55,7 +55,7 @@ func TestCommandRunner_Run(t *testing.T) {
 	runner := exec.NewCommandRunner(shell)
 
 	gotConsoleStdout, _ := captureConsoleOutput(t, func() {
-		if err := runner.Run(args...); err != nil {
+		if err := runner.Run(context.Background(), args...); err != nil {
 			t.Errorf("Run() error = %v, want nil", err)
 		}
 	})
@@ -103,7 +103,10 @@ func TestCommandRunner_RunWith_Quiet(t *testing.T) {
 	runner := exec.NewCommandRunner(shell)
 
 	gotConsoleStdout, gotConsoleStderr := captureConsoleOutput(t, func() {
-		got, err := runner.RunWith(context.Background(), []exec.Option{exec.WithQuiet()}, args...)
+		got, err := runner.RunWith(
+			context.Background(),
+			[]exec.Option{exec.WithQuiet()},
+			args...)
 		if err != nil {
 			t.Fatalf("RunWith() error = %v, want nil", err)
 		}

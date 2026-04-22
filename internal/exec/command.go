@@ -12,7 +12,7 @@ import (
 
 // Runner defines the interface for executing commands.
 type Runner interface {
-	Run(args ...string) error
+	Run(ctx context.Context, args ...string) error
 	RunWith(ctx context.Context, options []Option, args ...string) (*RunResult, error)
 }
 
@@ -72,15 +72,19 @@ func NewCommandRunner(path string) *CommandRunner {
 	return &CommandRunner{Path: path, Name: filepath.Base(path)}
 }
 
-// Run executes the command with the given arguments and prints output to stdout/stderr.
-func (r *CommandRunner) Run(args ...string) error {
-	_, err := r.RunWith(context.Background(), nil, args...)
+// Run executes the command with a context and the given arguments and prints output to stdout/stderr.
+func (r *CommandRunner) Run(ctx context.Context, args ...string) error {
+	_, err := r.RunWith(ctx, nil, args...)
 	return err
 }
 
 // RunWith executes the command with a context, functional options, and returns captured output if requested.
 // The subprocess is killed when ctx is done.
-func (r *CommandRunner) RunWith(ctx context.Context, options []Option, args ...string) (*RunResult, error) {
+func (r *CommandRunner) RunWith(
+	ctx context.Context,
+	options []Option,
+	args ...string,
+) (*RunResult, error) {
 	config := RunConfig{
 		OnStdout: r.PrintCallback,
 		OnStderr: r.PrintCallback,
