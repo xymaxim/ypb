@@ -169,10 +169,6 @@ func extractLastFrame(outputPath string, segment []byte, runner exec.Runner) err
 	defer os.Remove(tempFile.Name())
 	defer tempFile.Close()
 
-	if err := tempFile.Close(); err != nil {
-		return fmt.Errorf("closing temp file: %w", err)
-	}
-
 	// Step 1. Remux a segment to a temp file
 	remuxResult, remuxErr := runner.RunWith(context.Background(),
 		[]exec.Option{
