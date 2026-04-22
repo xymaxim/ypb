@@ -1,11 +1,11 @@
 package fetchers
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 
@@ -15,9 +15,9 @@ import (
 )
 
 type YtdlpFetcher struct {
-	VideoID  string
-	Runner   exec.Runner
-	OnStdout func([]byte)
+	VideoID string
+	Runner  exec.Runner
+	OnPrint func([]byte)
 }
 
 type YtdlpAdditionals struct {
@@ -44,7 +44,9 @@ type format struct {
 	HTTPHeaders       map[string]string `json:"http_headers"`
 }
 
-func (fetcher *YtdlpFetcher) FetchInfo(ctx context.Context) (*info.VideoInformation, Additionals, error) {
+func (fetcher *YtdlpFetcher) FetchInfo(
+	ctx context.Context,
+) (*info.VideoInformation, Additionals, error) {
 	out, err := fetcher.runDumpJSON(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("dumping video info: %w", err)
@@ -150,28 +152,43 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs(ctx context.Context) (map[string]stri
 }
 
 func (fetcher *YtdlpFetcher) runDumpJSON(ctx context.Context) (string, error) {
-	var outBuf bytes.Buffer
-
-	stdoutFn := func(chunk []byte) { outBuf.Write(chunk) }
-	if fetcher.OnStdout != nil {
-		stdoutFn = func(chunk []byte) {
-			fetcher.OnStdout(chunk)
-			outBuf.Write(chunk)
+	printCallback := func(chunk []byte) {
+		fetcher.Runner.(*exec.CommandRunner).PrintCallback(chunk)
+		if fetcher.OnPrint != nil {
+			fetcher.OnPrint(chunk)
 		}
 	}
 
-	_, err := fetcher.Runner.RunWith(
+	tempFile, err := os.CreateTemp("", "ypb-*")
+	if err != nil {
+		return "", fmt.Errorf("creating temp file: %w", err)
+	}
+	defer tempFile.Close()
+
+	// yt-dlp appends a suffix to the output filename for some reason
+	jsonPath := tempFile.Name() + ".info.json"
+	defer os.Remove(tempFile.Name())
+	defer os.Remove(jsonPath)
+
+	_, err = fetcher.Runner.RunWith(
 		ctx,
 		[]exec.Option{
-			exec.WithCallbacks(stdoutFn, fetcher.Runner.(*exec.CommandRunner).PrintCallback),
+			exec.WithCallbacks(printCallback, printCallback),
 		},
-		"--dump-json",
 		"--live-from-start",
+		"--skip-download",
+		"--write-info-json",
+		"-o", "infojson:"+tempFile.Name(),
 		fetcher.VideoID,
 	)
 	if err != nil {
 		return "", err
 	}
 
-	return outBuf.String(), nil
+	content, err := os.ReadFile(jsonPath)
+	if err != nil {
+		return "", fmt.Errorf("reading output file: %w", err)
+	}
+
+	return string(content), nil
 }
