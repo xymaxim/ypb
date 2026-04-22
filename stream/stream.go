@@ -25,7 +25,7 @@ type Stream struct {
 }
 
 type StreamConfig struct {
-	OnYtdlpStdout func([]byte)
+	OnPrint func([]byte)
 }
 
 func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
@@ -34,8 +34,8 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 	app := apppkg.NewApp()
 
 	if err := app.Initialize(ctx, videoID, &apppkg.Config{
-		Port:          port,
-		OnYtdlpStdout: cfg.OnYtdlpStdout,
+		Port:    port,
+		OnPrint: cfg.OnPrint,
 	}); err != nil {
 		return nil, fmt.Errorf("initializing app: %w", err)
 	}
