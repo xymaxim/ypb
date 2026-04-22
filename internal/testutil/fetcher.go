@@ -21,7 +21,9 @@ var (
 	}
 )
 
-func (f *MockFetcher) FetchInfo(_ context.Context) (*info.VideoInformation, fetchers.Additionals, error) {
+func (f *MockFetcher) FetchInfo(
+	_ context.Context,
+) (*info.VideoInformation, fetchers.Additionals, error) {
 	return &info.VideoInformation{
 		ID:              TestVideoID,
 		Title:           "Test title",

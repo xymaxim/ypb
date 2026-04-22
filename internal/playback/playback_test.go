@@ -54,7 +54,12 @@ func TestPlayback_RequestHeadSeqNum_Success(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(
+		context.Background(),
+		testutil.TestVideoID,
+		fetcher,
+		testutil.NewClient(ts.URL),
+	)
 
 	actual, err := pb.RequestHeadSeqNum()
 	require.NoError(t, err)
@@ -68,7 +73,12 @@ func TestPlayback_RequestHeadSeqNum_MissingHeader(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(
+		context.Background(),
+		testutil.TestVideoID,
+		fetcher,
+		testutil.NewClient(ts.URL),
+	)
 
 	_, err := pb.RequestHeadSeqNum()
 	if assert.Error(t, err) {
@@ -93,7 +103,12 @@ func TestPlayback_StreamSegment(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(
+		context.Background(),
+		testutil.TestVideoID,
+		fetcher,
+		testutil.NewClient(ts.URL),
+	)
 
 	var buf bytes.Buffer
 	if err := pb.StreamSegment("140", 123, &buf); err != nil {
@@ -114,7 +129,12 @@ func TestPlayback_StreamSegment_UnknownItag(t *testing.T) {
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(
+		context.Background(),
+		testutil.TestVideoID,
+		fetcher,
+		testutil.NewClient(ts.URL),
+	)
 
 	var buf bytes.Buffer
 	if err := pb.StreamSegment("unknown", 123, &buf); err == nil {
@@ -148,7 +168,12 @@ Target-Duration-Us: 2000000`
 	defer ts.Close()
 
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(context.Background(), testutil.TestVideoID, fetcher, testutil.NewClient(ts.URL))
+	pb, _ := playback.NewPlayback(
+		context.Background(),
+		testutil.TestVideoID,
+		fetcher,
+		testutil.NewClient(ts.URL),
+	)
 
 	data, err := pb.FetchSegmentMetadata("140", 123)
 	require.NoError(t, err)

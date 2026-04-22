@@ -132,9 +132,9 @@ func extractFrame(
 	slog.Debug("extracting frame", "sq", moment.Metadata.SequenceNumber, "t", at)
 
 	result, err := runner.RunWith(context.Background(), []exec.Option{
-			exec.WithQuiet(),
-			exec.WithStdin(bytes.NewReader(segment)),
-		},
+		exec.WithQuiet(),
+		exec.WithStdin(bytes.NewReader(segment)),
+	},
 		"-hide_banner", "-y",
 		"-i", "pipe:0",
 		"-ss", fmt.Sprintf("%.3f", at),

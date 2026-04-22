@@ -57,7 +57,12 @@ type Playback struct {
 	info     info.VideoInformation
 }
 
-func NewPlayback(ctx context.Context, videoID string, fetcher fetchers.Fetcher, client *http.Client) (*Playback, error) {
+func NewPlayback(
+	ctx context.Context,
+	videoID string,
+	fetcher fetchers.Fetcher,
+	client *http.Client,
+) (*Playback, error) {
 	information, _, err := fetcher.FetchInfo(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("fetching video info for playback: %w", err)

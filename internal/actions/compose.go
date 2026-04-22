@@ -82,9 +82,9 @@ func probeSegmentPTS(
 	}
 
 	result, err := runner.RunWith(context.Background(), []exec.Option{
-			exec.WithQuiet(),
-			exec.WithStdin(bytes.NewReader(buf.Bytes())),
-		},
+		exec.WithQuiet(),
+		exec.WithStdin(bytes.NewReader(buf.Bytes())),
+	},
 		"-v", "quiet",
 		"-i", "pipe:0",
 		"-show_entries", "packet=pts_time",
