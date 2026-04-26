@@ -113,4 +113,4 @@ yt-dlp http://localhost:8080/mpd/10m--now
 
 ## License
 
-MIT.
+GNU General Public License v3.0.
