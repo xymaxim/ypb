@@ -19,11 +19,46 @@ player, or download them as local files.
 
 ## Overview
 
-Ypb runs in two modes: serve and download. Serve mode runs a local proxy to
-locate the requested moments in the stream precisely, generates MPEG-DASH
-manifests, and serves media segments with retry handling for HTTP
-errors. Download mode saves excerpts to local files with a single command, using
-the same proxy internally to compose manifests before handing off to yt-dlp's
+```mermaid
+---
+config:
+  flowchart:
+    defaultRenderer: elk
+  theme: base
+  layout: elk
+  look: neo
+  themeVariables:
+    dropShadow: false
+---
+flowchart LR
+ subgraph YPB["`**ypb**`"]
+    direction LR
+        SERVE["`**Serve**<br>Stream proxy`"]:::mode
+        DOWN["`**Download**<br>Save to file`"]:::mode
+  end
+
+    DOWN -- Download video --> DOWNLOADER["`**yt-dlp**<br>General extractor`"]
+    SERVE --> FETCHER["`**yt-dlp**<br>Fetch metadata<br>Solve JS challenges`"]
+    Consumers(["`**Consumers**<br>Players, downloaders`"]) --> MPD["`**MPEG-DASH<br>manifest**`"]
+    SERVE <-- Stream video --> YT{{"`**YouTube**`"}}
+    DOWNLOADER --> MPD
+    SERVE -- Locate&nbsp;segments<br>Generate MPDs --> MPD
+    MPD -- Proxy&nbsp;base&nbsp;URLs --> SERVE
+
+    YT:::yt
+
+    classDef yt stroke:#ff0033,stroke-dasharray: 3 3,stroke-width:3px,fill:none
+    classDef mode stroke:#222,stroke-dasharray: 3 3,stroke-width:3px,fill:none
+```
+
+Ypb runs in two modes: serve and download.
+
+Serve mode runs a local proxy to locate the requested moments in the stream
+precisely, generates MPEG-DASH manifests, and serves media segments with retry
+handling for HTTP errors.
+
+Download mode saves excerpts to local files with a single command, using the
+same proxy internally to compose manifests before handing off to yt-dlp's
 general extractor. Both modes rely on yt-dlp for fetching video information and
 solving JavaScript challenges.
 
