@@ -53,9 +53,10 @@ flowchart LR
 
 Ypb runs in two modes: serve and download.
 
-Serve mode runs a local proxy to locate the requested moments in the stream
-precisely, generates MPEG-DASH manifests, and serves media segments with retry
-handling for HTTP errors.
+Serve mode runs a local HTTP proxy server that [handles
+requests](https://xymaxim.github.io/ypb/reference/api.html) to locate moments in
+the stream, generate MPEG-DASH manifests, and serve media segments with HTTP
+error retry handling.
 
 Download mode saves excerpts to local files with a single command, using the
 same proxy internally to compose manifests before handing off to yt-dlp's
