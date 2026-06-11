@@ -6,6 +6,6 @@ no-section-label = true
 mathjax-support = true
 
 [preprocessor.variables.variables]
-release_version = "v2026.2.24"
+release_version = "v2026.6.11"
 
 [preprocessor.cmdrun]
