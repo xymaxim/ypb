@@ -4,11 +4,21 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
-## Unreleased
+## [2026.6.11](https://github.com/xymaxim/ypb/releases/tag/v2026.6.11)
 
 ### Added
 
-- New `/info` endpoint returning basic info about YouTube live stream
+- Add playback and stream public packages
+- Add parser for fractional seconds
+- Add `/info` endpoint returning basic info about YouTube live stream
+
+### Fixed
+
+- Set MPD@availabilityStartTime to now for dynamic DASH manifests
+### Changed
+
+- Use yt-dlp's --write-info-json to dump info JSON
+- Change license from MIT to GPLv3
 
 ## [2026.2.24](https://github.com/xymaxim/ypb/releases/tag/v2026.2.24)
 
