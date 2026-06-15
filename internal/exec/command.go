@@ -116,6 +116,9 @@ func (r *CommandRunner) PrintCallback(b []byte) {
 func (r *CommandRunner) runWithConfig(ctx context.Context, config RunConfig, args ...string) error {
 	cmd := execpkg.CommandContext(ctx, r.Path, args...) // #nosec: G204
 
+	// Suppress console window on Windows
+	cmd = SuppressConsole(cmd)
+
 	// Setup stdin if provided
 	if config.Stdin != nil {
 		cmd.Stdin = config.Stdin
