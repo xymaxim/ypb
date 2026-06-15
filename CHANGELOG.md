@@ -4,6 +4,12 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.6.15](https://github.com/xymaxim/ypb/releases/tag/v2026.6.15)
+
+### Changed
+
+- Supress console windows on Windows
+
 ## [2026.6.11](https://github.com/xymaxim/ypb/releases/tag/v2026.6.11)
 
 ### Added
