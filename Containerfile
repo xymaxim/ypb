@@ -17,7 +17,7 @@ FROM alpine:latest
 LABEL org.opencontainers.image.title="Ypb"
 LABEL org.opencontainers.image.description="A playback for YouTube live streams."
 LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
-LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 
 RUN apk update && apk add --no-cache git deno ffmpeg
 RUN apk add --no-cache ca-certificates && update-ca-certificates
