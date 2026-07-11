@@ -27,34 +27,20 @@ func BuildSegmentURL(baseURL, sq string) (*url.URL, error) {
 }
 
 func BuildSegmentURLFromParsed(baseURL *url.URL, sq string) *url.URL {
-	return baseURL.JoinPath("sq", sq)
+	result := *baseURL
+	query := result.Query()
+	query.Set("sq", sq)
+	result.RawQuery = query.Encode()
+	return &result
 }
 
 func ExtractParameter(rawURL, name string) string {
-	token := "/" + name + "/"
-
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return ""
 	}
 
-	path := u.EscapedPath()
-	tokenStartIndex := strings.Index(path, token)
-	var startIndex int
-	if tokenStartIndex == -1 {
-		return ""
-	}
-
-	startIndex = tokenStartIndex + len(token)
-	endRelativeIndex := strings.IndexByte(path[startIndex:], '/')
-	var endIndex int
-	if endRelativeIndex == -1 {
-		endIndex = len(path)
-	} else {
-		endIndex = startIndex + endRelativeIndex
-	}
-
-	return path[startIndex:endIndex]
+	return u.Query().Get(name)
 }
 
 func FormatServerAddress(addr string) string {

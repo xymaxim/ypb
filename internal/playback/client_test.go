@@ -23,7 +23,7 @@ func newFakePlayback(addr string) *fakePlayback {
 	return &fakePlayback{
 		addr: addr,
 		baseURLs: map[string]string{
-			"0": strings.TrimRight(addr, "/") + "/initial/itag/0",
+			"0": strings.TrimRight(addr, "/") + "/initial?itag=0",
 		},
 	}
 }
@@ -34,7 +34,7 @@ func (pb *fakePlayback) BaseURLs() map[string]string {
 
 func (pb *fakePlayback) RefreshBaseURLs() error {
 	pb.baseURLs = map[string]string{
-		"0": strings.TrimRight(pb.addr, "/") + "/refreshed/itag/0",
+		"0": strings.TrimRight(pb.addr, "/") + "/refreshed?itag=0",
 	}
 	return nil
 }
@@ -42,39 +42,39 @@ func (pb *fakePlayback) RefreshBaseURLs() error {
 func TestClient_CheckRetry(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
-		name            string
-		statusCode      int
-		path            string
-		wantPath        string
-		wantBaseURLPath string
+		name           string
+		statusCode     int
+		path           string
+		wantRequestURL string
+		wantBaseURL    string
 	}{
 		{
-			name:            "service unavailable - head sequence number",
-			statusCode:      http.StatusServiceUnavailable,
-			path:            "/initial/itag/0",
-			wantPath:        "/initial/itag/0",
-			wantBaseURLPath: "/initial/itag/0",
+			name:           "service unavailable - head sequence number",
+			statusCode:     http.StatusServiceUnavailable,
+			path:           "/initial?itag=0",
+			wantRequestURL: "/initial?itag=0",
+			wantBaseURL:    "/initial?itag=0",
 		},
 		{
-			name:            "service unavailable - segment",
-			statusCode:      http.StatusServiceUnavailable,
-			path:            "/initial/itag/0/sq/0",
-			wantPath:        "/initial/itag/0/sq/0",
-			wantBaseURLPath: "/initial/itag/0",
+			name:           "service unavailable - segment",
+			statusCode:     http.StatusServiceUnavailable,
+			path:           "/initial?itag=0&sq=0",
+			wantRequestURL: "/initial?itag=0&sq=0",
+			wantBaseURL:    "/initial?itag=0",
 		},
 		{
-			name:            "forbidden - head sequence number",
-			statusCode:      http.StatusForbidden,
-			path:            "/initial/itag/0",
-			wantPath:        "/refreshed/itag/0",
-			wantBaseURLPath: "/refreshed/itag/0",
+			name:           "forbidden - head sequence number",
+			statusCode:     http.StatusForbidden,
+			path:           "/initial?itag=0",
+			wantRequestURL: "/refreshed?itag=0",
+			wantBaseURL:    "/refreshed?itag=0",
 		},
 		{
-			name:            "forbidden - segment",
-			statusCode:      http.StatusForbidden,
-			path:            "/initial/itag/0/sq/0",
-			wantPath:        "/refreshed/itag/0/sq/0",
-			wantBaseURLPath: "/refreshed/itag/0",
+			name:           "forbidden - segment",
+			statusCode:     http.StatusForbidden,
+			path:           "/initial?itag=0&sq=0",
+			wantRequestURL: "/refreshed?itag=0&sq=0",
+			wantBaseURL:    "/refreshed?itag=0",
 		},
 	}
 
@@ -111,14 +111,14 @@ func TestClient_CheckRetry(t *testing.T) {
 			}
 
 			wantBaseURLs := map[string]string{
-				"0": strings.TrimRight(ts.URL, "/") + tc.wantBaseURLPath,
+				"0": strings.TrimRight(ts.URL, "/") + tc.wantBaseURL,
 			}
 			if diff := cmp.Diff(pb.BaseURLs(), wantBaseURLs); diff != "" {
 				t.Errorf("base URLs mismatch (- have, + want):\n%s", diff)
 			}
 
 			haveURL := resp.Request.Header.Get("X-Request-Url")
-			wantURL := strings.TrimRight(ts.URL, "/") + tc.wantPath
+			wantURL := strings.TrimRight(ts.URL, "/") + tc.wantRequestURL
 			if haveURL != wantURL {
 				t.Errorf(
 					"request URL mismatch:\n have: %s\n want: %s",
