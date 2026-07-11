@@ -34,9 +34,9 @@ func TestPlayback_RefreshBaseURLs(t *testing.T) {
 	assert.Equal(
 		t,
 		map[string]string{
-			"136": "https://test/segments/itag/136/mime/video%2Fmp4/dur/2.000/new",
-			"137": "https://test/segments/itag/137/mime/video%2Fmp4/dur/2.000/new",
-			"140": "https://test/segments/itag/140/mime/audio%2Fmp4/dur/2.000/new",
+			"136": "https://new?itag=136&mime=video%2Fmp4",
+			"137": "https://new?itag=137&mime=video%2Fmp4",
+			"140": "https://new?itag=140&mime=audio%2Fmp4",
 		},
 		pb.BaseURLs(),
 	)
@@ -94,8 +94,8 @@ func TestPlayback_StreamSegment(t *testing.T) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(
 				t,
-				"/segments/itag/140/mime/audio%2Fmp4/dur/2.000/sq/123",
-				r.URL.EscapedPath(),
+				"/?itag=140&mime=audio%2Fmp4&sq=123",
+				r.URL.String(),
 			)
 			w.Write([]byte("test"))
 		}),
@@ -159,8 +159,8 @@ Target-Duration-Us: 2000000`
 			)
 			assert.Equal(
 				t,
-				"/segments/itag/140/mime/audio%2Fmp4/dur/2.000/sq/123",
-				r.URL.EscapedPath(),
+				"/?itag=140&mime=audio%2Fmp4&sq=123",
+				r.URL.String(),
 			)
 			w.Write([]byte(metadataBytes))
 		}),

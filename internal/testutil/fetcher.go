@@ -15,9 +15,9 @@ type MockFetcher struct {
 var (
 	TestVideoID  = "abcdefgh123"
 	TestBaseURLs = map[string]string{
-		"136": "https://test/segments/itag/136/mime/video%2Fmp4/dur/2.000/",
-		"137": "https://test/segments/itag/137/mime/video%2Fmp4/dur/2.000/",
-		"140": "https://test/segments/itag/140/mime/audio%2Fmp4/dur/2.000/",
+		"136": "https://test?itag=136&mime=video%2Fmp4",
+		"137": "https://test?itag=137&mime=video%2Fmp4",
+		"140": "https://test?itag=140&mime=audio%2Fmp4",
 	}
 )
 
@@ -70,8 +70,8 @@ func (f *MockFetcher) FetchInfo(
 
 func (f *MockFetcher) FetchBaseURLs(_ context.Context) (map[string]string, error) {
 	return map[string]string{
-		"136": "https://test/segments/itag/136/mime/video%2Fmp4/dur/2.000/new",
-		"137": "https://test/segments/itag/137/mime/video%2Fmp4/dur/2.000/new",
-		"140": "https://test/segments/itag/140/mime/audio%2Fmp4/dur/2.000/new",
+		"136": "https://new?itag=136&mime=video%2Fmp4",
+		"137": "https://new?itag=137&mime=video%2Fmp4",
+		"140": "https://new?itag=140&mime=audio%2Fmp4",
 	}, nil
 }
