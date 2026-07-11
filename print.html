@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2ec76242.js";
+            window.path_to_searchindex_js = "searchindex-706059b8.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -759,16 +759,16 @@ Flags:
   -v, --verbose    Show verbose output.
 
 Commands:
-  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+  capture frame --of="png" --moment=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Capture a single frame
 
-  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Create a time-lapse
 
   download --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Download stream excerpts
 
-  serve &lt;stream&gt; [flags]
+  serve &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Start playback server
 
   version [flags]
@@ -787,19 +787,20 @@ Flags:
   -v, --verbose    Show verbose output.
 
 Commands:
-  capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+  capture frame --of="png" --moment=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Capture a single frame
 
-  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+  capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
     Create a time-lapse
 </code></pre>
 <h4 id="frame"><a class="header" href="#frame">frame</a></h4>
-<pre><code class="language-shell">Usage: ypb capture frame --of="png" --moment=STRING &lt;stream&gt; [flags]
+<pre><code class="language-shell">Usage: ypb capture frame --of="png" --moment=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
 
 Capture a single frame
 
 Arguments:
-  &lt;stream&gt;    YouTube video ID
+  &lt;stream&gt;                 YouTube video ID
+  [&lt;ytdlp-options&gt; ...]    Options to pass to yt-dlp (use after --)
 
 Flags:
   -h, --help             Show context-sensitive help.
@@ -810,12 +811,13 @@ Flags:
   -m, --moment=STRING    Moment to capture
 </code></pre>
 <h4 id="timelapse"><a class="header" href="#timelapse">timelapse</a></h4>
-<pre><code class="language-shell">Usage: ypb capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [flags]
+<pre><code class="language-shell">Usage: ypb capture timelapse --of="png" --every=DURATION --interval=STRING &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
 
 Create a time-lapse
 
 Arguments:
-  &lt;stream&gt;    YouTube video ID
+  &lt;stream&gt;                 YouTube video ID
+  [&lt;ytdlp-options&gt; ...]    Options to pass to yt-dlp (use after --)
 
 Flags:
   -h, --help               Show context-sensitive help.
@@ -842,31 +844,14 @@ Flags:
   -p, --port=8080          Port to start playback on
   -i, --interval=STRING    Time or segment interval
 </code></pre>
-<h4 id="passing-options-to-yt-dlp"><a class="header" href="#passing-options-to-yt-dlp">Passing options to yt-dlp</a></h4>
-<p>Additional options can be passed directly to <code>yt-dlp</code> using the <code>--</code>
-separator. Everything after <code>--</code> is forwarded to the underlying
-<code>yt-dlp</code> process.</p>
-<p>Behind the scences, <code>ypb</code> calls <code>yt-dlp</code> with a custom <code>-o/--output</code> template:
-the only option that is overriden by default. This behavior can be changed as
-follows:</p>
-<pre><code>ypb download -i &lt;interval&gt; &lt;stream&gt; -- -o output.mp4
-</code></pre>
-<p>For a complete list of available options, see the <a href="https://github.com/yt-dlp/yt-dlp#usage-and-options">yt-dlp
-documentation</a>.</p>
-<blockquote class="blockquote-tag blockquote-tag-important">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
-<p>Not all <code>yt-dlp</code> options are compatible with <code>ypb</code>’s workflow. Incompatible
-options will not have effect. For example, <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options">the network
-options</a>
-are not supported.</p>
-</blockquote>
 <h3 id="serve"><a class="header" href="#serve">serve</a></h3>
-<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [flags]
+<pre><code class="language-shell">Usage: ypb serve &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]
 
 Start playback server
 
 Arguments:
-  &lt;stream&gt;    YouTube video ID
+  &lt;stream&gt;                 YouTube video ID
+  [&lt;ytdlp-options&gt; ...]    Options to pass to yt-dlp (use after --)
 
 Flags:
   -h, --help         Show context-sensitive help.
@@ -1039,6 +1024,19 @@ output/path.mp4
 <p>Note that since <code>yt-dlp</code> downloads the MPEG-DASH manifest via the general
 extractor rather than the YouTube extractor, YouTube-specific template
 variables are not available.</p>
+<h2 id="passing-options-to-yt-dlp"><a class="header" href="#passing-options-to-yt-dlp">Passing options to yt-dlp</a></h2>
+<p>To pass additional options directly to <code>yt-dlp</code>, use the <code>--</code>
+separator. Everything after <code>--</code> is forwarded to <code>yt-dlp</code>.</p>
+<p>By default, <code>ypb</code> overrides the <code>-o/--output</code> template. For example, to
+customize the output filename:</p>
+<pre><code>ypb download -i &lt;interval&gt; &lt;stream&gt; -- -o output.mp4
+</code></pre>
+<p>You can use any other <code>yt-dlp</code> option the same way. For example, to load cookies
+from a file:</p>
+<pre><code>ypb download -i &lt;interval&gt; &lt;stream&gt; -- --cookies file.txt
+</code></pre>
+<p>For a complete list of available options, see the <a href="https://github.com/yt-dlp/yt-dlp#usage-and-options">yt-dlp
+documentation</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="api"><a class="header" href="#api">API</a></h1>
 <h2 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h2>
