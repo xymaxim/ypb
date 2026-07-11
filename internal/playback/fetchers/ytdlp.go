@@ -33,7 +33,7 @@ type jsonDump struct {
 }
 
 type format struct {
-	FragmentBaseURL   string            `json:"fragment_base_url"`
+	URL               string            `json:"url"`
 	FormatID          string            `json:"format_id"`
 	AudioCodec        string            `json:"acodec"`
 	VideoCodec        string            `json:"vcodec"`
@@ -60,11 +60,11 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 	audioStreams := []info.AudioStream{}
 	videoStreams := []info.VideoStream{}
 	for _, f := range dump.Formats {
-		mimeTypeRaw := urlutil.ExtractParameter(f.FragmentBaseURL, "mime")
+		mimeTypeRaw := urlutil.ExtractParameter(f.URL, "mime")
 		if mimeTypeRaw == "" {
 			return nil, nil, fmt.Errorf(
 				"missing mime type parameter in base URL: %s",
-				f.FragmentBaseURL,
+				f.URL,
 			)
 		}
 		mimeType, err := url.PathUnescape(mimeTypeRaw)
@@ -72,7 +72,7 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 			return nil, nil, fmt.Errorf("unescaping mime type: %w", err)
 		}
 		common := info.CommonStream{
-			BaseURL:  f.FragmentBaseURL,
+			BaseURL:  f.URL,
 			Itag:     f.FormatID,
 			MimeType: mimeType,
 		}
@@ -135,8 +135,8 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs(ctx context.Context) (map[string]stri
 
 	var dump struct {
 		Formats []struct {
-			FormatID        string `json:"format_id"`
-			FragmentBaseURL string `json:"fragment_base_url"`
+			FormatID string `json:"format_id"`
+			URL      string `json:"url"`
 		} `json:"formats"`
 	}
 	if err := json.Unmarshal([]byte(out), &dump); err != nil {
@@ -145,7 +145,7 @@ func (fetcher *YtdlpFetcher) FetchBaseURLs(ctx context.Context) (map[string]stri
 
 	baseURLs := make(map[string]string)
 	for _, f := range dump.Formats {
-		baseURLs[f.FormatID] = f.FragmentBaseURL
+		baseURLs[f.FormatID] = f.URL
 	}
 
 	return baseURLs, nil
