@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
@@ -35,6 +34,7 @@ type jsonDump struct {
 type format struct {
 	URL               string            `json:"url"`
 	FormatID          string            `json:"format_id"`
+	TargetDuration    int               `json:"target_duration"`
 	AudioCodec        string            `json:"acodec"`
 	VideoCodec        string            `json:"vcodec"`
 	AudioSamplingRate *int              `json:"asr"`
@@ -99,17 +99,7 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 		}
 	}
 
-	someBaseURL := videoStreams[0].BaseURL
-	segmentDurationRaw := urlutil.ExtractParameter(someBaseURL, "dur")
-	if segmentDurationRaw == "" {
-		return nil, nil, fmt.Errorf("no 'dur' parameter in base URL: %s", someBaseURL)
-	}
-	segmentDurationNumber, err := strconv.ParseFloat(segmentDurationRaw, 64)
-	if err != nil {
-		return nil, nil, fmt.Errorf("parsing segment duration: %w", err)
-	}
-	segmentDuration := time.Duration(segmentDurationNumber * float64(time.Second))
-
+	segmentDuration := time.Duration(float64(dump.Formats[0].TargetDuration)) * time.Second
 	information := &info.VideoInformation{
 		ID:              fetcher.VideoID,
 		Title:           dump.Title,
