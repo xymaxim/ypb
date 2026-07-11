@@ -30,27 +30,6 @@
 <!-- cmdrun ../../../ypb download --help -->
 ```
 
-#### Passing options to yt-dlp
-
-Additional options can be passed directly to `yt-dlp` using the `--`
-separator. Everything after `--` is forwarded to the underlying
-`yt-dlp` process.
-
-Behind the scences, `ypb` calls `yt-dlp` with a custom `-o/--output` template:
-the only option that is overriden by default. This behavior can be changed as
-follows:
-
-    ypb download -i <interval> <stream> -- -o output.mp4
-
-For a complete list of available options, see the [yt-dlp
-documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
-
-> [!IMPORTANT]
-> Not all `yt-dlp` options are compatible with `ypb`'s workflow. Incompatible
-> options will not have effect. For example, [the network
-> options](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#network-options)
-> are not supported.
-
 ### serve
 
 ```shell
@@ -254,3 +233,21 @@ output/path.mp4
 Note that since `yt-dlp` downloads the MPEG-DASH manifest via the general
 extractor rather than the YouTube extractor, YouTube-specific template
 variables are not available.
+
+## Passing options to yt-dlp
+
+To pass additional options directly to `yt-dlp`, use the `--`
+separator. Everything after `--` is forwarded to `yt-dlp`.
+
+By default, `ypb` overrides the `-o/--output` template. For example, to
+customize the output filename:
+
+    ypb download -i <interval> <stream> -- -o output.mp4
+
+You can use any other `yt-dlp` option the same way. For example, to load cookies
+from a file:
+
+    ypb download -i <interval> <stream> -- --cookies file.txt
+
+For a complete list of available options, see the [yt-dlp
+documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
