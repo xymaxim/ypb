@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-706059b8.js";
+            window.path_to_searchindex_js = "searchindex-53d74f0f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -180,19 +180,28 @@
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
 Changelog</a>. Versions follow <a href="https://calver.org">Calendar
 Versioning</a>.</p>
+<h2 id="2026712"><a class="header" href="#2026712"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.7.12">2026.7.12</a></a></h2>
+<h3 id="fixed"><a class="header" href="#fixed">Fixed</a></h3>
+<ul>
+<li>Update dump format parsing and base URL handling (#7)</li>
+</ul>
+<h3 id="added"><a class="header" href="#added">Added</a></h3>
+<ul>
+<li>Accept passing yt-dlp options in most commands</li>
+</ul>
 <h2 id="2026615"><a class="header" href="#2026615"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.6.15">2026.6.15</a></a></h2>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
 <li>Supress console windows on Windows</li>
 </ul>
 <h2 id="2026611"><a class="header" href="#2026611"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.6.11">2026.6.11</a></a></h2>
-<h3 id="added"><a class="header" href="#added">Added</a></h3>
+<h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
 <ul>
 <li>Add playback and stream public packages</li>
 <li>Add parser for fractional seconds</li>
 <li>Add <code>/info</code> endpoint returning basic info about YouTube live stream</li>
 </ul>
-<h3 id="fixed"><a class="header" href="#fixed">Fixed</a></h3>
+<h3 id="fixed-1"><a class="header" href="#fixed-1">Fixed</a></h3>
 <ul>
 <li>Set MPD@availabilityStartTime to now for dynamic DASH manifests</li>
 </ul>
@@ -202,11 +211,11 @@ Versioning</a>.</p>
 <li>Change license from MIT to GPLv3</li>
 </ul>
 <h2 id="2026224"><a class="header" href="#2026224"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.24">2026.2.24</a></a></h2>
-<h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
+<h3 id="added-2"><a class="header" href="#added-2">Added</a></h3>
 <ul>
 <li>Accept open-ended interval in <code>/mpd/</code> endpoint to compose dynamic MPD</li>
 </ul>
-<h3 id="fixed-1"><a class="header" href="#fixed-1">Fixed</a></h3>
+<h3 id="fixed-2"><a class="header" href="#fixed-2">Fixed</a></h3>
 <ul>
 <li>Pin start-up time as <code>now</code> in strict mode (<code>download</code> and <code>capture</code> commands) (#5)</li>
 </ul>
@@ -225,12 +234,12 @@ Versioning</a>.</p>
 <li>Print standard output and error from external commands directly (#2)</li>
 </ul>
 <h2 id="2026216"><a class="header" href="#2026216"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.16">2026.2.16</a></a></h2>
-<h3 id="added-2"><a class="header" href="#added-2">Added</a></h3>
+<h3 id="added-3"><a class="header" href="#added-3">Added</a></h3>
 <ul>
 <li>New <code>capture frame</code> command to capture a single frame</li>
 <li>New <code>capture timelapse</code> command to capture multiple frames</li>
 </ul>
-<h3 id="fixed-2"><a class="header" href="#fixed-2">Fixed</a></h3>
+<h3 id="fixed-3"><a class="header" href="#fixed-3">Fixed</a></h3>
 <ul>
 <li>Incorrect 12-hour format (changed to 24-hour) in output filenames</li>
 </ul>
@@ -239,7 +248,7 @@ Versioning</a>.</p>
 <li>Rework CommandRunner to accept functional options</li>
 </ul>
 <h2 id="2026212"><a class="header" href="#2026212"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.12">2026.2.12</a></a></h2>
-<h3 id="fixed-3"><a class="header" href="#fixed-3">Fixed</a></h3>
+<h3 id="fixed-4"><a class="header" href="#fixed-4">Fixed</a></h3>
 <ul>
 <li>Incorrect parsing of ‘now’ in interval expressions (#1)</li>
 </ul>
