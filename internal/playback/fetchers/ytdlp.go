@@ -16,6 +16,7 @@ import (
 type YtdlpFetcher struct {
 	VideoID string
 	Runner  exec.Runner
+	YtdlpOptions []string
 	OnPrint func([]byte)
 }
 
@@ -110,6 +111,7 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 		AudioStreams:    audioStreams,
 		VideoStreams:    videoStreams,
 	}
+
 	additionals := YtdlpAdditionals{
 		UserAgent: dump.Formats[0].HTTPHeaders["User-Agent"],
 	}
@@ -160,16 +162,21 @@ func (fetcher *YtdlpFetcher) runDumpJSON(ctx context.Context) (string, error) {
 	defer os.Remove(tempFile.Name())
 	defer os.Remove(jsonPath)
 
+	args := []string{
+		"--live-from-start",
+		"--skip-download",
+		"--write-info-json",
+		"-o", "infojson:" + tempFile.Name(),
+	}
+	args = append(args, fetcher.YtdlpOptions...)
+	args = append(args, fetcher.VideoID)
+
 	_, err = fetcher.Runner.RunWith(
 		ctx,
 		[]exec.Option{
 			exec.WithCallbacks(printCallback, printCallback),
 		},
-		"--live-from-start",
-		"--skip-download",
-		"--write-info-json",
-		"-o", "infojson:"+tempFile.Name(),
-		fetcher.VideoID,
+		args...,
 	)
 	if err != nil {
 		return "", err

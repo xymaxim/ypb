@@ -20,7 +20,7 @@ type Download struct {
 	CommonFlags
 	Stream       string   `arg:"" help:"YouTube video ID"                         required:""`
 	Interval     string   `       help:"Time or segment interval"                 required:"" short:"i"`
-	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)"                       optional:"" passthrough:""` //nolint:lll
+	YtdlpOptionsFlag
 }
 
 func (c *Download) Run() error {
@@ -40,7 +40,9 @@ func (c *Download) Run() error {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
-	if err := CollectVideoInfo(c.Stream, app, c.Port); err != nil {
+	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
+
+	if err := CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}
 
@@ -89,10 +91,6 @@ func (c *Download) Run() error {
 		return fmt.Errorf("building URL: %w", err)
 	}
 
-	ytdlpOptions := c.YtdlpOptions
-	if len(ytdlpOptions) > 0 && ytdlpOptions[0] == "--" {
-		ytdlpOptions = ytdlpOptions[1:]
-	}
 	args := append(
 		[]string{
 			mpdURL,

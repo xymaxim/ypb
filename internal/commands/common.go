@@ -17,6 +17,10 @@ type CommonFlags struct {
 	Port int `help:"Port to start playback on" short:"p" default:"8080"`
 }
 
+type YtdlpOptionsFlag struct {
+	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""` //nolint:lll
+}
+
 func checkYtdlp() error {
 	_, err := exec.LookPath(apppkg.YtdlpBinaryPath)
 	if err != nil {
@@ -25,11 +29,21 @@ func checkYtdlp() error {
 	return nil
 }
 
-func CollectVideoInfo(id string, app *apppkg.App, port int) error {
+func NormalizeYtdlpOptions(opts []string) []string {
+	if len(opts) > 0 && opts[0] == "--" {
+		return opts[1:]
+	}
+	return opts
+}
+
+func CollectVideoInfo(id string, app *apppkg.App, port int, ytdlpOptions []string) error {
 	url := urlutil.BuildVideoLiveURL(id)
 
 	fmt.Printf("(<<) Collecting info about %s...\n", url)
-	cfg := &apppkg.Config{Port: port}
+	cfg := &apppkg.Config{
+		Port: port,
+		YtdlpOptions: ytdlpOptions,
+	}
 	if err := app.Initialize(context.Background(), id, cfg); err != nil {
 		return fmt.Errorf("initializing app: %w", err)
 	}

@@ -11,6 +11,7 @@ import (
 type Serve struct {
 	CommonFlags
 	Stream string `arg:"" help:"YouTube video ID" required:""`
+	YtdlpOptionsFlag
 }
 
 func (c *Serve) Run() error {
@@ -20,7 +21,8 @@ func (c *Serve) Run() error {
 
 	app := apppkg.NewApp()
 
-	if err := CollectVideoInfo(c.Stream, app, c.Port); err != nil {
+	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
+	if err := CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}
 

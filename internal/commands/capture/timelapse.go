@@ -25,6 +25,7 @@ type Timelapse struct {
 	Every    string `help:"Capture frame every duration" placeholder:"DURATION" required:"" short:"e"`
 	Stream   string `help:"YouTube video ID"                                    required:""           arg:""`
 	Interval string `help:"Time or segment interval"                            required:"" short:"i"`
+	commands.YtdlpOptionsFlag
 }
 
 type TimelapseConfig struct {
@@ -45,7 +46,8 @@ func (c *Timelapse) Run() error {
 		return err
 	}
 
-	if err := commands.CollectVideoInfo(c.Stream, app, c.Port); err != nil {
+	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)	
+	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}
 

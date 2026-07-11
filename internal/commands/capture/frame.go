@@ -16,6 +16,7 @@ type Frame struct {
 	CommonCaptureFlags
 	Moment string `help:"Moment to capture" required:"" short:"m"`
 	Stream string `help:"YouTube video ID"  required:""           arg:""`
+	commands.YtdlpOptionsFlag
 }
 
 type FrameConfig struct {
@@ -36,7 +37,8 @@ func (c *Frame) Run() error {
 	}
 
 	// Collect video information and initialize the app
-	if err := commands.CollectVideoInfo(c.Stream, app, c.Port); err != nil {
+	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)	
+	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}
 

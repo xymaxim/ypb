@@ -35,6 +35,7 @@ type App struct {
 
 type Config struct {
 	Port    int
+	YtdlpOptions []string
 	OnPrint func([]byte)
 }
 
@@ -54,9 +55,10 @@ func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config) error
 		ctx,
 		videoID,
 		&fetchers.YtdlpFetcher{
-			VideoID: videoID,
-			Runner:  a.YtdlpRunner,
-			OnPrint: cfg.OnPrint,
+			VideoID:      videoID,
+			Runner:       a.YtdlpRunner,
+			YtdlpOptions: cfg.YtdlpOptions,
+			OnPrint:      cfg.OnPrint,
 		},
 		nil,
 	)
