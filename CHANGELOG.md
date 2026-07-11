@@ -4,6 +4,16 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.7.12](https://github.com/xymaxim/ypb/releases/tag/v2026.7.12)
+
+### Fixed
+
+- Update dump format parsing and base URL handling (#7)
+
+### Added
+
+- Accept passing yt-dlp options in most commands
+
 ## [2026.6.15](https://github.com/xymaxim/ypb/releases/tag/v2026.6.15)
 
 ### Changed
