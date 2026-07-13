@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="dynamic" availabilityStartTime="2026-01-02T03:04:05Z" timeShiftBufferDepth="PT2H0M0S">
+   <ProgramInformation>
+     <Title>Sample stream</Title>
+     <Source>https://www.youtube.com/live/abcdefgh123</Source>
+   </ProgramInformation>
+   <BaseURL>http://localhost:8080</BaseURL>
+   <Period>
+     <AdaptationSet id="0" mimeType="audio/mp4">
+       <Representation id="140" codecs="mp4a.40.2" audioSamplingRate="44100">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+     </AdaptationSet>
+     <AdaptationSet id="1" mimeType="video/mp4" codecs="avc1.640028">
+       <Representation id="160" codecs="avc1.42c00b" width="256" height="144" frameRate="15">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+       <Representation id="137" codecs="avc1.640028" width="1920" height="1080" frameRate="30">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+     </AdaptationSet>
+     <AdaptationSet id="2" mimeType="video/mp4" codecs="av01.0.08M.08">
+       <Representation id="394" codecs="av01.0.00M.08" width="256" height="144" frameRate="30">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+       <Representation id="399" codecs="av01.0.08M.08" width="1920" height="1080" frameRate="30">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+     </AdaptationSet>
+     <AdaptationSet id="3" mimeType="video/webm" codecs="vp9">
+       <Representation id="248" codecs="vp9" width="1920" height="1080" frameRate="30">
+         <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" duration="5000" presentationTimeOffset="0"></SegmentTemplate>
+       </Representation>
+     </AdaptationSet>
+   </Period>
+ </MPD>
