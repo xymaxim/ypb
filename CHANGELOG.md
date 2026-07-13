@@ -4,6 +4,12 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.7.13](https://github.com/xymaxim/ypb/releases/tag/v2026.7.13)
+
+### Changed
+
+- Group adaptations sets by codec family in MPEG-DASH MPD files
+
 ## [2026.7.12](https://github.com/xymaxim/ypb/releases/tag/v2026.7.12)
 
 ### Fixed
