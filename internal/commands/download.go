@@ -18,8 +18,8 @@ import (
 
 type Download struct {
 	CommonFlags
-	Stream       string   `arg:"" help:"YouTube video ID"                         required:""`
-	Interval     string   `       help:"Time or segment interval"                 required:"" short:"i"`
+	Stream   string `arg:"" help:"YouTube video ID"         required:""`
+	Interval string `       help:"Time or segment interval" required:"" short:"i"`
 	YtdlpOptionsFlag
 }
 

@@ -37,7 +37,7 @@ func (c *Frame) Run() error {
 	}
 
 	// Collect video information and initialize the app
-	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)	
+	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
 	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}

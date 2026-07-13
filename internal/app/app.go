@@ -34,9 +34,9 @@ type App struct {
 }
 
 type Config struct {
-	Port    int
+	Port         int
 	YtdlpOptions []string
-	OnPrint func([]byte)
+	OnPrint      func([]byte)
 }
 
 func NewApp() *App {

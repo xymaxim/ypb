@@ -14,10 +14,10 @@ import (
 )
 
 type YtdlpFetcher struct {
-	VideoID string
-	Runner  exec.Runner
+	VideoID      string
+	Runner       exec.Runner
 	YtdlpOptions []string
-	OnPrint func([]byte)
+	OnPrint      func([]byte)
 }
 
 type YtdlpAdditionals struct {

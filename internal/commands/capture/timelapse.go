@@ -46,7 +46,7 @@ func (c *Timelapse) Run() error {
 		return err
 	}
 
-	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)	
+	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
 	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
 		return err
 	}

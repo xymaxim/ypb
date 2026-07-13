@@ -41,7 +41,7 @@ func CollectVideoInfo(id string, app *apppkg.App, port int, ytdlpOptions []strin
 
 	fmt.Printf("(<<) Collecting info about %s...\n", url)
 	cfg := &apppkg.Config{
-		Port: port,
+		Port:         port,
 		YtdlpOptions: ytdlpOptions,
 	}
 	if err := app.Initialize(context.Background(), id, cfg); err != nil {
