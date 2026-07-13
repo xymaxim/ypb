@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0d8d2295.js";
+            window.path_to_searchindex_js = "searchindex-9a08d326.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -326,9 +326,8 @@ working directory:</p>
 <pre><code>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
 </code></pre>
 <h3 id="specify-formats"><a class="header" href="#specify-formats">Specify formats</a></h3>
-<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically (it
-selects the best available quality). This gives you the flexibility to use
-familiar <code>yt-dlp</code> options or even your existing configuration file.</p>
+<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically,
+following its own defaults or any preferences set in your configuration file.</p>
 <p>You can pass options directly to <code>yt-dlp</code> by adding them after the <code>--</code>
 separator.</p>
 <blockquote>
@@ -339,6 +338,9 @@ and examples.</p>
 quality audio:</p>
 <pre><code class="language-shell">$ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 </code></pre>
+<p>Alternatively, any yt-dlp option can be set in your<a href="https://github.com/yt-dlp/yt-dlp#configuration"> yt-dlp configuration
+file</a> as usual, without having
+to pass them on the command line every time.</p>
 <p>Running <code>yt-dlp -F ...</code> can be helpful here to list all available formats:</p>
 <pre><code class="language-shell">$ yt-dlp -F --live-from-start Mm_zVDDUeNA
 [youtube] Extracting URL: Mm_zVDDUeNA
@@ -1037,7 +1039,7 @@ from a file:</p>
 </code></pre>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>Options can also be set via a <a href="https://github.com/yt-dlp/yt-dlp#configuration">yt-dlp config file</a> as usual.</p>
+<p>Options can also be set via a <a href="https://github.com/yt-dlp/yt-dlp#configuration">yt-dlp configuration file</a> as usual.</p>
 </blockquote>
 <p>For a complete list of available options, see the <a href="https://github.com/yt-dlp/yt-dlp#usage-and-options">yt-dlp
 documentation</a>.</p>

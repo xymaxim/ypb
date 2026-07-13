@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0d8d2295.js";
+            window.path_to_searchindex_js = "searchindex-9a08d326.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -301,9 +301,8 @@ working directory:</p>
 <pre><code>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
 </code></pre>
 <h3 id="specify-formats"><a class="header" href="#specify-formats">Specify formats</a></h3>
-<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically (it
-selects the best available quality). This gives you the flexibility to use
-familiar <code>yt-dlp</code> options or even your existing configuration file.</p>
+<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically,
+following its own defaults or any preferences set in your configuration file.</p>
 <p>You can pass options directly to <code>yt-dlp</code> by adding them after the <code>--</code>
 separator.</p>
 <blockquote>
@@ -314,6 +313,9 @@ and examples.</p>
 quality audio:</p>
 <pre><code class="language-shell">$ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 </code></pre>
+<p>Alternatively, any yt-dlp option can be set in your<a href="https://github.com/yt-dlp/yt-dlp#configuration"> yt-dlp configuration
+file</a> as usual, without having
+to pass them on the command line every time.</p>
 <p>Running <code>yt-dlp -F ...</code> can be helpful here to list all available formats:</p>
 <pre><code class="language-shell">$ yt-dlp -F --live-from-start Mm_zVDDUeNA
 [youtube] Extracting URL: Mm_zVDDUeNA
