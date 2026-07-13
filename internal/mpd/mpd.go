@@ -12,10 +12,8 @@ import (
 )
 
 const (
-	mpdNamespace      = "urn:mpeg:DASH:schema:MPD:2011"
-	mpdProfilesStatic = "urn:mpeg:dash:profile:isoff-main:2011"
-	mpdProfilesLive   = "urn:mpeg:dash:profile:isoff-live:2011"
-	segmentMediaURL   = "segments/itag/$RepresentationID$/sq/$Number$"
+	mpdNamespace    = "urn:mpeg:DASH:schema:MPD:2011"
+	segmentMediaURL = "segments/itag/$RepresentationID$/sq/$Number$"
 )
 
 type CommonOptions struct {
@@ -23,18 +21,6 @@ type CommonOptions struct {
 	StartNumber     int
 	SegmentDuration time.Duration
 	PTS             float64
-}
-
-type StaticOptions struct {
-	CommonOptions
-	MediaDuration time.Duration
-	SegmentCount  int
-}
-
-type DynamicOptions struct {
-	CommonOptions
-	AvailabilityStartTime time.Time
-	TimeShiftBufferDepth  time.Duration
 }
 
 type MPD struct {
@@ -63,7 +49,10 @@ type Period struct {
 type AdaptationSet struct {
 	ID              int              `xml:"id,attr"`
 	MimeType        string           `xml:"mimeType,attr"`
+	Codecs          string           `xml:"codecs,attr,omitempty"`
 	Representations []Representation `xml:"Representation"`
+
+	family string // grouping key, e.g. "avc1"; not exported
 }
 
 type Representation struct {
@@ -95,33 +84,6 @@ type S struct {
 	R string `xml:"r,attr"`
 }
 
-func ComposeStatic(opts StaticOptions, videoInfo info.VideoInformation) (string, error) {
-	m := newMPD(opts.BaseURL, videoInfo)
-	m.Type = "static"
-	m.Profiles = mpdProfilesStatic
-	m.MediaPresentationDuration = formatDuration(opts.MediaDuration)
-	m.Periods[0].AdaptationSets = buildAdaptationSets(
-		buildStaticSegmentTemplate(opts),
-		videoInfo,
-	)
-	return marshal(m)
-}
-
-func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (string, error) {
-	m := newMPD(opts.BaseURL, videoInfo)
-	m.Type = "dynamic"
-	m.Profiles = mpdProfilesLive
-	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)
-	if opts.TimeShiftBufferDepth > 0 {
-		m.TimeShiftBufferDepth = formatDuration(opts.TimeShiftBufferDepth)
-	}
-	m.Periods[0].AdaptationSets = buildAdaptationSets(
-		buildDynamicSegmentTemplate(opts),
-		videoInfo,
-	)
-	return marshal(m)
-}
-
 func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
 	return MPD{
 		Xmlns:   mpdNamespace,
@@ -134,14 +96,27 @@ func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
 	}
 }
 
+// buildAdaptationSets groups audio/video streams into adaptation sets by
+// codec family and labels each with its representative codecs attribute.
 func buildAdaptationSets(
 	template SegmentTemplate,
 	videoInfo info.VideoInformation,
 ) []AdaptationSet {
 	period := Period{}
 
-	for _, stream := range videoInfo.AudioStreams {
-		set := period.getOrCreateAdaptationSet(stream.MimeType)
+	addAudioRepresentations(&period, videoInfo.AudioStreams, template)
+	addVideoRepresentations(&period, videoInfo.VideoStreams, template)
+
+	for i := range period.AdaptationSets {
+		period.AdaptationSets[i].setRepresentativeCodecs()
+	}
+
+	return period.AdaptationSets
+}
+
+func addAudioRepresentations(period *Period, streams []info.AudioStream, template SegmentTemplate) {
+	for _, stream := range streams {
+		set := period.getOrCreateAdaptationSet(stream.MimeType, stream.Codecs)
 		set.Representations = append(set.Representations, Representation{
 			ID:                stream.Itag,
 			Codecs:            stream.Codecs,
@@ -149,8 +124,11 @@ func buildAdaptationSets(
 			SegmentTemplate:   template,
 		})
 	}
-	for _, stream := range videoInfo.VideoStreams {
-		set := period.getOrCreateAdaptationSet(stream.MimeType)
+}
+
+func addVideoRepresentations(period *Period, streams []info.VideoStream, template SegmentTemplate) {
+	for _, stream := range streams {
+		set := period.getOrCreateAdaptationSet(stream.MimeType, stream.Codecs)
 		set.Representations = append(set.Representations, Representation{
 			ID:              stream.Itag,
 			Codecs:          stream.Codecs,
@@ -160,8 +138,54 @@ func buildAdaptationSets(
 			SegmentTemplate: template,
 		})
 	}
+}
 
-	return period.AdaptationSets
+func (period *Period) getOrCreateAdaptationSet(mimeType, codecs string) *AdaptationSet {
+	family := codecFamily(codecs)
+
+	for i := range period.AdaptationSets {
+		if period.AdaptationSets[i].MimeType == mimeType &&
+			period.AdaptationSets[i].family == family {
+			return &period.AdaptationSets[i]
+		}
+	}
+
+	period.AdaptationSets = append(period.AdaptationSets, AdaptationSet{
+		ID:       len(period.AdaptationSets),
+		MimeType: mimeType,
+		family:   family,
+	})
+	return &period.AdaptationSets[len(period.AdaptationSets)-1]
+}
+
+func (set *AdaptationSet) setRepresentativeCodecs() {
+	if len(set.Representations) == 0 || set.Representations[0].Height == nil {
+		return
+	}
+
+	best := set.Representations[0]
+	for _, r := range set.Representations[1:] {
+		if r.Height == nil {
+			continue
+		}
+		switch {
+		case *r.Height > *best.Height:
+			best = r
+		case *r.Height == *best.Height && r.FrameRate != nil &&
+			(best.FrameRate == nil || *r.FrameRate > *best.FrameRate):
+			best = r
+		}
+	}
+
+	set.Codecs = best.Codecs
+}
+
+func codecFamily(codecs string) string {
+	before, _, found := strings.Cut(codecs, ".")
+	if found {
+		return before
+	}
+	return codecs
 }
 
 func baseSegmentTemplate(opts CommonOptions) SegmentTemplate {
@@ -172,39 +196,6 @@ func baseSegmentTemplate(opts CommonOptions) SegmentTemplate {
 		Timescale:              strconv.FormatInt(timescale, 10),
 		PresentationTimeOffset: fmt.Sprintf("%.0f", opts.PTS*float64(timescale)),
 	}
-}
-
-func buildStaticSegmentTemplate(opts StaticOptions) SegmentTemplate {
-	t := baseSegmentTemplate(opts.CommonOptions)
-	t.SegmentTimeline = &SegmentTimeline{
-		Timeline: []S{
-			{
-				T: t.PresentationTimeOffset,
-				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),
-				R: strconv.Itoa(opts.SegmentCount - 1),
-			},
-		},
-	}
-	return t
-}
-
-func buildDynamicSegmentTemplate(opts DynamicOptions) SegmentTemplate {
-	t := baseSegmentTemplate(opts.CommonOptions)
-	t.Duration = strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10)
-	return t
-}
-
-func (period *Period) getOrCreateAdaptationSet(mimeType string) *AdaptationSet {
-	for i := range period.AdaptationSets {
-		if period.AdaptationSets[i].MimeType == mimeType {
-			return &period.AdaptationSets[i]
-		}
-	}
-	period.AdaptationSets = append(period.AdaptationSets, AdaptationSet{
-		ID:       len(period.AdaptationSets),
-		MimeType: mimeType,
-	})
-	return &period.AdaptationSets[len(period.AdaptationSets)-1]
 }
 
 func formatDuration(dur time.Duration) string {
