@@ -250,7 +250,7 @@ from a file:
     ypb download -i <interval> <stream> -- --cookies file.txt
 
 > [!NOTE]
-> Options can also be set via a [yt-dlp config file](https://github.com/yt-dlp/yt-dlp#configuration) as usual.
+> Options can also be set via a [yt-dlp configuration file](https://github.com/yt-dlp/yt-dlp#configuration) as usual.
 
 For a complete list of available options, see the [yt-dlp
 documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).

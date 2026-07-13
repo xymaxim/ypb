@@ -155,9 +155,8 @@ working directory:
 
 ### Specify formats
 
-By default, we let `yt-dlp` choose the audio and video formats automatically (it
-selects the best available quality). This gives you the flexibility to use
-familiar `yt-dlp` options or even your existing configuration file.
+By default, we let `yt-dlp` choose the audio and video formats automatically,
+following its own defaults or any preferences set in your configuration file.
 
 You can pass options directly to `yt-dlp` by adding them after the `--`
 separator.
@@ -171,6 +170,10 @@ quality audio:
 ```shell
 $ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 ```
+
+Alternatively, any yt-dlp option can be set in your[ yt-dlp configuration
+file](https://github.com/yt-dlp/yt-dlp#configuration) as usual, without having
+to pass them on the command line every time.
 
 Running `yt-dlp -F ...` can be helpful here to list all available formats:
 
