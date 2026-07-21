@@ -30,7 +30,7 @@ jobs:
         run: |
           git checkout ${{ steps.get-tag.outputs.tag }}
           
-      - name: Build image
+      - name: Build main image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
@@ -41,6 +41,17 @@ jobs:
           containerfiles: |
             ./Containerfile
 
+      - name: Build bin image
+        id: build-bin-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.repository }}
+          tags: bin-latest bin-${{ steps.get-tag.outputs.tag }}
+          labels: ${{ steps.meta.outputs.labels }}
+          oci: true
+          containerfiles: |
+            ./bin.containerfile
+
       - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
         with:
@@ -48,10 +59,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Push to GHCR
+      - name: Push main image
         id: push-image
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
+          registry: ghcr.io
+
+      - name: Push bin image
+        id: push-bin-image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-bin-image.outputs.image }}
+          tags: ${{ steps.build-bin-image.outputs.tags }}
           registry: ghcr.io

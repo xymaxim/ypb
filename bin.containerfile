@@ -1,0 +1,15 @@
+FROM golang:1.25-alpine AS builder
+RUN apk update && apk add --no-cache make git
+WORKDIR /build
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN make build
+
+FROM scratch
+LABEL org.opencontainers.image.title="Ypb"
+LABEL org.opencontainers.image.description="Ypb binary image."
+LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
+LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
+
+COPY --from=builder --chmod=755 /build/ypb /ypb
