@@ -11,7 +11,7 @@ import (
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/playback/fetchers"
+	"github.com/xymaxim/ypb/fetchers"
 )
 
 // Streamer controls the playback server lifecycle.

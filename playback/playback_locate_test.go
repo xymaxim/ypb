@@ -18,7 +18,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/testutil"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/playback/segment"
+	"github.com/xymaxim/ypb/segment"
 )
 
 func makeGapCaseHandler(

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/mpd"
-	"github.com/xymaxim/ypb/playback/info"
+	"github.com/xymaxim/ypb/info"
 )
 
 func SampleVideoInfo() info.VideoInformation {

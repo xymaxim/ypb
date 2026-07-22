@@ -11,7 +11,7 @@ import (
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/urlutil"
-	"github.com/xymaxim/ypb/playback/fetchers"
+	"github.com/xymaxim/ypb/fetchers"
 )
 
 type CommonFlags struct {

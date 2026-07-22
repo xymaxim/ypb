@@ -10,7 +10,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/urlutil"
-	"github.com/xymaxim/ypb/playback/info"
+	"github.com/xymaxim/ypb/info"
 )
 
 type YtdlpFetcher struct {

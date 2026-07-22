@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/xymaxim/ypb/playback/info"
+	"github.com/xymaxim/ypb/info"
 )
 
 type jsonInfo struct {

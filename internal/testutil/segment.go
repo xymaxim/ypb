@@ -9,7 +9,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/urlutil"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/playback/segment"
+	"github.com/xymaxim/ypb/segment"
 )
 
 type MetadataMap = map[playback.SequenceNumber]segment.Metadata

@@ -8,7 +8,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/playback/segment"
+	"github.com/xymaxim/ypb/segment"
 )
 
 // BadMomentTypeError indicates that an unsupported moment value type was encountered.
