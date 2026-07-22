@@ -40,6 +40,7 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 		fetcher = &fetchers.YtdlpFetcher{
 			VideoID: videoID,
 			Runner:  app.YtdlpRunner,
+			OnPrint: cfg.OnPrint,
 		}
 	}
 
