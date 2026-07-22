@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -21,7 +22,7 @@ jobs:
       - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
         with:
-          registry: ${{ ghcr.io }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
