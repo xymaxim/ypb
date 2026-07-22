@@ -39,17 +39,18 @@ type TimelapseConfig struct {
 func (c *Timelapse) Run() error {
 	pinnedTime := time.Now().UTC()
 
-	app := apppkg.NewApp()
-
 	config, err := c.parseAndValidateInputs()
 	if err != nil {
 		return err
 	}
 
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
+	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	if err != nil {
 		return err
 	}
+
+	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	interval, locateContext, err := c.locateInterval(app.Playback, pinnedTime, config)
 	if err != nil {
@@ -107,19 +108,19 @@ func (c *Timelapse) parseAndValidateInputs() (*TimelapseConfig, error) {
 }
 
 func (c *Timelapse) locateInterval(
-	playback playback.Playbacker,
+	pb playback.Playbacker,
 	pinnedTime time.Time,
 	config *TimelapseConfig,
 ) (*playback.RewindInterval, *actions.LocateContext, error) {
 	fmt.Print("(<<) Locating start and end moments... ")
 
-	locateContext, err := actions.NewLocateContext(playback, nil, &pinnedTime)
+	locateContext, err := actions.NewLocateContext(pb, nil, &pinnedTime)
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}
 
 	interval, _, err := actions.LocateInterval(
-		playback,
+		pb,
 		config.StartMoment,
 		config.EndMoment,
 		locateContext,

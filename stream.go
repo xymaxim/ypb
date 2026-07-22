@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/xymaxim/ypb/fetchers"
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/fetchers"
 )
 
 // Streamer controls the playback server lifecycle.

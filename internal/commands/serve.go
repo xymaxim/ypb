@@ -19,12 +19,13 @@ func (c *Serve) Run() error {
 		return err
 	}
 
-	app := apppkg.NewApp()
-
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
-	if err := CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
+	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	if err != nil {
 		return err
 	}
+
+	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(

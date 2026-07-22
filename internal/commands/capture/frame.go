@@ -28,21 +28,19 @@ type FrameConfig struct {
 func (c *Frame) Run() error {
 	pinnedTime := time.Now().UTC()
 
-	app := apppkg.NewApp()
-
-	// Parse and validate inputs
 	config, err := c.parseAndValidateInputs()
 	if err != nil {
 		return err
 	}
 
-	// Collect video information and initialize the app
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	if err := commands.CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
+	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	if err != nil {
 		return err
 	}
 
-	// Locate the moment
+	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
+
 	rewindMoment, _, err := c.locateMoment(app.Playback, pinnedTime, config)
 	if err != nil {
 		return err
@@ -59,7 +57,6 @@ func (c *Frame) Run() error {
 		rewindMoment.Metadata.SequenceNumber,
 	)
 
-	// Capture the frame
 	config.OutputPath = fmt.Sprintf(
 		"%s_%s_%s.%s",
 		commands.AdjustForFilename(app.Playback.Info().Title, 0),

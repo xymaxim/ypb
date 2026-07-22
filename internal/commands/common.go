@@ -1,17 +1,14 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"os/exec"
+	osexec "os/exec"
 	"strings"
 	"time"
 
 	"github.com/gosimple/slug"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
-	"github.com/xymaxim/ypb/internal/urlutil"
-	"github.com/xymaxim/ypb/fetchers"
 )
 
 type CommonFlags struct {
@@ -23,7 +20,7 @@ type YtdlpOptionsFlag struct {
 }
 
 func checkYtdlp() error {
-	_, err := exec.LookPath(apppkg.YtdlpBinaryPath)
+	_, err := osexec.LookPath(apppkg.YtdlpBinaryPath)
 	if err != nil {
 		return fmt.Errorf("unable to find yt-dlp: %w", err)
 	}
@@ -35,28 +32,6 @@ func NormalizeYtdlpOptions(opts []string) []string {
 		return opts[1:]
 	}
 	return opts
-}
-
-func CollectVideoInfo(id string, app *apppkg.App, port int, ytdlpOptions []string) error {
-	url := urlutil.BuildVideoLiveURL(id)
-
-	fmt.Printf("(<<) Collecting info about %s...\n", url)
-	cfg := &apppkg.Config{
-		Port: port,
-	}
-	fetcher := &fetchers.YtdlpFetcher{
-		VideoID:      id,
-		Runner:       app.YtdlpRunner,
-		YtdlpOptions: ytdlpOptions,
-		OnPrint:      cfg.OnPrint,
-	}
-	if err := app.Initialize(context.Background(), id, cfg, fetcher); err != nil {
-		return fmt.Errorf("initializing app: %w", err)
-	}
-
-	fmt.Printf("Stream '%s' is alive!\n", app.Playback.Info().Title)
-
-	return nil
 }
 
 func AdjustForFilename(s string, length int) string {

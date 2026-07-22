@@ -26,52 +26,40 @@ const (
 
 type App struct {
 	Playback      playback.Playbacker
-	Server        *http.Server
-	Config        *Config
 	FFmpegRunner  exec.Runner
 	FFprobeRunner exec.Runner
 	YtdlpRunner   exec.Runner
+	Server        *http.Server
 }
 
-type Config struct {
-	Port    int
-	OnPrint func([]byte)
-}
+func InitApp(id string, port int, ytdlpOptions []string) (*App, error) {
+	ytdlpRunner := exec.NewCommandRunner(YtdlpBinaryPath)
+	ffmpegRunner := exec.NewCommandRunner(FFmpegBinaryPath)
+	ffprobeRunner := exec.NewCommandRunner(FFprobeBinaryPath)
 
-func NewApp() *App {
-	return &App{
-		Config:        &Config{},
-		FFmpegRunner:  exec.NewCommandRunner(FFmpegBinaryPath),
-		FFprobeRunner: exec.NewCommandRunner(FFprobeBinaryPath),
-		YtdlpRunner:   exec.NewCommandRunner(YtdlpBinaryPath),
+	fetcher := &fetchers.YtdlpFetcher{
+		VideoID:      id,
+		Runner:       ytdlpRunner,
+		YtdlpOptions: ytdlpOptions,
 	}
-}
 
-func (a *App) Initialize(
-	ctx context.Context,
-	videoID string,
-	cfg *Config,
-	fetcher fetchers.Fetcher,
-) error {
-	a.Config = cfg
-
-	pb, err := playback.NewPlayback(
-		ctx,
-		videoID,
-		fetcher,
-		nil,
-	)
+	pb, err := playback.NewPlayback(context.Background(), id, fetcher, nil)
 	if err != nil {
-		return fmt.Errorf("starting playback: %w", err)
+		return nil, fmt.Errorf("creating playback: %w", err)
 	}
-	a.Playback = pb
 
-	a.Server = &http.Server{
-		Addr:              ":" + strconv.Itoa(cfg.Port),
+	server := &http.Server{
+		Addr:              ":" + strconv.Itoa(port),
 		ReadHeaderTimeout: 20 * time.Second,
 	}
 
-	return nil
+	return &App{
+		Playback:      pb,
+		FFmpegRunner:  ffmpegRunner,
+		FFprobeRunner: ffprobeRunner,
+		YtdlpRunner:   ytdlpRunner,
+		Server:        server,
+	}, nil
 }
 
 func WithCORS(next http.Handler) http.Handler {

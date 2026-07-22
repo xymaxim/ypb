@@ -30,8 +30,6 @@ func (c *Download) Run() error {
 		return err
 	}
 
-	app := apppkg.NewApp()
-
 	start, end, err := input.ParseInterval(c.Interval)
 	if err != nil {
 		return fmt.Errorf("parsing input interval: %w", err)
@@ -41,10 +39,12 @@ func (c *Download) Run() error {
 	}
 
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
-
-	if err := CollectVideoInfo(c.Stream, app, c.Port, ytdlpOptions); err != nil {
+	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	if err != nil {
 		return err
 	}
+
+	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	fmt.Println("(<<) Locating start and end moments...")
 	locateContext, err := actions.NewLocateContext(app.Playback, nil, &pinnedTime)
