@@ -104,7 +104,7 @@ Actual start: Sun, 08 Feb 2026 11:22:50 +0000 (-2s), sq=1647523
   Actual end: Sun, 08 Feb 2026 11:23:55 +0000, sq=1647535
 
 (<<) Downloading and merging media...
-yt-dlp: [generic] Extracting URL: http://localhost:8080/mpd
+yt-dlp: [generic] Extracting URL: http://localhost:9000/mpd
 yt-dlp: [generic] mpd: Downloading webpage
 yt-dlp: WARNING: [generic] Falling back on generic information extractor
 yt-dlp: [generic] mpd: Extracting information
@@ -232,7 +232,7 @@ This requires us to start a playback in serve mode:
 
 ```shell
 $ ypb serve Mm_zVDDUeNA
-(<<) Served started and listening on http://localhost:8080
+(<<) Served started and listening on http://localhost:9000
 ```
 
 As you see, we are not using the interval option here. Format selection is also
@@ -242,7 +242,7 @@ not applicable. The playback server is now running and waiting for our requests.
 
 To rewind an excerpt, open another terminal and type:
 
-    curl localhost:8080/mpd/30m--now
+    curl localhost:9000/mpd/30m--now
 
 This should return the raw content of the composed static MPEG-DASH manifest.
 
@@ -258,7 +258,7 @@ Now the intriguing part: playing the excerpt.
 
 ``` shell
 ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/mpd/30m--now
+  localhost:9000/mpd/30m--now
 ```
 
 The option `-protocol_whitelist` is required to allow `ffplay` openining the
@@ -273,7 +273,7 @@ As a bonus, let's see how to download media content from the composed manifest.
 
 This is actually almost how `ypb download` works behind the scenes:
 
-    yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
+    yt-dlp -o output.mp4 http://localhost:9000/mpd/30m--now
 
 > Other downloader options: [FFmpeg](https://www.ffmpeg.org/), GPAC's
 > [MP4Box](https://github.com/gpac/gpac/wiki/MP4Box/), or

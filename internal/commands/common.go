@@ -15,7 +15,7 @@ import (
 )
 
 type CommonFlags struct {
-	Port int `help:"Port to start playback on" short:"p" default:"8080"`
+	Port int `help:"Port to start playback on" short:"p" default:"9000"`
 }
 
 type YtdlpOptionsFlag struct {

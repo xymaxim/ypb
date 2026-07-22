@@ -41,12 +41,12 @@ interval
 
 Rewind a 30-minute excerpt from one day ago (static):
 
-    $ curl localhost:8080/mpd/now-1d--30m
+    $ curl localhost:9000/mpd/now-1d--30m
 
 
 Playback starting from ten minutes ago, continuing live (dynamic):
 
-    curl localhost:8080/mpd/now-10m
+    curl localhost:9000/mpd/now-10m
 
 
 #### Response

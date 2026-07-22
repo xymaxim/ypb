@@ -53,8 +53,8 @@ alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
 # Downloads videos to current directory (mounts volume)
 alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
 
-# Starts server accessible at `http://localhost:8080` (exposes port)
-alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
+# Starts server accessible at `http://localhost:9000` (exposes port)
+alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
 ```
 
 > [!IMPORTANT]
@@ -71,16 +71,16 @@ If you prefer not to use aliases or need custom configurations:
 podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
 ```
 
-**Start server on port 8080:**
+**Start server on port 9000:**
 
 ```shell
-podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve
+podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
 ```
 
 **Use custom port (e.g., 3000):**
 
 ```shell
-podman run --rm -p 3000:8080 ghcr.io/xymaxim/ypb serve
+podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
 ```
 
 ## Update the image

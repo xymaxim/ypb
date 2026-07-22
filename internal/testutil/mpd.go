@@ -68,7 +68,7 @@ func SampleVideoInfo() info.VideoInformation {
 
 func SampleCommonOptions() mpd.CommonOptions {
 	return mpd.CommonOptions{
-		BaseURL:         "http://localhost:8080",
+		BaseURL:         "http://localhost:9000",
 		StartNumber:     123,
 		SegmentDuration: 5 * time.Second,
 		PTS:             0,
