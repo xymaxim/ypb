@@ -42,8 +42,7 @@ func CollectVideoInfo(id string, app *apppkg.App, port int, ytdlpOptions []strin
 
 	fmt.Printf("(<<) Collecting info about %s...\n", url)
 	cfg := &apppkg.Config{
-		Port:         port,
-		YtdlpOptions: ytdlpOptions,
+		Port: port,
 	}
 	fetcher := &fetchers.YtdlpFetcher{
 		VideoID:      id,
