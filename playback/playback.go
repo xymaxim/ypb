@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/xymaxim/ypb/internal/urlutil"
 	"github.com/xymaxim/ypb/playback/fetchers"
 	"github.com/xymaxim/ypb/playback/info"
 	"github.com/xymaxim/ypb/playback/segment"
-	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
 type SequenceNumber = int

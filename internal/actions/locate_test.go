@@ -12,10 +12,10 @@ import (
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/input"
+	"github.com/xymaxim/ypb/internal/testutil"
 	"github.com/xymaxim/ypb/playback"
 	"github.com/xymaxim/ypb/playback/info"
 	"github.com/xymaxim/ypb/playback/segment"
-	"github.com/xymaxim/ypb/internal/testutil"
 )
 
 type fakePlayback struct {

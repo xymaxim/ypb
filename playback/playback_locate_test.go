@@ -16,9 +16,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/xymaxim/ypb/internal/testutil"
 	"github.com/xymaxim/ypb/playback"
 	"github.com/xymaxim/ypb/playback/segment"
-	"github.com/xymaxim/ypb/internal/testutil"
 )
 
 func makeGapCaseHandler(

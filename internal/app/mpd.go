@@ -11,8 +11,8 @@ import (
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/input"
-	"github.com/xymaxim/ypb/playback"
 	"github.com/xymaxim/ypb/internal/urlutil"
+	"github.com/xymaxim/ypb/playback"
 )
 
 type intervalInfo struct {
