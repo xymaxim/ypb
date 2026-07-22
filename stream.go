@@ -7,17 +7,7 @@ import (
 	"net/http"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
-	"github.com/xymaxim/ypb/internal/playback/fetchers"
-	"github.com/xymaxim/ypb/internal/playback/info"
-)
-
-type (
-	Fetcher          = fetchers.Fetcher
-	Additionals      = fetchers.Additionals
-	VideoInformation = info.VideoInformation
-	AudioStream      = info.AudioStream
-	VideoStream      = info.VideoStream
-	CommonStream     = info.CommonStream
+	"github.com/xymaxim/ypb/playback/fetchers"
 )
 
 // Streamer controls the playback server lifecycle.
@@ -37,10 +27,11 @@ type Stream struct {
 
 // StreamConfig holds options for creating a new stream.
 type StreamConfig struct {
-	Fetcher Fetcher
+	Fetcher fetchers.Fetcher
 	OnPrint func([]byte)
 }
 
+// NewStream creates a new playback server.
 func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
