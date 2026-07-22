@@ -9,6 +9,7 @@ Versioning](https://calver.org).
 ### Added
 
 - CORS support for browser requests
+- Ypb binary container image
 
 ### Changed
 
