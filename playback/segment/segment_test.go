@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/xymaxim/ypb/internal/playback/segment"
+	"github.com/xymaxim/ypb/playback/segment"
 )
 
 func TestParseMetadata_Success(t *testing.T) {

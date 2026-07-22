@@ -8,7 +8,7 @@ import (
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/commands"
 	"github.com/xymaxim/ypb/internal/input"
-	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/playback"
 )
 
 type Frame struct {

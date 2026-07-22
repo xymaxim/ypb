@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/playback"
 )
 
 type SegmentHandler struct {

@@ -25,7 +25,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/playback/segment"
+	"github.com/xymaxim/ypb/playback/segment"
 )
 
 // timeDiffTolerance defines the acceptable time difference when matching

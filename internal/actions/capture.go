@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
-	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/playback"
 )
 
 // CaptureFrame extracts a frame corresponding to a moment.

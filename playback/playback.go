@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/playback/fetchers"
-	"github.com/xymaxim/ypb/internal/playback/info"
-	"github.com/xymaxim/ypb/internal/playback/segment"
+	"github.com/xymaxim/ypb/playback/fetchers"
+	"github.com/xymaxim/ypb/playback/info"
+	"github.com/xymaxim/ypb/playback/segment"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 

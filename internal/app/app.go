@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/xymaxim/ypb/internal/exec"
-	"github.com/xymaxim/ypb/internal/playback"
-	"github.com/xymaxim/ypb/internal/playback/fetchers"
+	"github.com/xymaxim/ypb/playback"
+	"github.com/xymaxim/ypb/playback/fetchers"
 )
 
 const (

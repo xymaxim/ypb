@@ -12,9 +12,9 @@ import (
 
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/input"
-	"github.com/xymaxim/ypb/internal/playback"
-	"github.com/xymaxim/ypb/internal/playback/info"
-	"github.com/xymaxim/ypb/internal/playback/segment"
+	"github.com/xymaxim/ypb/playback"
+	"github.com/xymaxim/ypb/playback/info"
+	"github.com/xymaxim/ypb/playback/segment"
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 

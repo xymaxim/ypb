@@ -3,7 +3,7 @@ package fetchers
 import (
 	"context"
 
-	"github.com/xymaxim/ypb/internal/playback/info"
+	"github.com/xymaxim/ypb/playback/info"
 )
 
 type Additionals any

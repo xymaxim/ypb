@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/playback"
 )
 
 // ValidateMoments performs preliminary validation on parsed start and end

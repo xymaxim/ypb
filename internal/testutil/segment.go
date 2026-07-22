@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xymaxim/ypb/internal/playback"
-	"github.com/xymaxim/ypb/internal/playback/segment"
+	"github.com/xymaxim/ypb/playback"
+	"github.com/xymaxim/ypb/playback/segment"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 

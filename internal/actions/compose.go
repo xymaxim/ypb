@@ -10,7 +10,7 @@ import (
 
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/internal/mpd"
-	"github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/playback"
 )
 
 func ComposeStatic(
