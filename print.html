@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9a08d326.js";
+            window.path_to_searchindex_js = "searchindex-17ed6625.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -284,7 +284,7 @@ Actual start: Sun, 08 Feb 2026 11:22:50 +0000 (-2s), sq=1647523
   Actual end: Sun, 08 Feb 2026 11:23:55 +0000, sq=1647535
 
 (&lt;&lt;) Downloading and merging media...
-yt-dlp: [generic] Extracting URL: http://localhost:8080/mpd
+yt-dlp: [generic] Extracting URL: http://localhost:9000/mpd
 yt-dlp: [generic] mpd: Downloading webpage
 yt-dlp: WARNING: [generic] Falling back on generic information extractor
 yt-dlp: [generic] mpd: Extracting information
@@ -387,13 +387,13 @@ on interval part formats.</p>
 <h3 id="start-a-playback-server"><a class="header" href="#start-a-playback-server">Start a playback server</a></h3>
 <p>This requires us to start a playback in serve mode:</p>
 <pre><code class="language-shell">$ ypb serve Mm_zVDDUeNA
-(&lt;&lt;) Served started and listening on http://localhost:8080
+(&lt;&lt;) Served started and listening on http://localhost:9000
 </code></pre>
 <p>As you see, we are not using the interval option here. Format selection is also
 not applicable. The playback server is now running and waiting for our requests.</p>
 <h3 id="send-rewind-requests"><a class="header" href="#send-rewind-requests">Send rewind requests</a></h3>
 <p>To rewind an excerpt, open another terminal and type:</p>
-<pre><code>curl localhost:8080/mpd/30m--now
+<pre><code>curl localhost:9000/mpd/30m--now
 </code></pre>
 <p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
 <p>The rewind path parameter <code>/mpd/{interval}</code> has the same format as the
@@ -405,7 +405,7 @@ instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
 <p>Now the intriguing part: playing the excerpt.</p>
 <pre><code class="language-shell">ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/mpd/30m--now
+  localhost:9000/mpd/30m--now
 </code></pre>
 <p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
 manifest and fetching media segments.</p>
@@ -414,7 +414,7 @@ compatible player you prefer.</p>
 <h3 id="download-media"><a class="header" href="#download-media">Download media</a></h3>
 <p>As a bonus, let’s see how to download media content from the composed manifest.</p>
 <p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
-<pre><code>yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
+<pre><code>yt-dlp -o output.mp4 http://localhost:9000/mpd/30m--now
 </code></pre>
 <blockquote>
 <p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC’s
@@ -542,8 +542,8 @@ alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
 # Downloads videos to current directory (mounts volume)
 alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
 
-# Starts server accessible at `http://localhost:8080` (exposes port)
-alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
+# Starts server accessible at `http://localhost:9000` (exposes port)
+alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
 </code></pre>
 <blockquote class="blockquote-tag blockquote-tag-important">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
@@ -555,11 +555,11 @@ errors.</p>
 <p><strong>Download videos to current directory:</strong></p>
 <pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
 </code></pre>
-<p><strong>Start server on port 8080:</strong></p>
-<pre><code class="language-shell">podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve
+<p><strong>Start server on port 9000:</strong></p>
+<pre><code class="language-shell">podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
 </code></pre>
 <p><strong>Use custom port (e.g., 3000):</strong></p>
-<pre><code class="language-shell">podman run --rm -p 3000:8080 ghcr.io/xymaxim/ypb serve
+<pre><code class="language-shell">podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
 </code></pre>
 <h2 id="update-the-image"><a class="header" href="#update-the-image">Update the image</a></h2>
 <p>To update <code>ypb</code> and all dependecies to the latest version:</p>
@@ -808,7 +808,7 @@ Flags:
   -h, --help             Show context-sensitive help.
   -v, --verbose          Show verbose output.
 
-  -p, --port=8080        Port to start playback on
+  -p, --port=9000        Port to start playback on
       --of="png"         Output image format
   -m, --moment=STRING    Moment to capture
 </code></pre>
@@ -825,7 +825,7 @@ Flags:
   -h, --help               Show context-sensitive help.
   -v, --verbose            Show verbose output.
 
-  -p, --port=8080          Port to start playback on
+  -p, --port=9000          Port to start playback on
       --of="png"           Output image format
   -e, --every=DURATION     Capture frame every duration
   -i, --interval=STRING    Time or segment interval
@@ -843,7 +843,7 @@ Flags:
   -h, --help               Show context-sensitive help.
   -v, --verbose            Show verbose output.
 
-  -p, --port=8080          Port to start playback on
+  -p, --port=9000          Port to start playback on
   -i, --interval=STRING    Time or segment interval
 </code></pre>
 <h3 id="serve"><a class="header" href="#serve">serve</a></h3>
@@ -859,7 +859,7 @@ Flags:
   -h, --help         Show context-sensitive help.
   -v, --verbose      Show verbose output.
 
-  -p, --port=8080    Port to start playback on
+  -p, --port=9000    Port to start playback on
 </code></pre>
 <h2 id="specifying-the-rewind-interval"><a class="header" href="#specifying-the-rewind-interval">Specifying the rewind interval</a></h2>
 <p>The rewind interval is specified using the<code>-i/--interval</code> option. An
@@ -1079,10 +1079,10 @@ instead of <code>/</code> and avoid unencoded whitespace.</p>
 </dl>
 <h4 id="usage-examples"><a class="header" href="#usage-examples">Usage examples</a></h4>
 <p>Rewind a 30-minute excerpt from one day ago (static):</p>
-<pre><code>$ curl localhost:8080/mpd/now-1d--30m
+<pre><code>$ curl localhost:9000/mpd/now-1d--30m
 </code></pre>
 <p>Playback starting from ten minutes ago, continuing live (dynamic):</p>
-<pre><code>curl localhost:8080/mpd/now-10m
+<pre><code>curl localhost:9000/mpd/now-10m
 </code></pre>
 <h4 id="response-1"><a class="header" href="#response-1">Response</a></h4>
 <p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To

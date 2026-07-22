@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9a08d326.js";
+            window.path_to_searchindex_js = "searchindex-17ed6625.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-0c2dce08.js"></script>
@@ -259,7 +259,7 @@ Actual start: Sun, 08 Feb 2026 11:22:50 +0000 (-2s), sq=1647523
   Actual end: Sun, 08 Feb 2026 11:23:55 +0000, sq=1647535
 
 (&lt;&lt;) Downloading and merging media...
-yt-dlp: [generic] Extracting URL: http://localhost:8080/mpd
+yt-dlp: [generic] Extracting URL: http://localhost:9000/mpd
 yt-dlp: [generic] mpd: Downloading webpage
 yt-dlp: WARNING: [generic] Falling back on generic information extractor
 yt-dlp: [generic] mpd: Extracting information
@@ -362,13 +362,13 @@ on interval part formats.</p>
 <h3 id="start-a-playback-server"><a class="header" href="#start-a-playback-server">Start a playback server</a></h3>
 <p>This requires us to start a playback in serve mode:</p>
 <pre><code class="language-shell">$ ypb serve Mm_zVDDUeNA
-(&lt;&lt;) Served started and listening on http://localhost:8080
+(&lt;&lt;) Served started and listening on http://localhost:9000
 </code></pre>
 <p>As you see, we are not using the interval option here. Format selection is also
 not applicable. The playback server is now running and waiting for our requests.</p>
 <h3 id="send-rewind-requests"><a class="header" href="#send-rewind-requests">Send rewind requests</a></h3>
 <p>To rewind an excerpt, open another terminal and type:</p>
-<pre><code>curl localhost:8080/mpd/30m--now
+<pre><code>curl localhost:9000/mpd/30m--now
 </code></pre>
 <p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
 <p>The rewind path parameter <code>/mpd/{interval}</code> has the same format as the
@@ -380,7 +380,7 @@ instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
 <h3 id="play-stream-excerpts"><a class="header" href="#play-stream-excerpts">Play stream excerpts</a></h3>
 <p>Now the intriguing part: playing the excerpt.</p>
 <pre><code class="language-shell">ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
-  localhost:8080/mpd/30m--now
+  localhost:9000/mpd/30m--now
 </code></pre>
 <p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
 manifest and fetching media segments.</p>
@@ -389,7 +389,7 @@ compatible player you prefer.</p>
 <h3 id="download-media"><a class="header" href="#download-media">Download media</a></h3>
 <p>As a bonus, let’s see how to download media content from the composed manifest.</p>
 <p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
-<pre><code>yt-dlp -o output.mp4 http://localhost:8080/mpd/30m--now
+<pre><code>yt-dlp -o output.mp4 http://localhost:9000/mpd/30m--now
 </code></pre>
 <blockquote>
 <p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC’s

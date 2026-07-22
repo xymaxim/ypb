@@ -37,7 +37,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-9a08d326.js";
+            window.path_to_searchindex_js = "../../searchindex-17ed6625.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-0c2dce08.js"></script>
@@ -208,8 +208,8 @@ alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
 # Downloads videos to current directory (mounts volume)
 alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
 
-# Starts server accessible at `http://localhost:8080` (exposes port)
-alias ypb-serve='podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve'
+# Starts server accessible at `http://localhost:9000` (exposes port)
+alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
 </code></pre>
 <blockquote class="blockquote-tag blockquote-tag-important">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
@@ -221,11 +221,11 @@ errors.</p>
 <p><strong>Download videos to current directory:</strong></p>
 <pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
 </code></pre>
-<p><strong>Start server on port 8080:</strong></p>
-<pre><code class="language-shell">podman run --rm -p 8080:8080 ghcr.io/xymaxim/ypb serve
+<p><strong>Start server on port 9000:</strong></p>
+<pre><code class="language-shell">podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
 </code></pre>
 <p><strong>Use custom port (e.g., 3000):</strong></p>
-<pre><code class="language-shell">podman run --rm -p 3000:8080 ghcr.io/xymaxim/ypb serve
+<pre><code class="language-shell">podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
 </code></pre>
 <h2 id="update-the-image"><a class="header" href="#update-the-image">Update the image</a></h2>
 <p>To update <code>ypb</code> and all dependecies to the latest version:</p>
