@@ -1,4 +1,4 @@
-package stream
+package ypb
 
 import (
 	"context"
@@ -8,16 +8,26 @@ import (
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/playback/fetchers"
-	"github.com/xymaxim/ypb/playback"
+	"github.com/xymaxim/ypb/internal/playback/info"
 )
 
+type (
+	Fetcher          = fetchers.Fetcher
+	Additionals      = fetchers.Additionals
+	VideoInformation = info.VideoInformation
+	AudioStream      = info.AudioStream
+	VideoStream      = info.VideoStream
+	CommonStream     = info.CommonStream
+)
+
+// Streamer controls the playback server lifecycle.
 type Streamer interface {
 	Start() error
 	Stop()
 	Server() *http.Server
-	Playback() playback.Playbacker
 }
 
+// Stream is the playback server implementation.
 type Stream struct {
 	app    *apppkg.App
 	server *http.Server
@@ -25,8 +35,9 @@ type Stream struct {
 	done   chan struct{}
 }
 
+// StreamConfig holds options for creating a new stream.
 type StreamConfig struct {
-	Fetcher playback.Fetcher
+	Fetcher Fetcher
 	OnPrint func([]byte)
 }
 
@@ -85,14 +96,12 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 	return stream, nil
 }
 
+// Server returns the underlying HTTP server.
 func (s *Stream) Server() *http.Server {
 	return s.server
 }
 
-func (s *Stream) Playback() playback.Playbacker {
-	return s.app.Playback
-}
-
+// Start begins serving requests. Blocks until the server is closed.
 func (s *Stream) Start() error {
 	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
 		return fmt.Errorf("starting stream server: %w", err)
@@ -100,6 +109,7 @@ func (s *Stream) Start() error {
 	return nil
 }
 
+// Stop gracefully shuts down the server.
 func (s *Stream) Stop() {
 	s.cancel()
 	<-s.done

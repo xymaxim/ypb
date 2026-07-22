@@ -1,4 +1,4 @@
-package stream_test
+package ypb_test
 
 import (
 	"context"
@@ -6,18 +6,18 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/xymaxim/ypb"
 	"github.com/xymaxim/ypb/internal/testutil"
-	"github.com/xymaxim/ypb/stream"
 )
 
 func TestCORS(t *testing.T) {
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 
-	s, err := stream.NewStream(
+	s, err := ypb.NewStream(
 		context.Background(),
 		testutil.TestVideoID,
 		0,
-		&stream.StreamConfig{
+		&ypb.StreamConfig{
 			Fetcher: fetcher,
 		},
 	)
