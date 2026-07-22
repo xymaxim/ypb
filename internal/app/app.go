@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/xymaxim/ypb/fetchers"
 	"github.com/xymaxim/ypb/internal/exec"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/fetchers"
 )
 
 const (

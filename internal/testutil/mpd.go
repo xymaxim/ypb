@@ -3,8 +3,8 @@ package testutil
 import (
 	"time"
 
-	"github.com/xymaxim/ypb/internal/mpd"
 	"github.com/xymaxim/ypb/info"
+	"github.com/xymaxim/ypb/internal/mpd"
 )
 
 func SampleVideoInfo() info.VideoInformation {

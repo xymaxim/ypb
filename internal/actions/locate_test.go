@@ -10,11 +10,11 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
 
+	"github.com/xymaxim/ypb/info"
 	"github.com/xymaxim/ypb/internal/actions"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/testutil"
 	"github.com/xymaxim/ypb/playback"
-	"github.com/xymaxim/ypb/info"
 	"github.com/xymaxim/ypb/segment"
 )
 
