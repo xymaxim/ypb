@@ -4,6 +4,17 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.7.23](https://github.com/xymaxim/ypb/releases/tag/v2026.7.23)
+
+### Added
+
+- CORS support for browser requests
+
+### Changed
+
+- Change default port from 8080 to 9000
+- Move playback, fetchers, info, and segment packages to root level
+
 ## [2026.7.13](https://github.com/xymaxim/ypb/releases/tag/v2026.7.13)
 
 ### Changed
