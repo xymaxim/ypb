@@ -13,9 +13,14 @@ import (
 func TestCORS(t *testing.T) {
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 
-	s, err := stream.NewStream(context.Background(), testutil.TestVideoID, 0, &stream.StreamConfig{
-		Fetcher: fetcher,
-	})
+	s, err := stream.NewStream(
+		context.Background(),
+		testutil.TestVideoID,
+		0,
+		&stream.StreamConfig{
+			Fetcher: fetcher,
+		},
+	)
 	if err != nil {
 		t.Fatalf("creating stream: %v", err)
 	}

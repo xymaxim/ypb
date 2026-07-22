@@ -47,7 +47,12 @@ func NewApp() *App {
 	}
 }
 
-func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config, fetcher fetchers.Fetcher) error {
+func (a *App) Initialize(
+	ctx context.Context,
+	videoID string,
+	cfg *Config,
+	fetcher fetchers.Fetcher,
+) error {
 	a.Config = cfg
 
 	pb, err := playback.NewPlayback(
