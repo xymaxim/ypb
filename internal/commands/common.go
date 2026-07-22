@@ -10,6 +10,7 @@ import (
 	"github.com/gosimple/slug"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -44,7 +45,13 @@ func CollectVideoInfo(id string, app *apppkg.App, port int, ytdlpOptions []strin
 		Port:         port,
 		YtdlpOptions: ytdlpOptions,
 	}
-	if err := app.Initialize(context.Background(), id, cfg); err != nil {
+	fetcher := &fetchers.YtdlpFetcher{
+		VideoID:      id,
+		Runner:       app.YtdlpRunner,
+		YtdlpOptions: ytdlpOptions,
+		OnPrint:      cfg.OnPrint,
+	}
+	if err := app.Initialize(context.Background(), id, cfg, fetcher); err != nil {
 		return fmt.Errorf("initializing app: %w", err)
 	}
 

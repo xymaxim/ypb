@@ -2,6 +2,7 @@ package playback
 
 import (
 	internalplayback "github.com/xymaxim/ypb/internal/playback"
+	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/internal/playback/info"
 	"github.com/xymaxim/ypb/internal/playback/segment"
 )
@@ -19,3 +20,5 @@ type RewindInterval = internalplayback.RewindInterval
 type SegmentMetadata = segment.Metadata
 
 type VideoInformation = info.VideoInformation
+
+type Fetcher = fetchers.Fetcher

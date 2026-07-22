@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/playback/fetchers"
 	"github.com/xymaxim/ypb/playback"
 )
 
@@ -25,6 +26,7 @@ type Stream struct {
 }
 
 type StreamConfig struct {
+	Fetcher playback.Fetcher
 	OnPrint func([]byte)
 }
 
@@ -33,10 +35,18 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 
 	app := apppkg.NewApp()
 
+	fetcher := cfg.Fetcher
+	if fetcher == nil {
+		fetcher = &fetchers.YtdlpFetcher{
+			VideoID: videoID,
+			Runner:  app.YtdlpRunner,
+		}
+	}
+
 	if err := app.Initialize(ctx, videoID, &apppkg.Config{
 		Port:    port,
 		OnPrint: cfg.OnPrint,
-	}); err != nil {
+	}, fetcher); err != nil {
 		return nil, fmt.Errorf("initializing app: %w", err)
 	}
 

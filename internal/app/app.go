@@ -48,18 +48,13 @@ func NewApp() *App {
 	}
 }
 
-func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config) error {
+func (a *App) Initialize(ctx context.Context, videoID string, cfg *Config, fetcher fetchers.Fetcher) error {
 	a.Config = cfg
 
 	pb, err := playback.NewPlayback(
 		ctx,
 		videoID,
-		&fetchers.YtdlpFetcher{
-			VideoID:      videoID,
-			Runner:       a.YtdlpRunner,
-			YtdlpOptions: cfg.YtdlpOptions,
-			OnPrint:      cfg.OnPrint,
-		},
+		fetcher,
 		nil,
 	)
 	if err != nil {
