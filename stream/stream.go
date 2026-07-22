@@ -54,7 +54,7 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
 		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
 	)
-	app.Server.Handler = mux
+	app.Server.Handler = apppkg.WithCORS(mux)
 
 	stream := &Stream{
 		app:    app,
