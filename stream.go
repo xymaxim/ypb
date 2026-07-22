@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/exec"
+	"github.com/xymaxim/ypb/playback"
 	"github.com/xymaxim/ypb/playback/fetchers"
 )
 
@@ -19,7 +23,6 @@ type Streamer interface {
 
 // Stream is the playback server implementation.
 type Stream struct {
-	app    *apppkg.App
 	server *http.Server
 	cancel context.CancelFunc
 	done   chan struct{}
@@ -35,43 +38,46 @@ type StreamConfig struct {
 func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
-	app := apppkg.NewApp()
+	ytdlpRunner := exec.NewCommandRunner(apppkg.YtdlpBinaryPath)
+	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
 	fetcher := cfg.Fetcher
 	if fetcher == nil {
 		fetcher = &fetchers.YtdlpFetcher{
 			VideoID: videoID,
-			Runner:  app.YtdlpRunner,
+			Runner:  ytdlpRunner,
 			OnPrint: cfg.OnPrint,
 		}
 	}
 
-	if err := app.Initialize(ctx, videoID, &apppkg.Config{
-		Port:    port,
-		OnPrint: cfg.OnPrint,
-	}, fetcher); err != nil {
-		return nil, fmt.Errorf("initializing app: %w", err)
+	pb, err := playback.NewPlayback(ctx, videoID, fetcher, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating playback: %w", err)
+	}
+
+	server := &http.Server{
+		Addr:              ":" + strconv.Itoa(port),
+		ReadHeaderTimeout: 20 * time.Second,
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
-		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
+		(&apppkg.InfoHandler{Info: pb.Info()}).ServeHTTP),
 	)
 	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
 		(&apppkg.MPDHandler{
-			Playback:      app.Playback,
-			FFprobeRunner: app.FFprobeRunner,
-			ServerAddr:    app.Server.Addr,
+			Playback:      pb,
+			FFprobeRunner: ffprobeRunner,
+			ServerAddr:    server.Addr,
 		}).ServeHTTP),
 	)
 	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
-		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
+		(&apppkg.SegmentHandler{Playback: pb}).ServeHTTP),
 	)
-	app.Server.Handler = apppkg.WithCORS(mux)
+	server.Handler = apppkg.WithCORS(mux)
 
 	stream := &Stream{
-		app:    app,
-		server: app.Server,
+		server: server,
 		cancel: cancel,
 		done:   make(chan struct{}),
 	}
