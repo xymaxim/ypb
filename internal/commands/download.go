@@ -24,13 +24,16 @@ type Download struct {
 }
 
 func (c *Download) Run() error {
-	pinnedTime := time.Now().UTC()
+	pinnedTime, err := ResolvePinnedTime(c.Now)
+	if err != nil {
+		return err
+	}
 
 	if err := checkYtdlp(); err != nil {
 		return err
 	}
 
-	start, end, err := input.ParseInterval(c.Interval)
+	start, end, err := input.ParseInterval(c.Interval, &pinnedTime)
 	if err != nil {
 		return fmt.Errorf("parsing input interval: %w", err)
 	}

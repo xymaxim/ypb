@@ -9,14 +9,41 @@ import (
 	"github.com/gosimple/slug"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/input"
 )
 
 type CommonFlags struct {
-	Port int `help:"Port to start playback on" short:"p" default:"9000"`
+	Port int    `help:"Port to start playback on"    short:"p" default:"9000"`
+	Now  string `help:"Pin 'now' to a specific time"                          placeholder:"TIME"`
 }
 
 type YtdlpOptionsFlag struct {
 	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""` //nolint:lll
+}
+
+func ResolvePinnedTime(nowFlag string) (time.Time, error) {
+	if nowFlag == "" {
+		return time.Now().UTC(), nil
+	}
+
+	v, err := input.ParseIntervalPart(nowFlag, nil)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("parsing --now value: %w", err)
+	}
+
+	switch t := v.(type) {
+	case time.Time:
+		return t, nil
+	case input.MomentKeyword:
+		if t == input.NowKeyword {
+			return time.Now().UTC(), nil
+		}
+		return time.Time{}, fmt.Errorf("unsupported keyword '%s' for --now", t)
+	default:
+		return time.Time{}, fmt.Errorf(
+			"--now value must be a time, not a duration or expression",
+		)
+	}
 }
 
 func checkYtdlp() error {

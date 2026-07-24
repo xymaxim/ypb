@@ -37,9 +37,12 @@ type TimelapseConfig struct {
 }
 
 func (c *Timelapse) Run() error {
-	pinnedTime := time.Now().UTC()
+	pinnedTime, err := commands.ResolvePinnedTime(c.Now)
+	if err != nil {
+		return err
+	}
 
-	config, err := c.parseAndValidateInputs()
+	config, err := c.parseAndValidateInputs(pinnedTime)
 	if err != nil {
 		return err
 	}
@@ -79,8 +82,8 @@ func (c *Timelapse) Run() error {
 	return nil
 }
 
-func (c *Timelapse) parseAndValidateInputs() (*TimelapseConfig, error) {
-	start, end, err := input.ParseInterval(c.Interval)
+func (c *Timelapse) parseAndValidateInputs(refTime time.Time) (*TimelapseConfig, error) {
+	start, end, err := input.ParseInterval(c.Interval, &refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input interval: %w", err)
 	}
@@ -89,7 +92,7 @@ func (c *Timelapse) parseAndValidateInputs() (*TimelapseConfig, error) {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
 
-	duration, err := input.ParseIntervalPart(c.Every)
+	duration, err := input.ParseIntervalPart(c.Every, nil)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input every duration: %w", err)
 	}
