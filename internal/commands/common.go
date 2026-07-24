@@ -13,8 +13,8 @@ import (
 )
 
 type CommonFlags struct {
-	Port int    `help:"Port to start playback on"    short:"p" default:"9000"`
-	Now  string `help:"Pin 'now' to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
+	Port int    `help:"Port to start playback on"  short:"p" default:"9000"`
+	Now  string `help:"Pin now to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
 }
 
 type YtdlpOptionsFlag struct {
