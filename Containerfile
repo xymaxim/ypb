@@ -29,6 +29,8 @@ RUN wget -q -O /usr/local/bin/yt-dlp \
 COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
 RUN /usr/local/bin/ypb version
 
+COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
+
 WORKDIR /content
 
-ENTRYPOINT ["/usr/local/bin/ypb"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
