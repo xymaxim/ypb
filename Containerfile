@@ -22,15 +22,13 @@ LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 RUN apk update && apk add --no-cache git deno ffmpeg
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 
-RUN wget -q -O /usr/local/bin/yt-dlp \
-    "https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_musllinux" && \
+ARG YTDLP_URL="https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_musllinux"
+RUN wget -q -O /usr/local/bin/yt-dlp "${YTDLP_URL}" && \
     chmod 755 /usr/local/bin/yt-dlp
 
 COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
 RUN /usr/local/bin/ypb version
 
-COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
-
 WORKDIR /content
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/ypb"]
