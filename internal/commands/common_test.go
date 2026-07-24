@@ -11,6 +11,7 @@ import (
 )
 
 func TestResolvePinnedTime(t *testing.T) {
+	t.Parallel()
 	before := time.Now().UTC()
 	testCases := []struct {
 		name      string
@@ -116,6 +117,7 @@ func TestResolvePinnedTime(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := ResolvePinnedTime(tc.nowFlag)
 			if tc.wantErr {
 				require.Error(t, err)
@@ -128,6 +130,7 @@ func TestResolvePinnedTime(t *testing.T) {
 }
 
 func TestNowFlagIntegration(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name    string
 		nowFlag string
@@ -209,6 +212,7 @@ func TestNowFlagIntegration(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			pinnedTime, err := ResolvePinnedTime(tc.nowFlag)
 			require.NoError(t, err)
 
