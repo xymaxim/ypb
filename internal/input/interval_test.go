@@ -227,7 +227,7 @@ func TestParseIntervalPart(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			value, err := input.ParseIntervalPart(tc.input)
+			value, err := input.ParseIntervalPart(tc.input, nil)
 			if err == nil && tc.wantErr {
 				t.Fatalf("should fail, got: %v", value)
 			}
@@ -371,7 +371,7 @@ func TestParseIntervalPart_Expressions(t *testing.T) {
 	for _, tc := range expandedTestCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			value, err := input.ParseIntervalPart(tc.input)
+			value, err := input.ParseIntervalPart(tc.input, nil)
 			if err == nil && tc.wantErr {
 				t.Fatalf("should fail, got: %v", value)
 			}
@@ -435,7 +435,7 @@ func TestParseInterval(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			start, end, err := input.ParseInterval(tc.input)
+			start, end, err := input.ParseInterval(tc.input, nil)
 			if err == nil && tc.wantErr {
 				t.Fatalf("should fail, got: start '%v', end '%v'", start, end)
 			}

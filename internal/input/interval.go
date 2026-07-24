@@ -34,21 +34,28 @@ const (
 
 type ParserResult = gomme.Result[MomentValue, string]
 
-var intervalPart = gomme.Alternative(
-	parseExpression,               // e.g., 2026-01-02T10:20:30+00 - 30s
-	parseDateAndTime,              // e.g., 2026-01-02T10:20:30+00
-	parseDuration,                 // e.g., 1d2h3m4s
-	parseUnixTimestamp,            // e.g., @1767349230
-	parseKeyword(NowKeyword),      // now
-	parseKeyword(EarliestKeyword), // earliest
-	parseSequenceNumber,           // e.g., 123
-)
+func intervalPart(refTime *time.Time) gomme.Parser[string, MomentValue] {
+	return gomme.Alternative(
+		parseExpression(refTime),      // e.g., 2026-01-02T10:20:30+00 - 30s
+		parseDateAndTime(refTime),     // e.g., 2026-01-02T10:20:30+00
+		parseDuration,                 // e.g., 1d2h3m4s
+		parseUnixTimestamp,            // e.g., @1767349230
+		parseKeyword(NowKeyword),      // now
+		parseKeyword(EarliestKeyword), // earliest
+		parseSequenceNumber,           // e.g., 123
+	)
+}
 
-func ParseInterval(input string) (MomentValue, MomentValue, error) {
+// ParseInterval parses an interval expression. refTime is the reference time
+// used to resolve the date for time-only values.
+func ParseInterval(
+	input string,
+	refTime *time.Time,
+) (MomentValue, MomentValue, error) {
 	result := gomme.SeparatedPair(
-		intervalPart,
+		intervalPart(refTime),
 		gomme.Alternative(gomme.Token[string]("/"), gomme.Token[string]("--")),
-		tillEnd(intervalPart),
+		tillEnd(intervalPart(refTime)),
 	)(input)
 	if result.Err != nil {
 		return nil, nil, result.Err
@@ -82,8 +89,13 @@ func ParseInterval(input string) (MomentValue, MomentValue, error) {
 	return start, end, nil
 }
 
-func ParseIntervalPart(input string) (MomentValue, error) {
-	result := intervalPart(input)
+// ParseIntervalPart parses a single moment value. refTime is the reference time
+// used to resolve the date for time-only values.
+func ParseIntervalPart(
+	input string,
+	refTime *time.Time,
+) (MomentValue, error) {
+	result := intervalPart(refTime)(input)
 	if result.Err != nil {
 		return nil, result.Err
 	}
@@ -110,163 +122,171 @@ func parseSequenceNumber(input string) ParserResult {
 	)(input)
 }
 
-func parseDateAndTime(input string) ParserResult {
-	digits := func(n uint) gomme.Parser[string, int] {
-		return gomme.Map(
-			gomme.Take[string](n),
-			strconv.Atoi,
-		)
-	}
+func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
+	return func(input string) ParserResult {
+		digits := func(n uint) gomme.Parser[string, int] {
+			return gomme.Map(
+				gomme.Take[string](n),
+				strconv.Atoi,
+			)
+		}
 
-	// Date parsers
-	year := digits(4)
-	month := gomme.Preceded(
-		gomme.Char[string]('-'),
-		digits(2),
-	)
-	day := gomme.Preceded(
-		gomme.Char[string]('-'),
-		digits(2),
-	)
-
-	dateOnly := gomme.Map(
-		gomme.Sequence(year, month, day),
-		func(parts []int) (MomentValue, error) {
-			yyyy, mm, dd := parts[0], time.Month(parts[1]), parts[2]
-			return time.Date(yyyy, mm, dd, 0, 0, 0, 0, time.UTC), nil
-		},
-	)
-
-	// Time parsers
-	hours := digits(2)
-	minutes := gomme.Preceded(gomme.Char[string](':'), digits(2))
-	seconds := gomme.Optional(gomme.Preceded(gomme.Char[string](':'), digits(2)))
-	fractional := gomme.Optional(
-		gomme.Map(
-			gomme.Preceded(gomme.Char[string]('.'), gomme.Digit1[string]()),
-			func(s string) (int, error) {
-				if len(s) > 6 {
-					s = s[:6]
-				}
-				for len(s) < 9 {
-					s += "0"
-				}
-				ns, err := strconv.Atoi(s)
-				if err != nil {
-					return 0, err
-				}
-				return ns, nil
-			},
-		),
-	)
-
-	timeOnly := gomme.Map(
-		gomme.Sequence(hours, minutes, seconds, fractional),
-		func(parts []int) (MomentValue, error) {
-			hh, mm, ss, ns := parts[0], parts[1], parts[2], parts[3]
-			now := time.Now()
-			return time.Date(
-				now.Year(),
-				now.Month(),
-				now.Day(),
-				hh,
-				mm,
-				ss,
-				ns,
-				time.UTC,
-			), nil
-		},
-	)
-
-	// Offset parsers
-	offsetHour := gomme.Map(
-		gomme.Pair(gomme.OneOf[string]('+', '-'), digits(2)),
-		func(p gomme.PairContainer[rune, int]) (int, error) {
-			if p.Left == '-' {
-				return -p.Right, nil
-			}
-			return p.Right, nil
-		},
-	)
-	offsetMinutes := gomme.Optional(
-		gomme.Preceded(
-			gomme.Char[string](':'),
+		// Date parsers
+		year := digits(4)
+		month := gomme.Preceded(
+			gomme.Char[string]('-'),
 			digits(2),
-		),
-	)
+		)
+		day := gomme.Preceded(
+			gomme.Char[string]('-'),
+			digits(2),
+		)
 
-	offset := gomme.Alternative(
-		gomme.Map(
-			gomme.Char[string]('Z'),
-			func(_ rune) (*time.Location, error) {
-				return time.UTC, nil
+		dateOnly := gomme.Map(
+			gomme.Sequence(year, month, day),
+			func(parts []int) (MomentValue, error) {
+				yyyy, mm, dd := parts[0], time.Month(parts[1]), parts[2]
+				return time.Date(yyyy, mm, dd, 0, 0, 0, 0, time.UTC), nil
 			},
-		),
-		gomme.Map(
-			gomme.Sequence(offsetHour, offsetMinutes),
-			func(parts []int) (*time.Location, error) {
-				offsetHH, offsetMM := parts[0], parts[1]
-				offsetSeconds := offsetHH*3600 + offsetMM*60
-				return time.FixedZone(
-					fmt.Sprintf("%+03d:%02d", offsetHH, offsetMM),
-					offsetSeconds,
+		)
+
+		// Time parsers
+		hours := digits(2)
+		minutes := gomme.Preceded(gomme.Char[string](':'), digits(2))
+		seconds := gomme.Optional(gomme.Preceded(gomme.Char[string](':'), digits(2)))
+		fractional := gomme.Optional(
+			gomme.Map(
+				gomme.Preceded(gomme.Char[string]('.'), gomme.Digit1[string]()),
+				func(s string) (int, error) {
+					if len(s) > 6 {
+						s = s[:6]
+					}
+					for len(s) < 9 {
+						s += "0"
+					}
+					ns, err := strconv.Atoi(s)
+					if err != nil {
+						return 0, err
+					}
+					return ns, nil
+				},
+			),
+		)
+
+		timeOnly := gomme.Map(
+			gomme.Sequence(hours, minutes, seconds, fractional),
+			func(parts []int) (MomentValue, error) {
+				hh, mm, ss, ns := parts[0], parts[1], parts[2], parts[3]
+				ref := time.Now()
+				if refTime != nil {
+					ref = *refTime
+				}
+				return time.Date(
+					ref.Year(),
+					ref.Month(),
+					ref.Day(),
+					hh,
+					mm,
+					ss,
+					ns,
+					time.UTC,
 				), nil
 			},
-		),
-	)
+		)
 
-	withLocation := func(t time.Time, loc *time.Location) time.Time {
-		newTime := t.In(loc)
-		_, offsetSeconds := newTime.Zone()
-		return newTime.Add(-time.Duration(offsetSeconds) * time.Second)
-	}
-	offsetted := func(
-		t gomme.Parser[string, MomentValue],
-	) gomme.Parser[string, MomentValue] {
-		return gomme.Map(
-			gomme.Pair(t, gomme.Optional(offset)),
-			func(
-				p gomme.PairContainer[MomentValue, *time.Location],
-			) (MomentValue, error) {
-				tt, loc := p.Left.(time.Time), p.Right
-				if loc != nil {
-					return withLocation(tt, loc), nil
+		// Offset parsers
+		offsetHour := gomme.Map(
+			gomme.Pair(gomme.OneOf[string]('+', '-'), digits(2)),
+			func(p gomme.PairContainer[rune, int]) (int, error) {
+				if p.Left == '-' {
+					return -p.Right, nil
 				}
-				return withLocation(tt, time.Local), nil //nolint:gosmopolitan
+				return p.Right, nil
 			},
 		)
-	}
+		offsetMinutes := gomme.Optional(
+			gomme.Preceded(
+				gomme.Char[string](':'),
+				digits(2),
+			),
+		)
 
-	// All together
-	all := offsetted(
-		gomme.Alternative(
+		offset := gomme.Alternative(
 			gomme.Map(
-				gomme.SeparatedPair(
-					dateOnly,
-					gomme.Char[string]('T'),
-					timeOnly,
-				),
-				func(
-					p gomme.PairContainer[MomentValue, MomentValue],
-				) (MomentValue, error) {
-					return time.Date(
-						p.Left.(time.Time).Year(),
-						p.Left.(time.Time).Month(),
-						p.Left.(time.Time).Day(),
-						p.Right.(time.Time).Hour(),
-						p.Right.(time.Time).Minute(),
-						p.Right.(time.Time).Second(),
-						p.Right.(time.Time).Nanosecond(),
-						time.UTC,
+				gomme.Char[string]('Z'),
+				func(_ rune) (*time.Location, error) {
+					return time.UTC, nil
+				},
+			),
+			gomme.Map(
+				gomme.Sequence(offsetHour, offsetMinutes),
+				func(parts []int) (*time.Location, error) {
+					offsetHH, offsetMM := parts[0], parts[1]
+					offsetSeconds := offsetHH*3600 + offsetMM*60
+					return time.FixedZone(
+						fmt.Sprintf("%+03d:%02d", offsetHH, offsetMM),
+						offsetSeconds,
 					), nil
 				},
 			),
-			dateOnly,
-			timeOnly,
-		),
-	)
+		)
 
-	return all(input)
+		withLocation := func(t time.Time, loc *time.Location) time.Time {
+			newTime := t.In(loc)
+			_, offsetSeconds := newTime.Zone()
+			return newTime.Add(-time.Duration(offsetSeconds) * time.Second)
+		}
+		offsetted := func(
+			t gomme.Parser[string, MomentValue],
+		) gomme.Parser[string, MomentValue] {
+			return gomme.Map(
+				gomme.Pair(t, gomme.Optional(offset)),
+				func(
+					p gomme.PairContainer[MomentValue, *time.Location],
+				) (MomentValue, error) {
+					tt, loc := p.Left.(time.Time), p.Right
+					if loc != nil {
+						return withLocation(tt, loc), nil
+					}
+					return withLocation(
+						tt,
+						time.Local,
+					), nil //nolint:gosmopolitan
+				},
+			)
+		}
+
+		// All together
+		all := offsetted(
+			gomme.Alternative(
+				gomme.Map(
+					gomme.SeparatedPair(
+						dateOnly,
+						gomme.Char[string]('T'),
+						timeOnly,
+					),
+					func(
+						p gomme.PairContainer[MomentValue, MomentValue],
+					) (MomentValue, error) {
+						return time.Date(
+							p.Left.(time.Time).Year(),
+							p.Left.(time.Time).Month(),
+							p.Left.(time.Time).Day(),
+							p.Right.(time.Time).Hour(),
+							p.Right.(time.Time).Minute(),
+							p.Right.(time.Time).Second(),
+							p.Right.(time.Time).Nanosecond(),
+							time.UTC,
+						), nil
+					},
+				),
+				dateOnly,
+				timeOnly,
+			),
+		)
+
+		return all(input)
+	}
 }
 
 func parseUnixTimestamp(input string) ParserResult {
@@ -311,46 +331,50 @@ func parseDuration(input string) ParserResult {
 	)(input)
 }
 
-func parseExpression(input string) ParserResult {
-	// Parse left operand
-	leftResult := gomme.Terminated(
-		gomme.Alternative(
-			parseKeyword(NowKeyword),
-			parseDateAndTime,
-			parseUnixTimestamp,
-			parseSequenceNumber,
-		),
-		gomme.Whitespace0[string](),
-	)(input)
-	if leftResult.Err != nil {
-		return gomme.Failure[string, MomentValue](
-			gomme.NewError(input, "parseExpression"),
-			input,
-		)
-	}
+func parseExpression(refTime *time.Time) func(string) ParserResult {
+	return func(input string) ParserResult {
+		// Parse left operand
+		leftResult := gomme.Terminated(
+			gomme.Alternative(
+				parseKeyword(NowKeyword),
+				parseDateAndTime(refTime),
+				parseUnixTimestamp,
+				parseSequenceNumber,
+			),
+			gomme.Whitespace0[string](),
+		)(input)
+		if leftResult.Err != nil {
+			return gomme.Failure[string, MomentValue](
+				gomme.NewError(input, "parseExpression"),
+				input,
+			)
+		}
 
-	// Parse operator
-	opResult := gomme.OneOf[string](OpPlus, OpMinus)(leftResult.Remaining)
+		left := leftResult.Output
 
-	// Parse right operand
-	rightResult := gomme.Preceded(
-		gomme.Whitespace0[string](),
-		parseDuration,
-	)(opResult.Remaining)
-	if rightResult.Err != nil {
-		return gomme.Failure[string, MomentValue](
-			gomme.NewError(input, "parseExpression"),
-			input,
-		)
-	}
+		// Parse operator
+		opResult := gomme.OneOf[string](OpPlus, OpMinus)(leftResult.Remaining)
 
-	return gomme.Result[MomentValue, string]{
-		Output: MomentExpression{
-			Left:     leftResult.Output,
-			Operator: opResult.Output,
-			Right:    rightResult.Output.(time.Duration),
-		},
-		Remaining: rightResult.Remaining,
+		// Parse right operand
+		rightResult := gomme.Preceded(
+			gomme.Whitespace0[string](),
+			parseDuration,
+		)(opResult.Remaining)
+		if rightResult.Err != nil {
+			return gomme.Failure[string, MomentValue](
+				gomme.NewError(input, "parseExpression"),
+				input,
+			)
+		}
+
+		return gomme.Result[MomentValue, string]{
+			Output: MomentExpression{
+				Left:     left,
+				Operator: opResult.Output,
+				Right:    rightResult.Output.(time.Duration),
+			},
+			Remaining: rightResult.Remaining,
+		}
 	}
 }
 

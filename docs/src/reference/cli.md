@@ -210,6 +210,44 @@ Its exact meaning depends on the running mode:
 | Strict     | `capture`, `download` | App start-up time                          |
 | Non-strict | `serve`               | End of the most recently available segment |
 
+### Pinning the current time
+
+Interval expressions that use the `now` keyword or time-only values (like
+`10:20`) are resolved against the moment the command runs, so re-running the
+same command later produces a different result. The `--now` flag and the
+`YPB_NOW` environment variable fix that: they pin the current time to a
+specific value, making such intervals reproducible.
+
+#### Usage examples
+
+```shell
+# Pin now to a specific date-time
+ypb download --interval 'now/1h' --now 2026-01-02T10:20:30+00 ...
+
+# Pin now to a specific date
+ypb download --interval '10:20/1h' --now 2026-01-02 ...
+
+# Same, via the environment variable
+YPB_NOW=2026-01-02 ypb download --interval '10:20/1h' ...
+```
+
+Pinning `now` also simplifies interval expressions, since you can reference
+it instead of repeating an absolute date-time on both sides:
+
+```shell
+# Repeating the same absolute date-time on both sides
+ypb download --interval '2026-01-02T10:20:30+00 - 10m/2026-01-02T10:20:30+00 + 10m' ...
+
+# Pin now once, then reference it on both sides
+ypb download --interval 'now - 10m/now + 10m' --now 2026-01-02T10:20:30+00 ...
+```
+
+#### Accepted values
+
+* a date and time, e.g. `2026-01-02T10:20:30+00`
+* a date only, e.g. `2026-01-02`
+* a time only, e.g. `10:20:30`
+
 ## Specifying the output filename
 
 By default, downloaded files are saved in the current working directory with

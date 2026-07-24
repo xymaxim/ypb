@@ -26,9 +26,12 @@ type FrameConfig struct {
 }
 
 func (c *Frame) Run() error {
-	pinnedTime := time.Now().UTC()
+	pinnedTime, err := commands.ResolvePinnedTime(c.Now)
+	if err != nil {
+		return err
+	}
 
-	config, err := c.parseAndValidateInputs()
+	config, err := c.parseAndValidateInputs(pinnedTime)
 	if err != nil {
 		return err
 	}
@@ -74,8 +77,8 @@ func (c *Frame) Run() error {
 	return nil
 }
 
-func (c *Frame) parseAndValidateInputs() (*FrameConfig, error) {
-	momentValue, err := input.ParseIntervalPart(c.Moment)
+func (c *Frame) parseAndValidateInputs(refTime time.Time) (*FrameConfig, error) {
+	momentValue, err := input.ParseIntervalPart(c.Moment, &refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input moment: %w", err)
 	}

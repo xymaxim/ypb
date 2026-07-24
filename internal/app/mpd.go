@@ -55,7 +55,7 @@ func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
-	startParsed, endParsed, err := input.ParseInterval(param)
+	startParsed, endParsed, err := input.ParseInterval(param, nil)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
@@ -101,7 +101,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 }
 
 func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
-	parsed, err := input.ParseIntervalPart(param)
+	parsed, err := input.ParseIntervalPart(param, nil)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
