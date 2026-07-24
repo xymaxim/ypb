@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5d8cc2f5.js";
+            window.path_to_searchindex_js = "../searchindex-637a0c91.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-0c2dce08.js"></script>
@@ -234,6 +234,7 @@ Flags:
   -v, --verbose          Show verbose output.
 
   -p, --port=9000        Port to start playback on
+      --now=TIME         Pin now to a specific time ($YPB_NOW)
       --of="png"         Output image format
   -m, --moment=STRING    Moment to capture
 </code></pre>
@@ -251,6 +252,7 @@ Flags:
   -v, --verbose            Show verbose output.
 
   -p, --port=9000          Port to start playback on
+      --now=TIME           Pin now to a specific time ($YPB_NOW)
       --of="png"           Output image format
   -e, --every=DURATION     Capture frame every duration
   -i, --interval=STRING    Time or segment interval
@@ -269,6 +271,7 @@ Flags:
   -v, --verbose            Show verbose output.
 
   -p, --port=9000          Port to start playback on
+      --now=TIME           Pin now to a specific time ($YPB_NOW)
   -i, --interval=STRING    Time or segment interval
 </code></pre>
 <h3 id="serve"><a class="header" href="#serve">serve</a></h3>
@@ -285,6 +288,7 @@ Flags:
   -v, --verbose      Show verbose output.
 
   -p, --port=9000    Port to start playback on
+      --now=TIME     Pin now to a specific time ($YPB_NOW)
 </code></pre>
 <h2 id="specifying-the-rewind-interval"><a class="header" href="#specifying-the-rewind-interval">Specifying the rewind interval</a></h2>
 <p>The rewind interval is specified using the<code>-i/--interval</code> option. An
@@ -435,6 +439,36 @@ available rewind window.</p>
 </tbody>
 </table>
 </div>
+<h3 id="pinning-the-current-time"><a class="header" href="#pinning-the-current-time">Pinning the current time</a></h3>
+<p>Interval expressions that use the <code>now</code> keyword or time-only values (like
+<code>10:20</code>) are resolved against the moment the command runs, so re-running the
+same command later produces a different result. The <code>--now</code> flag and the
+<code>YPB_NOW</code> environment variable fix that: they pin the current time to a
+specific value, making such intervals reproducible.</p>
+<h4 id="usage-examples"><a class="header" href="#usage-examples">Usage examples</a></h4>
+<pre><code class="language-shell"># Pin now to a specific date-time
+ypb download --interval 'now/1h' --now 2026-01-02T10:20:30+00 ...
+
+# Pin now to a specific date
+ypb download --interval '10:20/1h' --now 2026-01-02 ...
+
+# Same, via the environment variable
+YPB_NOW=2026-01-02 ypb download --interval '10:20/1h' ...
+</code></pre>
+<p>Pinning <code>now</code> also simplifies interval expressions, since you can reference
+it instead of repeating an absolute date-time on both sides:</p>
+<pre><code class="language-shell"># Repeating the same absolute date-time on both sides
+ypb download --interval '2026-01-02T10:20:30+00 - 10m/2026-01-02T10:20:30+00 + 10m' ...
+
+# Pin now once, then reference it on both sides
+ypb download --interval 'now - 10m/now + 10m' --now 2026-01-02T10:20:30+00 ...
+</code></pre>
+<h4 id="accepted-values"><a class="header" href="#accepted-values">Accepted values</a></h4>
+<ul>
+<li>a date and time, e.g. <code>2026-01-02T10:20:30+00</code></li>
+<li>a date only, e.g. <code>2026-01-02</code></li>
+<li>a time only, e.g. <code>10:20:30</code></li>
+</ul>
 <h2 id="specifying-the-output-filename"><a class="header" href="#specifying-the-output-filename">Specifying the output filename</a></h2>
 <p>By default, downloaded files are saved in the current working directory with
 names composed of the adjusted title, YouTube video ID, start time, and
