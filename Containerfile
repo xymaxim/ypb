@@ -22,8 +22,8 @@ LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 RUN apk update && apk add --no-cache git deno ffmpeg
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 
-ARG YTDLP_URL="https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_musllinux"
-RUN wget -q -O /usr/local/bin/yt-dlp "${YTDLP_URL}" && \
+RUN wget -q -O /usr/local/bin/yt-dlp \
+    "https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_musllinux" && \
     chmod 755 /usr/local/bin/yt-dlp
 
 COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
