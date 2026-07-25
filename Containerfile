@@ -1,4 +1,4 @@
-# Stage 1. Build ypb
+# Build stage
 FROM golang:1.25-alpine AS builder
 
 RUN apk update && apk add --no-cache make git
@@ -11,26 +11,39 @@ RUN go mod download
 COPY . .
 RUN make build
 
-# Stage 2. Create the final image
-FROM alpine:latest
+# Get yt-dlp and the bgutil-ytdlp-pot-provider plugin
+FROM alpine:latest AS ytdlp
+RUN apk add --no-cache curl unzip
+
+RUN curl -L https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_linux -o /yt-dlp
+
+RUN mkdir -p /yt-dlp-plugins \
+    && curl -fL -o /tmp/pot-plugin.zip \
+      "https://github.com/Brainicism/bgutil-ytdlp-pot-provider/releases/latest/download/bgutil-ytdlp-pot-provider.zip" \
+    && unzip -q /tmp/pot-plugin.zip -d /yt-dlp-plugins
+
+# Runtime stage
+FROM docker.io/chainguard/wolfi-base:latest
 
 LABEL org.opencontainers.image.title="Ypb"
 LABEL org.opencontainers.image.description="A playback for YouTube live streams."
 LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
 LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 
-RUN apk update && apk add --no-cache git deno ffmpeg
-RUN apk add --no-cache ca-certificates && update-ca-certificates
+RUN echo "https://packages.wolfi.dev/os" > /etc/apk/repositories
+RUN apk update && apk add --no-cache ca-certificates ffmpeg deno
 
-RUN wget -q -O /usr/local/bin/yt-dlp \
-    "https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp_musllinux" && \
-    chmod 755 /usr/local/bin/yt-dlp
+COPY --from=ytdlp --chmod=755 /yt-dlp /usr/local/bin/yt-dlp
+COPY --from=ytdlp /yt-dlp-plugins /etc/yt-dlp/plugins/bgutil-ytdlp-pot-provider
 
 COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
-RUN /usr/local/bin/ypb version
+
+COPY yt-dlp.container.conf /etc/yt-dlp/config
 
 COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /content
+
+EXPOSE 9000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
