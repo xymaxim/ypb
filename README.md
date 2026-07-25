@@ -20,48 +20,36 @@ player, or download them as local files.
 ## Overview
 
 ```mermaid
----
-config:
-  flowchart:
-    defaultRenderer: elk
-  theme: base
-  layout: elk
-  look: neo
-  themeVariables:
-    dropShadow: false
----
-flowchart LR
- subgraph YPB["`**ypb**`"]
-    direction LR
-        SERVE["`**Serve**<br>Stream proxy`"]:::mode
-        DOWN["`**Download**<br>Save to file`"]:::mode
-  end
-
-    DOWN -- Download video --> DOWNLOADER["`**yt-dlp**<br>General extractor`"]
-    SERVE --> FETCHER["`**yt-dlp**<br>Fetch metadata<br>Solve JS challenges`"]
-    Consumers(["`**Consumers**<br>Players, downloaders`"]) --> MPD["`**MPEG-DASH<br>manifest**`"]
-    SERVE <-- Stream video --> YT{{"`**YouTube**`"}}
-    DOWNLOADER --> MPD
-    SERVE -- Locate&nbsp;segments<br>Generate MPDs --> MPD
-    MPD -- Proxy&nbsp;base&nbsp;URLs --> SERVE
-
-    YT:::yt
-
-    classDef yt stroke:#ff0033,stroke-dasharray: 3 3,stroke-width:3px,fill:none
-    classDef mode stroke:#222,stroke-dasharray: 3 3,stroke-width:3px,fill:none
+sequenceDiagram
+    autonumber
+    participant D as Download
+    participant S as Serve
+    participant Y as YouTube
+    participant E as yt-dlp<br/>(extractor)
+    S->>Y: Fetch info (via yt-dlp)
+    Y-->>S: Video info
+    D->>S: Request MPD
+    S->>S: Generate MPD
+    S-->>D: MPD (proxied base URLs)
+    D->>E: Pass MPD
+    loop Download
+        E->>S: Request segment (proxied URL)
+        S->>Y: Stream segment
+        Y-->>S: Segment
+        S-->>E: Segment
+    end
+    E->>E: Write to file
 ```
 
 Ypb runs in two modes: serve and download.
 
-Serve mode runs a local HTTP proxy server that [handles
+**Serve** mode runs a local HTTP proxy server that handles [API
 requests](https://xymaxim.github.io/ypb/reference/api.html) to locate moments in
-the stream, generate MPEG-DASH manifests, and serve media segments with HTTP
-error retry handling.
-
-Download mode saves excerpts to local files with a single command, using the
-same proxy internally to compose manifests before handing off to yt-dlp's
-general extractor. Both modes rely on yt-dlp for fetching video information and
-solving JavaScript challenges.
+the stream, generate MPEG-DASH manifests (MPDs), and serve media segments with
+HTTP error retry handling. **Download** mode saves excerpts to local files with
+a single command, using the same proxy internally to compose manifests before
+handing off to yt-dlp's general extractor. Both modes rely on yt-dlp for
+fetching video information and solving JavaScript challenges.
 
 ## Installation
 
