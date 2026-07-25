@@ -224,6 +224,24 @@ func TestLocateMoment_BadMomentType(t *testing.T) {
 	}
 }
 
+func TestLocateMoment_NowPlusWithoutPinnedTime(t *testing.T) {
+	t.Parallel()
+
+	fakeMetadata := testutil.GenerateFakeSegmentMetadata(3, 2*time.Second)
+	pb := newFakePlayback(fakeMetadata)
+	now := fakeMetadata[len(fakeMetadata)-1]
+	ctx := &actions.LocateContext{Head: now, Reference: now}
+
+	value := input.MomentExpression{
+		Left:     input.NowKeyword,
+		Operator: input.OpPlus,
+		Right:    time.Hour,
+	}
+	_, err := actions.LocateMoment(pb, value, ctx)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cannot be used with plus")
+}
+
 func TestLocateInterval(t *testing.T) {
 	t.Parallel()
 

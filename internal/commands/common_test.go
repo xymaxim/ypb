@@ -173,6 +173,18 @@ func TestNowFlagIntegration(t *testing.T) {
 			},
 		},
 		{
+			name:    "now expression with plus is allowed when pinned",
+			nowFlag: "2026-01-02",
+			input:   "now + 1h",
+			check: func(t *testing.T, v input.MomentValue) {
+				expr, ok := v.(input.MomentExpression)
+				require.True(t, ok, "expected MomentExpression, got %T", v)
+				assert.Equal(t, input.NowKeyword, expr.Left)
+				assert.Equal(t, input.OpPlus, expr.Operator)
+				assert.Equal(t, time.Hour, expr.Right)
+			},
+		},
+		{
 			name:    "now keyword stays when --now is not set",
 			nowFlag: "",
 			input:   "now",

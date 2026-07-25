@@ -402,7 +402,7 @@ func resolveExpression(
 	// Resolve left operand to a concrete time
 	var leftTime time.Time
 	if expr.Left == input.NowKeyword {
-		if expr.Operator == input.OpPlus {
+		if expr.Operator == input.OpPlus && ctx.PinnedTime == nil {
 			return nil, fmt.Errorf("'%s' cannot be used with plus", input.NowKeyword)
 		}
 		moment, err := resolveMoment(pb, expr.Left, ctx, false)
