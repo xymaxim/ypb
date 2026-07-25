@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  build-and-push:
+  publish-images:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -58,3 +58,36 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
           registry: ghcr.io
+
+  publish-compose:
+    needs: publish-images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push compose.yaml as OCI artifact
+        run: |
+          oras push \
+            --artifact-type application/vnd.docker.compose.project \
+            --annotation org.opencontainers.image.title="Ypb Compose" \
+            --annotation org.opencontainers.image.description="Compose file to run ypb with PO token provider" \
+            --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --annotation org.opencontainers.image.version=${{ github.ref_name }} \
+            ghcr.io/${{ github.repository }}-compose:latest \
+            compose.yaml
+          oras push \
+            --artifact-type application/vnd.docker.compose.project \
+            --annotation org.opencontainers.image.title="Ypb Compose" \
+            --annotation org.opencontainers.image.description="Compose file to run ypb with PO token provider" \
+            --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --annotation org.opencontainers.image.version=${{ github.ref_name }} \
+            ghcr.io/${{ github.repository }}-compose:${{ github.ref_name }} \
+            compose.yaml
