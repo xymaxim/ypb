@@ -1,0 +1,28 @@
+services:
+  pot-provider:
+    image: docker.io/brainicism/bgutil-ytdlp-pot-provider:deno
+    container_name: pot-provider
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/4416'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  ypb:
+    image: ghcr.io/xymaxim/ypb:latest
+    container_name: ypb
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - ${YTDLP_CONFIG_DIR:-config}:/root/.config/yt-dlp:z
+      - ${CONTENT_DIR:-content}:/content
+    depends_on:
+      pot-provider:
+        condition: service_healthy
+
+volumes:
+  config:
+  content:
