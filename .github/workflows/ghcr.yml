@@ -70,6 +70,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install oras
+        uses: oras-project/setup-oras@v1
+
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
 
