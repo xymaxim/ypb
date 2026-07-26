@@ -27,6 +27,7 @@ go.work.sum
 
 # env file
 .env
+!containers/.env
 
 # Added by goreleaser init:
 dist/
