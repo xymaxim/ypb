@@ -4,6 +4,17 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.7.26](https://github.com/xymaxim/ypb/releases/tag/v2026.7.26)
+
+### Added
+
+- Add `--now` flag and `YPB_NOW` to pin the current time (#9)
+- Add `compose.yaml` to the `ypb-compose` OCI artifact
+
+### Changed
+
+- Binary is now built with `CGO_ENABLED=0`
+
 ## [2026.7.23](https://github.com/xymaxim/ypb/releases/tag/v2026.7.23)
 
 ### Added
