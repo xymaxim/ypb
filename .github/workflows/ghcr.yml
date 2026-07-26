@@ -78,6 +78,7 @@ jobs:
 
       - name: Push compose.yaml as OCI artifact
         run: |
+          cd containers
           oras push \
             --artifact-type application/vnd.docker.compose.project \
             --annotation org.opencontainers.image.title="Ypb Compose" \
@@ -85,7 +86,7 @@ jobs:
             --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
             --annotation org.opencontainers.image.version=${{ github.ref_name }} \
             ghcr.io/${{ github.repository }}-compose:latest \
-            containers/compose.yaml containers/.env
+            compose.yaml .env
           oras push \
             --artifact-type application/vnd.docker.compose.project \
             --annotation org.opencontainers.image.title="Ypb Compose" \
@@ -93,4 +94,4 @@ jobs:
             --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
             --annotation org.opencontainers.image.version=${{ github.ref_name }} \
             ghcr.io/${{ github.repository }}-compose:${{ github.ref_name }} \
-            containers/compose.yaml containers/.env
+            compose.yaml .env
