@@ -13,16 +13,14 @@ services:
   ypb:
     image: ghcr.io/xymaxim/ypb:latest
     container_name: ypb
-    restart: unless-stopped
     ports:
       - "9000:9000"
     volumes:
-      - ${YTDLP_CONFIG_DIR:-config}:/root/.config/yt-dlp:z
-      - ${CONTENT_DIR:-content}:/content
+      - ${YPB_YTDLP_CONFIG_DIR:-config}:/root/.config/yt-dlp:z
+      - ${YPB_MEDIA_DIR:-./media}:/media:z
     depends_on:
       pot-provider:
         condition: service_healthy
 
 volumes:
   config:
-  content:

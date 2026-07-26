@@ -38,11 +38,11 @@ COPY --from=ytdlp /yt-dlp-plugins /etc/yt-dlp/plugins/bgutil-ytdlp-pot-provider
 
 COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
 
-COPY yt-dlp.container.conf /etc/yt-dlp/config
+COPY containers/yt-dlp.container.conf /etc/yt-dlp/config
 
-COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 containers/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-WORKDIR /content
+WORKDIR /media
 
 EXPOSE 9000
 

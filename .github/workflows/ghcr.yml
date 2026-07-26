@@ -33,7 +33,7 @@ jobs:
           tags: latest ${{ github.ref_name }}
           oci: true
           containerfiles: |
-            ./Containerfile
+            ./containers/Containerfile
 
       - name: Build bin image
         id: build-bin-image
@@ -43,7 +43,7 @@ jobs:
           tags: bin-latest bin-${{ github.ref_name }}
           oci: true
           containerfiles: |
-            ./bin.containerfile
+            ./containers/Containerfile.bin
 
       - name: Push bin image
         uses: redhat-actions/push-to-registry@v2
@@ -82,7 +82,7 @@ jobs:
             --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
             --annotation org.opencontainers.image.version=${{ github.ref_name }} \
             ghcr.io/${{ github.repository }}-compose:latest \
-            compose.yaml
+            containers/compose.yaml containers/.env
           oras push \
             --artifact-type application/vnd.docker.compose.project \
             --annotation org.opencontainers.image.title="Ypb Compose" \
@@ -90,4 +90,4 @@ jobs:
             --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }} \
             --annotation org.opencontainers.image.version=${{ github.ref_name }} \
             ghcr.io/${{ github.repository }}-compose:${{ github.ref_name }} \
-            compose.yaml
+            containers/compose.yaml containers/.env

@@ -12,4 +12,4 @@ LABEL org.opencontainers.image.description="Ypb binary image."
 LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
 LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 
-COPY --from=builder --chmod=755 /build/ypb /ypb
+COPY --from=builder /build/ypb /ypb
