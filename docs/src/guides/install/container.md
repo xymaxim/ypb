@@ -1,92 +1,94 @@
-# Container image
+# Container
+
+Running ypb with containers is the recommended way to get started.
+
+> [!NOTE]
+> This guide uses Podman, but Docker works too — commands are mostly the
+> same with `docker` in place of `podman`, though some steps (like
+> `podman machine` and `podman artifact`) don't have a direct Docker
+> equivalent.
+
+The app runs as two containers managed by [Compose](https://compose-spec.io/):
+
+- **Ypb** ([ghcr.io/xymaxim/ypb](https://ghcr.io/xymaxim/ypb)) — the main app, with yt-dlp and ffmpeg inside
+- **PO token provider** ([brainicism/bgutil-ytdlp-pot-provider](https://hub.docker.com/r/brainicism/bgutil-ytdlp-pot-provider)) — handles YouTube's bot verification in the background
 
 ## Prerequisites
 
-No additional dependencies required: the container image includes all necessary
-components (yt-dlp, FFmpeg, and additional dependencies).
+[Podman](https://podman.io/getting-started/installation) with [Compose](https://podman-desktop.io/docs/compose).
 
-You'll need either [Podman](https://podman.io/getting-started/installation)
-(recommended) or [Docker](https://docs.docker.com/get-docker/).
+### macOS and Windows
 
-### Initial setup
-
-On macOS and Windows, Podman requires a virtual machine. Initialize and start it
-once:
+On macOS and Windows, Podman requires a virtual machine. Initialize and start
+it once:
 
 ```shell
 podman machine init
 podman machine start
 ```
 
-The machine will automatically start on reboots. You can verify it is running:
+The machine starts automatically on subsequent reboots.
+
+## Set up
+
+Pull the compose file and extract it to a local directory:
 
 ```shell
-podman machine list
+podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
 ```
 
-## Pull the image
-
-Pull the latest container image from GitHub Container Registry:
-
-```shell
-podman pull ghcr.io/xymaxim/ypb
-```
+This gives you `compose.yaml` and a `.env` file with commented-out defaults.
+Edit `.env` if you want to override where files are saved or use your own yt-dlp
+config. Otherwise, the defaults work out of the box.
 
 ## Usage
 
-### Basic commands
-
-Run `ypb` commands directly with the container:
+Run as many download commands as needed:
 
 ```shell
-podman run --rm ghcr.io/xymaxim/ypb version
+podman compose run --rm ypb download -i 30s/now abcdefgh123
 ```
 
-### Recommended aliases
-
-For easier usage, add these aliases to your shell configuration file:
+To start a playback server, use `serve`:
 
 ```shell
-# General commands like ypb version
-alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
-
-# Downloads videos to current directory (mounts volume)
-alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
-
-# Starts server accessible at `http://localhost:9000` (exposes port)
-alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
+podman compose run --rm ypb serve abcdefgh123
 ```
 
-> [!IMPORTANT]
-> On SELinux-enabled systems add `:Z` to the volume mount to avoid permission
-> errors.
+This listens on port 9000.
 
-### Manual usage without aliases
-
-If you prefer not to use aliases or need custom configurations:
-
-**Download videos to current directory:**
+When done, shut down the PO token provider sidecar:
 
 ```shell
-podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
+podman compose down
 ```
 
-**Start server on port 9000:**
+## Configuration
 
-```shell
-podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
+The `.env` file holds environment variables you can set:
+
+### YPB_MEDIA_DIR
+
+Where output media files are saved on your machine. The directory is
+created automatically if it doesn't already exist.
+
+### YPB_YTDLP_CONFIG_DIR
+
+By default, `ypb` uses its own built-in yt-dlp configuration. Mounting your
+own config directory here lets you add your own settings on top.
+
+For example, to use cookies, export them from your browser into a `cookies.txt`
+file, put it inside your `YPB_YTDLP_CONFIG_DIR`, then reference it from your yt-dlp config
+file (`config`, `config.txt`):
+
+```
+--cookies /path/to/cookies.txt
 ```
 
-**Use custom port (e.g., 3000):**
+## Update the app
 
 ```shell
-podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
-```
-
-## Update the image
-
-To update `ypb` and all dependecies to the latest version:
-
-```shell
-podman pull ghcr.io/xymaxim/ypb
+podman compose pull
 ```
