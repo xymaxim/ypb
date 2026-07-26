@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-637a0c91.js";
+            window.path_to_searchindex_js = "searchindex-f34d64ae.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0c2dce08.js"></script>
+        <script src="toc-8472c712.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -200,8 +200,8 @@ and architecture:</p>
 <tr><th></th><th>Linux</th><th>macOS</th><th>Windows</th></tr>
 </thead>
 <tbody>
-<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-amd64.zip">ypb-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-amd64.zip">ypb-windows-amd64.zip</a></td></tr>
-<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-arm64.zip">ypb-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-arm64.zip">ypb-windows-arm64.zip</a></td></tr>
+<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-amd64.zip">ypb-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-amd64.zip">ypb-windows-amd64.zip</a></td></tr>
+<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-arm64.zip">ypb-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-arm64.zip">ypb-windows-arm64.zip</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -219,20 +219,20 @@ and architecture:</p>
 </blockquote>
 <h3 id="try-in-a-container"><a class="header" href="#try-in-a-container">Try in a container</a></h3>
 <p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
-<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a></p>
-<p><strong>macOS/Windows only:</strong> Initialize the Podman machine (one-time setup):</p>
+<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a>, with Compose</p>
+<p><strong>macOS/Windows only, Podman:</strong> Initialize the Podman machine (one-time setup):</p>
 <pre><code>podman machine init &amp;&amp; podman machine start
 </code></pre>
-<p>Pull the container image and verify the version:</p>
-<pre><code>podman pull ghcr.io/xymaxim/ypb
-podman run --rm ghcr.io/xymaxim/ypb version
+<p>Pull the compose file and extract it to a local directory:</p>
+<pre><code>podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
 </code></pre>
-<p>To run commands with access to your current directory:</p>
-<pre><code>podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+<p>Verify the version:</p>
+<pre><code>podman compose run --rm ypb version
 </code></pre>
 <blockquote>
-<p>See <a href="guides/install/container.html">Container image</a> for creating <a href="guides/install/container.html#recommended-aliases">recommended
-aliases</a> and more details.</p>
+<p>See <a href="guides/install/container.html">Container</a> for configuration options and more details.</p>
 </blockquote>
 <h2 id="download-excerpts"><a class="header" href="#download-excerpts">Download excerpts</a></h2>
 <p>Let’s start by downloading a small excerpt from a live stream.</p>

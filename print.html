@@ -38,10 +38,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-637a0c91.js";
+            window.path_to_searchindex_js = "searchindex-f34d64ae.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0c2dce08.js"></script>
+        <script src="toc-8472c712.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -225,8 +225,8 @@ and architecture:</p>
 <tr><th></th><th>Linux</th><th>macOS</th><th>Windows</th></tr>
 </thead>
 <tbody>
-<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-amd64.zip">ypb-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-amd64.zip">ypb-windows-amd64.zip</a></td></tr>
-<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-arm64.zip">ypb-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-arm64.zip">ypb-windows-arm64.zip</a></td></tr>
+<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-amd64.zip">ypb-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-amd64.zip">ypb-windows-amd64.zip</a></td></tr>
+<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-arm64.zip">ypb-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-arm64.zip">ypb-windows-arm64.zip</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -244,20 +244,20 @@ and architecture:</p>
 </blockquote>
 <h3 id="try-in-a-container"><a class="header" href="#try-in-a-container">Try in a container</a></h3>
 <p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
-<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a></p>
-<p><strong>macOS/Windows only:</strong> Initialize the Podman machine (one-time setup):</p>
+<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a>, with Compose</p>
+<p><strong>macOS/Windows only, Podman:</strong> Initialize the Podman machine (one-time setup):</p>
 <pre><code>podman machine init &amp;&amp; podman machine start
 </code></pre>
-<p>Pull the container image and verify the version:</p>
-<pre><code>podman pull ghcr.io/xymaxim/ypb
-podman run --rm ghcr.io/xymaxim/ypb version
+<p>Pull the compose file and extract it to a local directory:</p>
+<pre><code>podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
 </code></pre>
-<p>To run commands with access to your current directory:</p>
-<pre><code>podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+<p>Verify the version:</p>
+<pre><code>podman compose run --rm ypb version
 </code></pre>
 <blockquote>
-<p>See <a href="#container-image">Container image</a> for creating <a href="#recommended-aliases">recommended
-aliases</a> and more details.</p>
+<p>See <a href="#container">Container</a> for configuration options and more details.</p>
 </blockquote>
 <h2 id="download-excerpts"><a class="header" href="#download-excerpts">Download excerpts</a></h2>
 <p>Let’s start by downloading a small excerpt from a live stream.</p>
@@ -428,7 +428,7 @@ compatible player you prefer.</p>
 <ol>
 <li><a href="#pre-built-binaries"><strong>Pre-built binaries</strong></a>: Install platform-specific binaries
 along with additional dependencies</li>
-<li><a href="#container-image"><strong>Container image</strong></a>: Run in a container with all dependencies
+<li><a href="#container"><strong>Container image</strong></a>: Run in a container with all dependencies
 bundled</li>
 </ol>
 <h2 id="choosing-installation-method"><a class="header" href="#choosing-installation-method">Choosing installation method</a></h2>
@@ -488,8 +488,8 @@ release</a> page.</p>
 <tr><th></th><th>Linux</th><th>macOS</th><th>Windows</th></tr>
 </thead>
 <tbody>
-<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-amd64.zip">ypb-v2026.7.23-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-amd64.zip">ypb-v2026.7.23-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-amd64.zip">ypb-v2026.7.23-windows-amd64.zip</a></td></tr>
-<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-linux-arm64.zip">ypb-v2026.7.23-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-darwin-arm64.zip">ypb-v2026.7.23-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.23/ypb-v2026.7.23-windows-arm64.zip">ypb-v2026.7.23-windows-arm64.zip</a></td></tr>
+<tr><td>AMD64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-amd64.zip">ypb-v2026.7.26-linux-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-amd64.zip">ypb-v2026.7.26-darwin-amd64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-amd64.zip">ypb-v2026.7.26-windows-amd64.zip</a></td></tr>
+<tr><td>ARM64</td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-linux-arm64.zip">ypb-v2026.7.26-linux-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-darwin-arm64.zip">ypb-v2026.7.26-darwin-arm64.zip</a></td><td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.26/ypb-v2026.7.26-windows-arm64.zip">ypb-v2026.7.26-windows-arm64.zip</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -510,60 +510,64 @@ location in PowerShell.</p>
 </code></pre>
 <p>Note: this is not recommended unless you need a development version.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="container-image"><a class="header" href="#container-image">Container image</a></h1>
+<h1 id="container"><a class="header" href="#container">Container</a></h1>
+<p>Running ypb with containers is the recommended way to get started.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>This guide uses Podman, but Docker works too — commands are mostly the
+same with <code>docker</code> in place of <code>podman</code>, though some steps (like
+<code>podman machine</code> and <code>podman artifact</code>) don’t have a direct Docker
+equivalent.</p>
+</blockquote>
+<p>The app runs as two containers managed by <a href="https://compose-spec.io/">Compose</a>:</p>
+<ul>
+<li><strong>Ypb</strong> (<a href="https://ghcr.io/xymaxim/ypb">ghcr.io/xymaxim/ypb</a>) — the main app, with yt-dlp and ffmpeg inside</li>
+<li><strong>PO token provider</strong> (<a href="https://hub.docker.com/r/brainicism/bgutil-ytdlp-pot-provider">brainicism/bgutil-ytdlp-pot-provider</a>) — handles YouTube’s bot verification in the background</li>
+</ul>
 <h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
-<p>No additional dependencies required: the container image includes all necessary
-components (yt-dlp, FFmpeg, and additional dependencies).</p>
-<p>You’ll need either <a href="https://podman.io/getting-started/installation">Podman</a>
-(recommended) or <a href="https://docs.docker.com/get-docker/">Docker</a>.</p>
-<h3 id="initial-setup"><a class="header" href="#initial-setup">Initial setup</a></h3>
-<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start it
-once:</p>
+<p><a href="https://podman.io/getting-started/installation">Podman</a> with <a href="https://podman-desktop.io/docs/compose">Compose</a>.</p>
+<h3 id="macos-and-windows"><a class="header" href="#macos-and-windows">macOS and Windows</a></h3>
+<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start
+it once:</p>
 <pre><code class="language-shell">podman machine init
 podman machine start
 </code></pre>
-<p>The machine will automatically start on reboots. You can verify it is running:</p>
-<pre><code class="language-shell">podman machine list
+<p>The machine starts automatically on subsequent reboots.</p>
+<h2 id="set-up"><a class="header" href="#set-up">Set up</a></h2>
+<p>Pull the compose file and extract it to a local directory:</p>
+<pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
 </code></pre>
-<h2 id="pull-the-image"><a class="header" href="#pull-the-image">Pull the image</a></h2>
-<p>Pull the latest container image from GitHub Container Registry:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
-</code></pre>
+<p>This gives you <code>compose.yaml</code> and a <code>.env</code> file with commented-out defaults.
+Edit <code>.env</code> if you want to override where files are saved or use your own yt-dlp
+config. Otherwise, the defaults work out of the box.</p>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
-<h3 id="basic-commands"><a class="header" href="#basic-commands">Basic commands</a></h3>
-<p>Run <code>ypb</code> commands directly with the container:</p>
-<pre><code class="language-shell">podman run --rm ghcr.io/xymaxim/ypb version
+<p>Run as many download commands as needed:</p>
+<pre><code class="language-shell">podman compose run --rm ypb download -i 30s/now abcdefgh123
 </code></pre>
-<h3 id="recommended-aliases"><a class="header" href="#recommended-aliases">Recommended aliases</a></h3>
-<p>For easier usage, add these aliases to your shell configuration file:</p>
-<pre><code class="language-shell"># General commands like ypb version
-alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
-
-# Downloads videos to current directory (mounts volume)
-alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
-
-# Starts server accessible at `http://localhost:9000` (exposes port)
-alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
+<p>To start a playback server, use <code>serve</code>:</p>
+<pre><code class="language-shell">podman compose run --rm ypb serve abcdefgh123
 </code></pre>
-<blockquote class="blockquote-tag blockquote-tag-important">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
-<p>On SELinux-enabled systems add <code>:Z</code> to the volume mount to avoid permission
-errors.</p>
-</blockquote>
-<h3 id="manual-usage-without-aliases"><a class="header" href="#manual-usage-without-aliases">Manual usage without aliases</a></h3>
-<p>If you prefer not to use aliases or need custom configurations:</p>
-<p><strong>Download videos to current directory:</strong></p>
-<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
+<p>This listens on port 9000.</p>
+<p>When done, shut down the PO token provider sidecar:</p>
+<pre><code class="language-shell">podman compose down
 </code></pre>
-<p><strong>Start server on port 9000:</strong></p>
-<pre><code class="language-shell">podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The <code>.env</code> file holds environment variables you can set:</p>
+<h3 id="ypb_media_dir"><a class="header" href="#ypb_media_dir">YPB_MEDIA_DIR</a></h3>
+<p>Where output media files are saved on your machine. The directory is
+created automatically if it doesn’t already exist.</p>
+<h3 id="ypb_ytdlp_config_dir"><a class="header" href="#ypb_ytdlp_config_dir">YPB_YTDLP_CONFIG_DIR</a></h3>
+<p>By default, <code>ypb</code> uses its own built-in yt-dlp configuration. Mounting your
+own config directory here lets you add your own settings on top.</p>
+<p>For example, to use cookies, export them from your browser into a <code>cookies.txt</code>
+file, put it inside your <code>YPB_YTDLP_CONFIG_DIR</code>, then reference it from your yt-dlp config
+file (<code>config</code>, <code>config.txt</code>):</p>
+<pre><code>--cookies /path/to/cookies.txt
 </code></pre>
-<p><strong>Use custom port (e.g., 3000):</strong></p>
-<pre><code class="language-shell">podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
-</code></pre>
-<h2 id="update-the-image"><a class="header" href="#update-the-image">Update the image</a></h2>
-<p>To update <code>ypb</code> and all dependecies to the latest version:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+<h2 id="update-the-app"><a class="header" href="#update-the-app">Update the app</a></h2>
+<pre><code class="language-shell">podman compose pull
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="create-a-time-lapse-video"><a class="header" href="#create-a-time-lapse-video">Create a time-lapse video</a></h1>
@@ -1152,19 +1156,29 @@ the <code>Accept: application/json</code> header.</p>
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
 Changelog</a>. Versions follow <a href="https://calver.org">Calendar
 Versioning</a>.</p>
-<h2 id="2026723"><a class="header" href="#2026723"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.7.23">2026.7.23</a></a></h2>
+<h2 id="2026726"><a class="header" href="#2026726"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.7.26">2026.7.26</a></a></h2>
 <h3 id="added"><a class="header" href="#added">Added</a></h3>
+<ul>
+<li>Add <code>--now</code> flag and <code>YPB_NOW</code> to pin the current time (#9)</li>
+<li>Add <code>compose.yaml</code> to the <code>ypb-compose</code> OCI artifact</li>
+</ul>
+<h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
+<ul>
+<li>Binary is now built with <code>CGO_ENABLED=0</code></li>
+</ul>
+<h2 id="2026723"><a class="header" href="#2026723"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.7.23">2026.7.23</a></a></h2>
+<h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
 <ul>
 <li>CORS support for browser requests</li>
 <li>Ypb binary container image</li>
 </ul>
-<h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
+<h3 id="changed-1"><a class="header" href="#changed-1">Changed</a></h3>
 <ul>
 <li>Change default port from 8080 to 9000</li>
 <li>Move playback, fetchers, info, and segment packages to root level</li>
 </ul>
 <h2 id="2026713"><a class="header" href="#2026713"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.7.13">2026.7.13</a></a></h2>
-<h3 id="changed-1"><a class="header" href="#changed-1">Changed</a></h3>
+<h3 id="changed-2"><a class="header" href="#changed-2">Changed</a></h3>
 <ul>
 <li>Group adaptations sets by codec family in MPEG-DASH MPD files</li>
 </ul>
@@ -1173,17 +1187,17 @@ Versioning</a>.</p>
 <ul>
 <li>Update dump format parsing and base URL handling (#7)</li>
 </ul>
-<h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
+<h3 id="added-2"><a class="header" href="#added-2">Added</a></h3>
 <ul>
 <li>Accept passing yt-dlp options in most commands</li>
 </ul>
 <h2 id="2026615"><a class="header" href="#2026615"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.6.15">2026.6.15</a></a></h2>
-<h3 id="changed-2"><a class="header" href="#changed-2">Changed</a></h3>
+<h3 id="changed-3"><a class="header" href="#changed-3">Changed</a></h3>
 <ul>
 <li>Supress console windows on Windows</li>
 </ul>
 <h2 id="2026611"><a class="header" href="#2026611"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.6.11">2026.6.11</a></a></h2>
-<h3 id="added-2"><a class="header" href="#added-2">Added</a></h3>
+<h3 id="added-3"><a class="header" href="#added-3">Added</a></h3>
 <ul>
 <li>Add playback and stream public packages</li>
 <li>Add parser for fractional seconds</li>
@@ -1193,13 +1207,13 @@ Versioning</a>.</p>
 <ul>
 <li>Set MPD@availabilityStartTime to now for dynamic DASH manifests</li>
 </ul>
-<h3 id="changed-3"><a class="header" href="#changed-3">Changed</a></h3>
+<h3 id="changed-4"><a class="header" href="#changed-4">Changed</a></h3>
 <ul>
 <li>Use yt-dlp’s –write-info-json to dump info JSON</li>
 <li>Change license from MIT to GPLv3</li>
 </ul>
 <h2 id="2026224"><a class="header" href="#2026224"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.24">2026.2.24</a></a></h2>
-<h3 id="added-3"><a class="header" href="#added-3">Added</a></h3>
+<h3 id="added-4"><a class="header" href="#added-4">Added</a></h3>
 <ul>
 <li>Accept open-ended interval in <code>/mpd/</code> endpoint to compose dynamic MPD</li>
 </ul>
@@ -1207,7 +1221,7 @@ Versioning</a>.</p>
 <ul>
 <li>Pin start-up time as <code>now</code> in strict mode (<code>download</code> and <code>capture</code> commands) (#5)</li>
 </ul>
-<h3 id="changed-4"><a class="header" href="#changed-4">Changed</a></h3>
+<h3 id="changed-5"><a class="header" href="#changed-5">Changed</a></h3>
 <ul>
 <li>Rename <code>/rewind/</code> endpoint to <code>/mpd/</code></li>
 <li>Rename <code>/videoplayback/</code> endpoint to <code>/segments/</code></li>
@@ -1216,13 +1230,13 @@ Versioning</a>.</p>
 <li>Switch to custom text progress bar in capture timelapse</li>
 </ul>
 <h2 id="2026218"><a class="header" href="#2026218"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.18">2026.2.18</a></a></h2>
-<h3 id="changed-5"><a class="header" href="#changed-5">Changed</a></h3>
+<h3 id="changed-6"><a class="header" href="#changed-6">Changed</a></h3>
 <ul>
 <li>Retry on connection errors (“connection reset by peer”, “connection timed out”, etc)</li>
 <li>Print standard output and error from external commands directly (#2)</li>
 </ul>
 <h2 id="2026216"><a class="header" href="#2026216"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.16">2026.2.16</a></a></h2>
-<h3 id="added-4"><a class="header" href="#added-4">Added</a></h3>
+<h3 id="added-5"><a class="header" href="#added-5">Added</a></h3>
 <ul>
 <li>New <code>capture frame</code> command to capture a single frame</li>
 <li>New <code>capture timelapse</code> command to capture multiple frames</li>
@@ -1231,7 +1245,7 @@ Versioning</a>.</p>
 <ul>
 <li>Incorrect 12-hour format (changed to 24-hour) in output filenames</li>
 </ul>
-<h3 id="changed-6"><a class="header" href="#changed-6">Changed</a></h3>
+<h3 id="changed-7"><a class="header" href="#changed-7">Changed</a></h3>
 <ul>
 <li>Rework CommandRunner to accept functional options</li>
 </ul>

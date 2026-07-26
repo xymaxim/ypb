@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Container image - Ypb documentation</title>
+        <title>Container - Ypb documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -37,10 +37,10 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-637a0c91.js";
+            window.path_to_searchindex_js = "../../searchindex-f34d64ae.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-0c2dce08.js"></script>
+        <script src="../../toc-8472c712.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -176,60 +176,64 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="container-image"><a class="header" href="#container-image">Container image</a></h1>
+                        <h1 id="container"><a class="header" href="#container">Container</a></h1>
+<p>Running ypb with containers is the recommended way to get started.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>This guide uses Podman, but Docker works too — commands are mostly the
+same with <code>docker</code> in place of <code>podman</code>, though some steps (like
+<code>podman machine</code> and <code>podman artifact</code>) don’t have a direct Docker
+equivalent.</p>
+</blockquote>
+<p>The app runs as two containers managed by <a href="https://compose-spec.io/">Compose</a>:</p>
+<ul>
+<li><strong>Ypb</strong> (<a href="https://ghcr.io/xymaxim/ypb">ghcr.io/xymaxim/ypb</a>) — the main app, with yt-dlp and ffmpeg inside</li>
+<li><strong>PO token provider</strong> (<a href="https://hub.docker.com/r/brainicism/bgutil-ytdlp-pot-provider">brainicism/bgutil-ytdlp-pot-provider</a>) — handles YouTube’s bot verification in the background</li>
+</ul>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
-<p>No additional dependencies required: the container image includes all necessary
-components (yt-dlp, FFmpeg, and additional dependencies).</p>
-<p>You’ll need either <a href="https://podman.io/getting-started/installation">Podman</a>
-(recommended) or <a href="https://docs.docker.com/get-docker/">Docker</a>.</p>
-<h3 id="initial-setup"><a class="header" href="#initial-setup">Initial setup</a></h3>
-<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start it
-once:</p>
+<p><a href="https://podman.io/getting-started/installation">Podman</a> with <a href="https://podman-desktop.io/docs/compose">Compose</a>.</p>
+<h3 id="macos-and-windows"><a class="header" href="#macos-and-windows">macOS and Windows</a></h3>
+<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start
+it once:</p>
 <pre><code class="language-shell">podman machine init
 podman machine start
 </code></pre>
-<p>The machine will automatically start on reboots. You can verify it is running:</p>
-<pre><code class="language-shell">podman machine list
+<p>The machine starts automatically on subsequent reboots.</p>
+<h2 id="set-up"><a class="header" href="#set-up">Set up</a></h2>
+<p>Pull the compose file and extract it to a local directory:</p>
+<pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
 </code></pre>
-<h2 id="pull-the-image"><a class="header" href="#pull-the-image">Pull the image</a></h2>
-<p>Pull the latest container image from GitHub Container Registry:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
-</code></pre>
+<p>This gives you <code>compose.yaml</code> and a <code>.env</code> file with commented-out defaults.
+Edit <code>.env</code> if you want to override where files are saved or use your own yt-dlp
+config. Otherwise, the defaults work out of the box.</p>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
-<h3 id="basic-commands"><a class="header" href="#basic-commands">Basic commands</a></h3>
-<p>Run <code>ypb</code> commands directly with the container:</p>
-<pre><code class="language-shell">podman run --rm ghcr.io/xymaxim/ypb version
+<p>Run as many download commands as needed:</p>
+<pre><code class="language-shell">podman compose run --rm ypb download -i 30s/now abcdefgh123
 </code></pre>
-<h3 id="recommended-aliases"><a class="header" href="#recommended-aliases">Recommended aliases</a></h3>
-<p>For easier usage, add these aliases to your shell configuration file:</p>
-<pre><code class="language-shell"># General commands like ypb version
-alias ypb='podman run --rm ghcr.io/xymaxim/ypb'
-
-# Downloads videos to current directory (mounts volume)
-alias ypb-download='podman run --rm -v .:/content ghcr.io/xymaxim/ypb download'
-
-# Starts server accessible at `http://localhost:9000` (exposes port)
-alias ypb-serve='podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve'
+<p>To start a playback server, use <code>serve</code>:</p>
+<pre><code class="language-shell">podman compose run --rm ypb serve abcdefgh123
 </code></pre>
-<blockquote class="blockquote-tag blockquote-tag-important">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
-<p>On SELinux-enabled systems add <code>:Z</code> to the volume mount to avoid permission
-errors.</p>
-</blockquote>
-<h3 id="manual-usage-without-aliases"><a class="header" href="#manual-usage-without-aliases">Manual usage without aliases</a></h3>
-<p>If you prefer not to use aliases or need custom configurations:</p>
-<p><strong>Download videos to current directory:</strong></p>
-<pre><code class="language-shell">podman run --rm -v .:/content ghcr.io/xymaxim/ypb download 
+<p>This listens on port 9000.</p>
+<p>When done, shut down the PO token provider sidecar:</p>
+<pre><code class="language-shell">podman compose down
 </code></pre>
-<p><strong>Start server on port 9000:</strong></p>
-<pre><code class="language-shell">podman run --rm -p 9000:9000 ghcr.io/xymaxim/ypb serve
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The <code>.env</code> file holds environment variables you can set:</p>
+<h3 id="ypb_media_dir"><a class="header" href="#ypb_media_dir">YPB_MEDIA_DIR</a></h3>
+<p>Where output media files are saved on your machine. The directory is
+created automatically if it doesn’t already exist.</p>
+<h3 id="ypb_ytdlp_config_dir"><a class="header" href="#ypb_ytdlp_config_dir">YPB_YTDLP_CONFIG_DIR</a></h3>
+<p>By default, <code>ypb</code> uses its own built-in yt-dlp configuration. Mounting your
+own config directory here lets you add your own settings on top.</p>
+<p>For example, to use cookies, export them from your browser into a <code>cookies.txt</code>
+file, put it inside your <code>YPB_YTDLP_CONFIG_DIR</code>, then reference it from your yt-dlp config
+file (<code>config</code>, <code>config.txt</code>):</p>
+<pre><code>--cookies /path/to/cookies.txt
 </code></pre>
-<p><strong>Use custom port (e.g., 3000):</strong></p>
-<pre><code class="language-shell">podman run --rm -p 3000:9000 ghcr.io/xymaxim/ypb serve
-</code></pre>
-<h2 id="update-the-image"><a class="header" href="#update-the-image">Update the image</a></h2>
-<p>To update <code>ypb</code> and all dependecies to the latest version:</p>
-<pre><code class="language-shell">podman pull ghcr.io/xymaxim/ypb
+<h2 id="update-the-app"><a class="header" href="#update-the-app">Update the app</a></h2>
+<pre><code class="language-shell">podman compose pull
 </code></pre>
 
                     </main>
