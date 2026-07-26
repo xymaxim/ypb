@@ -1,6 +1,11 @@
 PACKAGE = github.com/xymaxim/ypb
 
-GIT_VERSION = `(git describe 2>/dev/null) | tr -d 'v\n'`
+GIT_VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null | tr -d 'v\n')
+
+ifdef GITHUB_REF_NAME
+GIT_VERSION := $(GITHUB_REF_NAME)
+endif
+
 VERSION_LDFLAGS = -X $(PACKAGE)/internal/version.GitVersion=$(GIT_VERSION)
 
 fmt:
