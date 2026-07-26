@@ -56,23 +56,23 @@ Verify the version with the following command:
 
 Running in a container allows you to try `ypb` in an isolated environment with all required dependencies pre-installed.
 
-**Prerequisites:** [Podman](https://podman.io/getting-started/installation) or [Docker](https://docs.docker.com/get-docker/)
+**Prerequisites:** [Podman](https://podman.io/getting-started/installation) or [Docker](https://docs.docker.com/get-docker/), with Compose
 
-**macOS/Windows only:** Initialize the Podman machine (one-time setup):
+**macOS/Windows only, Podman:** Initialize the Podman machine (one-time setup):
 
     podman machine init && podman machine start
 
-Pull the container image and verify the version:
+Pull the compose file and extract it to a local directory:
 
-    podman pull ghcr.io/xymaxim/ypb
-    podman run --rm ghcr.io/xymaxim/ypb version
+    podman artifact pull ghcr.io/xymaxim/ypb-compose
+    podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+    cd ~/ypb-app
 
-To run commands with access to your current directory:
+Verify the version:
 
-    podman run --rm -v .:/content ghcr.io/xymaxim/ypb ...
+    podman compose run --rm ypb version
 
-> See [Container image](guides/install/container.md) for creating [recommended
-> aliases](guides/install/container.md#recommended-aliases) and more details.
+> See [Container](guides/install/container.md) for configuration options and more details.
 
 ## Download excerpts
 
