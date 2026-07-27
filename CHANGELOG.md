@@ -4,6 +4,17 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.7.27](https://github.com/xymaxim/ypb/releases/tag/v2026.7.27)
+
+### Fixed
+
+- Fix `now` at start rejection when `--now` is set
+
+### Changed
+
+- Resolve `now` to pinned time at parse time when `--now` is set
+- Reject future start and end times at parse time
+
 ## [2026.7.26](https://github.com/xymaxim/ypb/releases/tag/v2026.7.26)
 
 ### Added
