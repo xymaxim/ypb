@@ -8,7 +8,7 @@
 
 - [Installation](guides/install/install.md)
   - [Pre-built binaries](guides/install/binaries.md)
-  - [Container](guides/install/container.md)
+  - [Container (Compose)](guides/install/container.md)
 
 # Tutorials
 

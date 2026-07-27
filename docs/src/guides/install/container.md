@@ -1,9 +1,9 @@
-# Container
+# Container (Compose)
 
 Running ypb with containers is the recommended way to get started.
 
 > [!NOTE]
-> This guide uses Podman, but Docker works too — commands are mostly the
+> This guide uses Podman, but Docker works too. Commands are mostly the
 > same with `docker` in place of `podman`, though some steps (like
 > `podman machine` and `podman artifact`) don't have a direct Docker
 > equivalent.
