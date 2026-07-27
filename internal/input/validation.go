@@ -10,7 +10,7 @@ import (
 
 // ValidateMoments performs preliminary validation on parsed start and end
 // moment values to catch obvious errors.
-func ValidateMoments(start, end MomentValue) error {
+func ValidateMoments(start, end MomentValue, refTime *time.Time) error {
 	switch s := start.(type) {
 	case time.Time:
 		if e, ok := end.(time.Time); ok && s.After(e) {
@@ -25,7 +25,7 @@ func ValidateMoments(start, end MomentValue) error {
 			return errors.New("both start and end cannot be durations")
 		}
 	case MomentKeyword:
-		if s == NowKeyword {
+		if s == NowKeyword && refTime == nil {
 			return fmt.Errorf("'%s' cannot be used at start", NowKeyword)
 		}
 	}

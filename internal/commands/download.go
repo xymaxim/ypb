@@ -37,7 +37,7 @@ func (c *Download) Run() error {
 	if err != nil {
 		return fmt.Errorf("parsing input interval: %w", err)
 	}
-	if err := input.ValidateMoments(start, end); err != nil {
+	if err := input.ValidateMoments(start, end, &pinnedTime); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 

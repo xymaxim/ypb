@@ -88,7 +88,7 @@ func (c *Timelapse) parseAndValidateInputs(refTime time.Time) (*TimelapseConfig,
 		return nil, fmt.Errorf("parsing input interval: %w", err)
 	}
 
-	if err := input.ValidateMoments(start, end); err != nil {
+	if err := input.ValidateMoments(start, end, &refTime); err != nil {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
 

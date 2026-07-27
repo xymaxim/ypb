@@ -64,7 +64,7 @@ func ParseInterval(
 	start, end := result.Output.Left, result.Output.Right
 
 	// Validate start value
-	if start == NowKeyword {
+	if start == NowKeyword && refTime == nil {
 		return nil, nil, fmt.Errorf(
 			"keyword '%s' cannot be used as start",
 			NowKeyword,

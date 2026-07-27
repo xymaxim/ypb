@@ -451,3 +451,19 @@ func TestParseInterval(t *testing.T) {
 		})
 	}
 }
+
+func TestParseInterval_NowAtStartWithRefTime(t *testing.T) {
+	t.Parallel()
+
+	refTime := time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)
+	start, end, err := input.ParseInterval("now/1h", &refTime)
+	if err != nil {
+		t.Fatalf("should not fail, got %v", err)
+	}
+	if diff := cmp.Diff(input.NowKeyword, start); diff != "" {
+		t.Fatalf("start mismatch (- want, + have):\n%s", diff)
+	}
+	if diff := cmp.Diff(time.Hour, end); diff != "" {
+		t.Fatalf("end mismatch (- want, + have):\n%s", diff)
+	}
+}
