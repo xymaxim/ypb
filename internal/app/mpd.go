@@ -60,7 +60,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
-	if err := input.ValidateMoments(startParsed, endParsed, nil); err != nil {
+	if err := input.ValidateMoments(startParsed, endParsed); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 

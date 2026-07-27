@@ -246,6 +246,13 @@ func locateWithAbsoluteStart(
 	// Handle duration end
 	if duration, ok := end.(time.Duration); ok {
 		endTime := startMoment.TargetTime.Add(duration)
+		if endTime.After(ctx.Head.EndTime()) {
+			return nil, NewResolveMomentError(
+				end,
+				true,
+				errors.New("end time is after head segment"),
+			)
+		}
 		endMoment, err := pb.LocateMoment(endTime, ctx.Reference, true)
 		if err != nil {
 			return nil, fmt.Errorf("locating end moment: %w", err)
@@ -347,7 +354,7 @@ func resolveSequenceNumber(
 	return playback.NewRewindMoment(targetTime, *metadata, isEnd, false), nil
 }
 
-// resolveKeywordMoment resolves a keyword into a RewindMoment.
+// resolveKeyword resolves a keyword into a RewindMoment.
 func resolveKeyword(
 	pb playback.Playbacker,
 	keyword input.MomentKeyword,
@@ -360,24 +367,12 @@ func resolveKeyword(
 			return ctx.PinnedMoment, nil
 		}
 
-		if ctx.PinnedTime != nil {
-			m, err := resolveTime(pb, *ctx.PinnedTime, ctx, isEnd)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"resolving pinned time %q: %w",
-					ctx.PinnedTime,
-					err,
-				)
-			}
-			ctx.PinnedMoment = m
-		} else {
-			ctx.PinnedMoment = playback.NewRewindMoment(
-				ctx.Head.EndTime(),
-				ctx.Head,
-				isEnd,
-				false,
-			)
-		}
+		ctx.PinnedMoment = playback.NewRewindMoment(
+			ctx.Head.EndTime(),
+			ctx.Head,
+			isEnd,
+			false,
+		)
 
 		slog.Debug(
 			"resolved now keyword",

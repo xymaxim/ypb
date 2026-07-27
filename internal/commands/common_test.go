@@ -153,33 +153,51 @@ func TestNowFlagIntegration(t *testing.T) {
 			},
 		},
 		{
-			name:    "now keyword stays as keyword",
+			name:    "now resolves to pinned time",
 			nowFlag: "2026-01-02T10:20:30+00",
 			input:   "now",
 			check: func(t *testing.T, v input.MomentValue) {
-				assert.Equal(t, input.NowKeyword, v)
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
 			},
 		},
 		{
-			name:    "now expression keeps now keyword as left operand",
+			name:    "now expression resolves left operand to pinned time",
 			nowFlag: "2026-01-02T10:20:30+00",
 			input:   "now - 10m",
 			check: func(t *testing.T, v input.MomentValue) {
 				expr, ok := v.(input.MomentExpression)
 				require.True(t, ok, "expected MomentExpression, got %T", v)
-				assert.Equal(t, input.NowKeyword, expr.Left)
+				tt, ok := expr.Left.(time.Time)
+				require.True(t, ok, "expected time.Time left, got %T", expr.Left)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
 				assert.Equal(t, input.OpMinus, expr.Operator)
 				assert.Equal(t, 10*time.Minute, expr.Right)
 			},
 		},
 		{
-			name:    "now expression with plus is allowed when pinned",
+			name:    "now plus expression resolves left operand to pinned time",
 			nowFlag: "2026-01-02",
 			input:   "now + 1h",
 			check: func(t *testing.T, v input.MomentValue) {
 				expr, ok := v.(input.MomentExpression)
 				require.True(t, ok, "expected MomentExpression, got %T", v)
-				assert.Equal(t, input.NowKeyword, expr.Left)
+				tt, ok := expr.Left.(time.Time)
+				require.True(t, ok, "expected time.Time left, got %T", expr.Left)
+				assert.Equal(t, 2026, tt.Year())
+				assert.Equal(t, time.January, tt.Month())
+				assert.Equal(t, 2, tt.Day())
 				assert.Equal(t, input.OpPlus, expr.Operator)
 				assert.Equal(t, time.Hour, expr.Right)
 			},
@@ -236,6 +254,193 @@ func TestNowFlagIntegration(t *testing.T) {
 			require.NoError(t, err)
 
 			tc.check(t, value)
+		})
+	}
+}
+
+func TestNowFlagIntervalIntegration(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name      string
+		nowFlag   string
+		input     string
+		wantStart func(t *testing.T, v input.MomentValue)
+		wantEnd   func(t *testing.T, v input.MomentValue)
+		wantErr   bool
+	}{
+		{
+			name:    "now at start with --now set resolves to pinned time",
+			nowFlag: "2026-01-02T10:20:30+00",
+			input:   "now/1h",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				d, ok := v.(time.Duration)
+				require.True(t, ok, "expected time.Duration, got %T", v)
+				assert.Equal(t, time.Hour, d)
+			},
+		},
+		{
+			name:    "now at start without --now is rejected",
+			nowFlag: "",
+			input:   "now/1h",
+			wantErr: true,
+		},
+		{
+			name:    "now plus expression with --now set resolves left to pinned time",
+			nowFlag: "2026-01-02T10:20:30+00",
+			input:   "now + 1h/2h",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				expr, ok := v.(input.MomentExpression)
+				require.True(t, ok, "expected MomentExpression, got %T", v)
+				tt, ok := expr.Left.(time.Time)
+				require.True(t, ok, "expected time.Time left, got %T", expr.Left)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
+				assert.Equal(t, input.OpPlus, expr.Operator)
+				assert.Equal(t, time.Hour, expr.Right)
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				d, ok := v.(time.Duration)
+				require.True(t, ok, "expected time.Duration, got %T", v)
+				assert.Equal(t, 2*time.Hour, d)
+			},
+		},
+		{
+			name:    "now plus expression without --now is rejected",
+			nowFlag: "",
+			input:   "now + 1h/2h",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				expr, ok := v.(input.MomentExpression)
+				require.True(t, ok, "expected MomentExpression, got %T", v)
+				assert.Equal(t, input.NowKeyword, expr.Left)
+				assert.Equal(t, input.OpPlus, expr.Operator)
+				assert.Equal(t, time.Hour, expr.Right)
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				d, ok := v.(time.Duration)
+				require.True(t, ok, "expected time.Duration, got %T", v)
+				assert.Equal(t, 2*time.Hour, d)
+			},
+		},
+		{
+			name:    "now minus start and now end with --now set resolves to pinned time",
+			nowFlag: "2026-01-02T10:20:30+00",
+			input:   "now - 1h/now",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				expr, ok := v.(input.MomentExpression)
+				require.True(t, ok, "expected MomentExpression, got %T", v)
+				tt, ok := expr.Left.(time.Time)
+				require.True(t, ok, "expected time.Time left, got %T", expr.Left)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
+				assert.Equal(t, input.OpMinus, expr.Operator)
+				assert.Equal(t, time.Hour, expr.Right)
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
+			},
+		},
+		{
+			name:    "now minus start without --now passes parsing",
+			nowFlag: "",
+			input:   "now - 1h/now",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				expr, ok := v.(input.MomentExpression)
+				require.True(t, ok, "expected MomentExpression, got %T", v)
+				assert.Equal(t, input.NowKeyword, expr.Left)
+				assert.Equal(t, input.OpMinus, expr.Operator)
+				assert.Equal(t, time.Hour, expr.Right)
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				assert.Equal(t, input.NowKeyword, v)
+			},
+		},
+		{
+			name:    "time only start with now end and --now set",
+			nowFlag: "2026-01-02T10:20:30+00",
+			input:   "10:20/now",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				assert.Equal(t, 2026, tt.Year())
+				assert.Equal(t, time.January, tt.Month())
+				assert.Equal(t, 2, tt.Day())
+				assert.Equal(t, 10, tt.Hour())
+				assert.Equal(t, 20, tt.Minute())
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				assert.True(
+					t,
+					tt.Equal(time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)),
+					"expected 2026-01-02T10:20:30 UTC, got %v",
+					tt,
+				)
+			},
+		},
+		{
+			name:    "time only start with now end without --now",
+			nowFlag: "",
+			input:   "10:20/now",
+			wantStart: func(t *testing.T, v input.MomentValue) {
+				tt, ok := v.(time.Time)
+				require.True(t, ok, "expected time.Time, got %T", v)
+				now := time.Now()
+				assert.Equal(t, now.Year(), tt.Year())
+				assert.Equal(t, now.Month(), tt.Month())
+				assert.Equal(t, now.Day(), tt.Day())
+				assert.Equal(t, 10, tt.Hour())
+				assert.Equal(t, 20, tt.Minute())
+			},
+			wantEnd: func(t *testing.T, v input.MomentValue) {
+				assert.Equal(t, input.NowKeyword, v)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			pinnedTime, err := ResolvePinnedTime(tc.nowFlag)
+			require.NoError(t, err)
+
+			var refTime *time.Time
+			if tc.nowFlag != "" {
+				refTime = &pinnedTime
+			}
+			start, end, err := input.ParseInterval(tc.input, refTime)
+			if tc.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			tc.wantStart(t, start)
+			tc.wantEnd(t, end)
 		})
 	}
 }

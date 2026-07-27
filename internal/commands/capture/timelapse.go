@@ -42,7 +42,11 @@ func (c *Timelapse) Run() error {
 		return err
 	}
 
-	config, err := c.parseAndValidateInputs(pinnedTime)
+	var refTime *time.Time
+	if c.Now != "" {
+		refTime = &pinnedTime
+	}
+	config, err := c.parseAndValidateInputs(refTime)
 	if err != nil {
 		return err
 	}
@@ -82,13 +86,13 @@ func (c *Timelapse) Run() error {
 	return nil
 }
 
-func (c *Timelapse) parseAndValidateInputs(refTime time.Time) (*TimelapseConfig, error) {
-	start, end, err := input.ParseInterval(c.Interval, &refTime)
+func (c *Timelapse) parseAndValidateInputs(refTime *time.Time) (*TimelapseConfig, error) {
+	start, end, err := input.ParseInterval(c.Interval, refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input interval: %w", err)
 	}
 
-	if err := input.ValidateMoments(start, end, &refTime); err != nil {
+	if err := input.ValidateMoments(start, end); err != nil {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
 

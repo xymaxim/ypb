@@ -31,7 +31,11 @@ func (c *Frame) Run() error {
 		return err
 	}
 
-	config, err := c.parseAndValidateInputs(pinnedTime)
+	var refTime *time.Time
+	if c.Now != "" {
+		refTime = &pinnedTime
+	}
+	config, err := c.parseAndValidateInputs(refTime)
 	if err != nil {
 		return err
 	}
@@ -77,8 +81,8 @@ func (c *Frame) Run() error {
 	return nil
 }
 
-func (c *Frame) parseAndValidateInputs(refTime time.Time) (*FrameConfig, error) {
-	momentValue, err := input.ParseIntervalPart(c.Moment, &refTime)
+func (c *Frame) parseAndValidateInputs(refTime *time.Time) (*FrameConfig, error) {
+	momentValue, err := input.ParseIntervalPart(c.Moment, refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input moment: %w", err)
 	}

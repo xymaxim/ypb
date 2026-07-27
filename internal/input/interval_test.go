@@ -460,8 +460,12 @@ func TestParseInterval_NowAtStartWithRefTime(t *testing.T) {
 	if err != nil {
 		t.Fatalf("should not fail, got %v", err)
 	}
-	if diff := cmp.Diff(input.NowKeyword, start); diff != "" {
-		t.Fatalf("start mismatch (- want, + have):\n%s", diff)
+	tt, ok := start.(time.Time)
+	if !ok {
+		t.Fatalf("expected start to be time.Time, got %T", start)
+	}
+	if !tt.Equal(refTime) {
+		t.Fatalf("expected start %v, got %v", refTime, tt)
 	}
 	if diff := cmp.Diff(time.Hour, end); diff != "" {
 		t.Fatalf("end mismatch (- want, + have):\n%s", diff)

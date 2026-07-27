@@ -36,13 +36,13 @@ type ParserResult = gomme.Result[MomentValue, string]
 
 func intervalPart(refTime *time.Time) gomme.Parser[string, MomentValue] {
 	return gomme.Alternative(
-		parseExpression(refTime),      // e.g., 2026-01-02T10:20:30+00 - 30s
-		parseDateAndTime(refTime),     // e.g., 2026-01-02T10:20:30+00
-		parseDuration,                 // e.g., 1d2h3m4s
-		parseUnixTimestamp,            // e.g., @1767349230
-		parseKeyword(NowKeyword),      // now
-		parseKeyword(EarliestKeyword), // earliest
-		parseSequenceNumber,           // e.g., 123
+		parseExpression(refTime),           // e.g., 2026-01-02T10:20:30+00 - 30s
+		parseDateAndTime(refTime),          // e.g., 2026-01-02T10:20:30+00
+		parseDuration,                      // e.g., 1d2h3m4s
+		parseUnixTimestamp,                 // e.g., @1767349230
+		parseKeyword(NowKeyword, refTime),  // now
+		parseKeyword(EarliestKeyword, nil), // earliest
+		parseSequenceNumber,                // e.g., 123
 	)
 }
 
@@ -102,11 +102,14 @@ func ParseIntervalPart(
 	return result.Output, nil
 }
 
-func parseKeyword(keyword MomentKeyword) func(string) ParserResult {
+func parseKeyword(keyword MomentKeyword, refTime *time.Time) func(string) ParserResult {
 	return func(input string) ParserResult {
 		return gomme.Map(
 			gomme.Token[string](string(keyword)),
 			func(k string) (MomentValue, error) {
+				if keyword == NowKeyword && refTime != nil {
+					return *refTime, nil
+				}
 				return MomentKeyword(k), nil
 			},
 		)(input)
@@ -336,7 +339,7 @@ func parseExpression(refTime *time.Time) func(string) ParserResult {
 		// Parse left operand
 		leftResult := gomme.Terminated(
 			gomme.Alternative(
-				parseKeyword(NowKeyword),
+				parseKeyword(NowKeyword, refTime),
 				parseDateAndTime(refTime),
 				parseUnixTimestamp,
 				parseSequenceNumber,
