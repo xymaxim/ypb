@@ -6,7 +6,7 @@ There are two installation methods available:
 
 1. [**Pre-built binaries**](binaries.md): Install platform-specific binaries
    along with additional dependencies
-2. [**Container image**](container.md): Run in a container with all dependencies
+2. [**Container (Compose)**](container.md): Run in a container with all dependencies
    bundled
 
 ## Choosing installation method
