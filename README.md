@@ -1,6 +1,9 @@
 # Ypb — A playback for YouTube live streams
 
-[Project page](https://github.com/xymaxim/ypb) · [Documentation](https://xymaxim.github.io/ypb) · [Changelog](https://xymaxim.github.io/ypb/changelog.html)
+[![Test](https://github.com/xymaxim/ypb/actions/workflows/test.yml/badge.svg)](https://github.com/xymaxim/ypb/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/xymaxim/ypb)](https://github.com/xymaxim/ypb/releases/latest)
+
+[Project page](https://github.com/xymaxim/ypb) &nbsp; [Documentation](https://xymaxim.github.io/ypb) &nbsp; [Changelog](https://xymaxim.github.io/ypb/changelog.html)
 
 *Rewind to past moments in live streams and play or download excerpts*
 
