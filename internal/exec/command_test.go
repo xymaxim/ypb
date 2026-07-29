@@ -15,9 +15,6 @@ import (
 )
 
 func getShellCommand(script string) (string, []string) {
-	if runtime.GOOS == "windows" {
-		return "cmd.exe", []string{"/c", script}
-	}
 	return "sh", []string{"-c", script}
 }
 
