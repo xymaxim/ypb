@@ -37,9 +37,9 @@ sequenceDiagram
     D->>E: Pass MPD
     loop Download
         E->>S: Request segment (proxied URL)
-        S->>Y: Stream segment
-        Y-->>S: Segment
-        S-->>E: Segment
+        S->>Y: Request segment
+        Y-->>S: Stream segment
+        S-->>E: Stream segment
     end
     E->>E: Write to file
 ```
