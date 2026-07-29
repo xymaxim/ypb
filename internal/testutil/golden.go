@@ -3,6 +3,7 @@ package testutil
 import (
 	"flag"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -25,6 +26,9 @@ func AssertGolden(t *testing.T, got, path string) {
 	if err != nil {
 		t.Fatalf("reading golden file %s: %v (run with -update to create it)", path, err)
 	}
+
+	// Normalize CRLF to LF so golden files match on Windows.
+	got = strings.ReplaceAll(got, "\r\n", "\n")
 
 	if diff := cmp.Diff(string(want), got); diff != "" {
 		t.Errorf("output does not match %s (-want +got):\n%s", path, diff)
