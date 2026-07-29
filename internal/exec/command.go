@@ -150,14 +150,16 @@ func (r *CommandRunner) runWithConfig(ctx context.Context, config RunConfig, arg
 	handle(stdout, config.OnStdout)
 	handle(stderr, config.OnStderr)
 
+	// Wait for readers before cmd.Wait, which closes the pipes on exit and
+	// can otherwise race the readers and truncate output.
+	wg.Wait()
+
 	if err := cmd.Wait(); err != nil {
-		wg.Wait()
 		if ctx.Err() != nil {
 			return fmt.Errorf("running command: %w (context: %v)", err, ctx.Err())
 		}
 		return fmt.Errorf("running command: %w", err)
 	}
-	wg.Wait()
 	return nil
 }
 
