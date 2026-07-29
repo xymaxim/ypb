@@ -63,21 +63,6 @@ func TestCommandRunner_Run(t *testing.T) {
 	}
 }
 
-// func TestCommandRunner_Run(t *testing.T) {
-// 	shell, args := getShellCommand("echo test")
-// 	runner := exec.NewCommandRunner(shell)
-
-// 	gotConsoleStdout, _ := captureConsoleOutput(t, func() {
-// 		if err := runner.Run(args...); err != nil {
-// 			t.Errorf("Run() error = %v, want nil", err)
-// 		}
-// 	})
-// 	wantConsoleStdout := shell + ": test\n"
-// 	if diff := cmp.Diff(wantConsoleStdout, gotConsoleStdout); diff != "" {
-// 		t.Errorf("console stdout mismatch %s", testutil.PrintWantGot(diff))
-// 	}
-// }
-
 func TestCommandRunner_Name(t *testing.T) {
 	runner := exec.NewCommandRunner("/usr/bin/test-binary")
 
