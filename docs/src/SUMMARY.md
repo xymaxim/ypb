@@ -21,4 +21,5 @@
 
 # About
 
+- [Support](support.md)
 - [Changelog](changelog.md)
