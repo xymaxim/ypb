@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Container (Compose) - Ypb documentation</title>
+        <title>Support - Ypb documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -12,20 +12,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../../css/general-2459343d.css">
-        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
-        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -34,13 +34,13 @@
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1fd8bb24.js";
+            window.path_to_searchindex_js = "searchindex-1fd8bb24.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-c247a560.js"></script>
+        <script src="toc-c247a560.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -107,7 +107,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -142,7 +142,7 @@
                     <h1 class="menu-title">Ypb documentation</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
@@ -176,115 +176,19 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="container-compose"><a class="header" href="#container-compose">Container (Compose)</a></h1>
-<p>Running ypb with containers is the recommended way to get started.</p>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>This guide uses Podman, but Docker works too. Commands are mostly the
-same with <code>docker</code> in place of <code>podman</code>, though some steps (like
-<code>podman machine</code> and <code>podman artifact</code>) don’t have a direct Docker
-equivalent.</p>
-</blockquote>
-<p>The app runs as two containers managed by <a href="https://compose-spec.io/">Compose</a>:</p>
-<ul>
-<li><strong>Ypb</strong> (<a href="https://ghcr.io/xymaxim/ypb">ghcr.io/xymaxim/ypb</a>) — the main app, with yt-dlp and ffmpeg inside</li>
-<li><strong>PO token provider</strong> (<a href="https://hub.docker.com/r/brainicism/bgutil-ytdlp-pot-provider">brainicism/bgutil-ytdlp-pot-provider</a>) — handles YouTube’s bot verification in the background</li>
-</ul>
-<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
-<ul>
-<li>
-<p><a href="https://podman.io/getting-started/installation">Podman</a> with <a href="https://podman-desktop.io/docs/compose">Compose</a></p>
-</li>
-<li>
-<p>YouTube cookies <a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">exported</a> from your browser</p>
-</li>
-</ul>
-<h3 id="macos-and-windows"><a class="header" href="#macos-and-windows">macOS and Windows</a></h3>
-<p>On macOS and Windows, Podman requires a virtual machine. Initialize and start
-it once:</p>
-<pre><code class="language-shell">podman machine init
-podman machine start
-</code></pre>
-<p>The machine starts automatically on subsequent reboots.</p>
-<h2 id="set-up"><a class="header" href="#set-up">Set up</a></h2>
-<ol>
-<li>
-<p>Pull the compose file and extract it to a local directory:</p>
-<pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
-podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
-cd ~/ypb-app
-</code></pre>
-<p>This gives you <code>compose.yaml</code> and <code>.env.template</code> files with defaults,
-containing configuration variables — see <a href="#configuration">Configuration</a>
-below for what’s available.</p>
-</li>
-<li>
-<p>Copy <code>.env.template</code> to <code>.env</code> and edit that copy:</p>
-<pre><code class="language-shell">cp .env.template .env
-</code></pre>
-<p><code>.env</code> is yours to customize and won’t be overwritten by future updates.</p>
-</li>
-</ol>
-<h3 id="set-up-cookies-recommended"><a class="header" href="#set-up-cookies-recommended">Set up cookies (recommended)</a></h3>
-<p>YouTube may respond with a “Sign in to confirm you’re not a bot” error
-without cookies, so setting them up is recommended. To avoid this:</p>
-<ol>
-<li>
-<p>Export cookies from your browser into a <code>cookies.txt</code> file.</p>
-</li>
-<li>
-<p>In <code>.env</code>, set <code>YPB_YTDLP_CONFIG_DIR</code> to the directory where you want
-to store yt-dlp related config files.</p>
-</li>
-<li>
-<p>Place <code>cookies.txt</code> inside that directory.</p>
-</li>
-<li>
-<p>Reference it from your yt-dlp config file (<code>config</code>, <code>config.txt</code>):</p>
-<pre><code> --cookies /path/to/cookies.txt
-</code></pre>
-</li>
-</ol>
-<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
-<p>Run as many download commands as needed:</p>
-<pre><code class="language-shell">podman compose run --rm ypb download -i 30s/now abcdefgh123
-</code></pre>
-<p>To start a playback server, use <code>serve</code>:</p>
-<pre><code class="language-shell">podman compose run --rm ypb serve abcdefgh123
-</code></pre>
-<p>This listens on port 9000.</p>
-<p>When done, shut down the PO token provider sidecar:</p>
-<pre><code class="language-shell">podman compose down
-</code></pre>
-<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
-<p>The <code>.env.template</code> file (copied to <code>.env</code> during <a href="#set-up">setup</a>) holds
-environment variables you can set:</p>
-<h3 id="ypb_media_dir"><a class="header" href="#ypb_media_dir">YPB_MEDIA_DIR</a></h3>
-<p>Where output media files are saved on your machine. The directory is
-created automatically if it doesn’t already exist.</p>
-<h3 id="ypb_ytdlp_config_dir"><a class="header" href="#ypb_ytdlp_config_dir">YPB_YTDLP_CONFIG_DIR</a></h3>
-<p>By default, <code>ypb</code> uses its own built-in yt-dlp configuration. Mounting your
-own config directory here lets you add your own settings on top — see
-<a href="#set-up-cookies-recommended">Set up cookies</a> above for an example.</p>
-<h2 id="update-the-app"><a class="header" href="#update-the-app">Update the app</a></h2>
-<p>To update the container images:</p>
-<pre><code class="language-shell">podman compose pull
-</code></pre>
-<p>To pick up changes to <code>compose.yaml</code> or <code>.env.template</code>, re-run the extract
-step. This leaves your <code>.env</code> untouched:</p>
-<pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
-podman artifact extract ghcr.io/xymaxim/ypb-compose .
-</code></pre>
+                        <h1 id="support"><a class="header" href="#support">Support</a></h1>
+<p>You can support this project by
+<a href="https://xymaxim.github.io/rewyt/docs/sponsoring.html">sponsoring</a> it.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../guides/install/binaries.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="reference/api.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../tutorials/timelapse.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="changelog.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -294,11 +198,11 @@ podman artifact extract ghcr.io/xymaxim/ypb-compose .
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../guides/install/binaries.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="reference/api.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../tutorials/timelapse.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="changelog.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -318,13 +222,13 @@ podman artifact extract ghcr.io/xymaxim/ypb-compose .
         </script>
 
 
-        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../../mark-09e88c2c.min.js"></script>
-        <script src="../../searcher-c2a407aa.js"></script>
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
 
-        <script src="../../clipboard-1626706a.min.js"></script>
-        <script src="../../highlight-abc7f01d.js"></script>
-        <script src="../../book-a0b12cfe.js"></script>
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
 

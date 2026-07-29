@@ -38,10 +38,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c17847d7.js";
+            window.path_to_searchindex_js = "searchindex-1fd8bb24.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-f1d6489d.js"></script>
+        <script src="toc-c247a560.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -525,7 +525,14 @@ equivalent.</p>
 <li><strong>PO token provider</strong> (<a href="https://hub.docker.com/r/brainicism/bgutil-ytdlp-pot-provider">brainicism/bgutil-ytdlp-pot-provider</a>) — handles YouTube’s bot verification in the background</li>
 </ul>
 <h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
-<p><a href="https://podman.io/getting-started/installation">Podman</a> with <a href="https://podman-desktop.io/docs/compose">Compose</a>.</p>
+<ul>
+<li>
+<p><a href="https://podman.io/getting-started/installation">Podman</a> with <a href="https://podman-desktop.io/docs/compose">Compose</a></p>
+</li>
+<li>
+<p>YouTube cookies <a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">exported</a> from your browser</p>
+</li>
+</ul>
 <h3 id="macos-and-windows"><a class="header" href="#macos-and-windows">macOS and Windows</a></h3>
 <p>On macOS and Windows, Podman requires a virtual machine. Initialize and start
 it once:</p>
@@ -534,14 +541,44 @@ podman machine start
 </code></pre>
 <p>The machine starts automatically on subsequent reboots.</p>
 <h2 id="set-up"><a class="header" href="#set-up">Set up</a></h2>
+<ol>
+<li>
 <p>Pull the compose file and extract it to a local directory:</p>
 <pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
 podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
 cd ~/ypb-app
 </code></pre>
-<p>This gives you <code>compose.yaml</code> and a <code>.env</code> file with commented-out defaults.
-Edit <code>.env</code> if you want to override where files are saved or use your own yt-dlp
-config. Otherwise, the defaults work out of the box.</p>
+<p>This gives you <code>compose.yaml</code> and <code>.env.template</code> files with defaults,
+containing configuration variables — see <a href="#configuration">Configuration</a>
+below for what’s available.</p>
+</li>
+<li>
+<p>Copy <code>.env.template</code> to <code>.env</code> and edit that copy:</p>
+<pre><code class="language-shell">cp .env.template .env
+</code></pre>
+<p><code>.env</code> is yours to customize and won’t be overwritten by future updates.</p>
+</li>
+</ol>
+<h3 id="set-up-cookies-recommended"><a class="header" href="#set-up-cookies-recommended">Set up cookies (recommended)</a></h3>
+<p>YouTube may respond with a “Sign in to confirm you’re not a bot” error
+without cookies, so setting them up is recommended. To avoid this:</p>
+<ol>
+<li>
+<p>Export cookies from your browser into a <code>cookies.txt</code> file.</p>
+</li>
+<li>
+<p>In <code>.env</code>, set <code>YPB_YTDLP_CONFIG_DIR</code> to the directory where you want
+to store yt-dlp related config files.</p>
+</li>
+<li>
+<p>Place <code>cookies.txt</code> inside that directory.</p>
+</li>
+<li>
+<p>Reference it from your yt-dlp config file (<code>config</code>, <code>config.txt</code>):</p>
+<pre><code> --cookies /path/to/cookies.txt
+</code></pre>
+</li>
+</ol>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
 <p>Run as many download commands as needed:</p>
 <pre><code class="language-shell">podman compose run --rm ypb download -i 30s/now abcdefgh123
@@ -554,20 +591,23 @@ config. Otherwise, the defaults work out of the box.</p>
 <pre><code class="language-shell">podman compose down
 </code></pre>
 <h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
-<p>The <code>.env</code> file holds environment variables you can set:</p>
+<p>The <code>.env.template</code> file (copied to <code>.env</code> during <a href="#set-up">setup</a>) holds
+environment variables you can set:</p>
 <h3 id="ypb_media_dir"><a class="header" href="#ypb_media_dir">YPB_MEDIA_DIR</a></h3>
 <p>Where output media files are saved on your machine. The directory is
 created automatically if it doesn’t already exist.</p>
 <h3 id="ypb_ytdlp_config_dir"><a class="header" href="#ypb_ytdlp_config_dir">YPB_YTDLP_CONFIG_DIR</a></h3>
 <p>By default, <code>ypb</code> uses its own built-in yt-dlp configuration. Mounting your
-own config directory here lets you add your own settings on top.</p>
-<p>For example, to use cookies, export them from your browser into a <code>cookies.txt</code>
-file, put it inside your <code>YPB_YTDLP_CONFIG_DIR</code>, then reference it from your yt-dlp config
-file (<code>config</code>, <code>config.txt</code>):</p>
-<pre><code>--cookies /path/to/cookies.txt
-</code></pre>
+own config directory here lets you add your own settings on top — see
+<a href="#set-up-cookies-recommended">Set up cookies</a> above for an example.</p>
 <h2 id="update-the-app"><a class="header" href="#update-the-app">Update the app</a></h2>
+<p>To update the container images:</p>
 <pre><code class="language-shell">podman compose pull
+</code></pre>
+<p>To pick up changes to <code>compose.yaml</code> or <code>.env.template</code>, re-run the extract
+step. This leaves your <code>.env</code> untouched:</p>
+<pre><code class="language-shell">podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose .
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="create-a-time-lapse-video"><a class="header" href="#create-a-time-lapse-video">Create a time-lapse video</a></h1>
@@ -1151,6 +1191,10 @@ the <code>Accept: application/json</code> header.</p>
 </dl>
 <h4 id="response-2"><a class="header" href="#response-2">Response</a></h4>
 <p>The bytes of the requested media segment.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="support"><a class="header" href="#support">Support</a></h1>
+<p>You can support this project by
+<a href="https://xymaxim.github.io/rewyt/docs/sponsoring.html">sponsoring</a> it.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
