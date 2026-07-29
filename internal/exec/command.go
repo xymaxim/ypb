@@ -8,6 +8,7 @@ import (
 	"os"
 	execpkg "os/exec"
 	"path/filepath"
+	"sync"
 )
 
 // Runner defines the interface for executing commands.
@@ -137,22 +138,26 @@ func (r *CommandRunner) runWithConfig(ctx context.Context, config RunConfig, arg
 		return fmt.Errorf("starting command: %w", err)
 	}
 
+	var wg sync.WaitGroup
 	handle := func(p io.ReadCloser, h func([]byte)) {
+		wg.Add(1)
 		if h == nil {
-			go func() { io.Copy(io.Discard, p) }()
+			go func() { defer wg.Done(); io.Copy(io.Discard, p) }()
 		} else {
-			go func() { streamRaw(p, h) }()
+			go func() { defer wg.Done(); streamRaw(p, h) }()
 		}
 	}
 	handle(stdout, config.OnStdout)
 	handle(stderr, config.OnStderr)
 
 	if err := cmd.Wait(); err != nil {
+		wg.Wait()
 		if ctx.Err() != nil {
 			return fmt.Errorf("running command: %w (context: %v)", err, ctx.Err())
 		}
 		return fmt.Errorf("running command: %w", err)
 	}
+	wg.Wait()
 	return nil
 }
 
