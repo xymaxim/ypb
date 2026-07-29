@@ -15,7 +15,9 @@ The app runs as two containers managed by [Compose](https://compose-spec.io/):
 
 ## Prerequisites
 
-[Podman](https://podman.io/getting-started/installation) with [Compose](https://podman-desktop.io/docs/compose).
+- [Podman](https://podman.io/getting-started/installation) with [Compose](https://podman-desktop.io/docs/compose)
+
+- YouTube cookies [exported](https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies) from your browser
 
 ### macOS and Windows
 
@@ -31,17 +33,38 @@ The machine starts automatically on subsequent reboots.
 
 ## Set up
 
-Pull the compose file and extract it to a local directory:
+1. Pull the compose file and extract it to a local directory:
 
-```shell
-podman artifact pull ghcr.io/xymaxim/ypb-compose
-podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
-cd ~/ypb-app
-```
+   ```shell
+   podman artifact pull ghcr.io/xymaxim/ypb-compose
+   podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+   cd ~/ypb-app
+   ```
 
-This gives you `compose.yaml` and a `.env` file with commented-out defaults.
-Edit `.env` if you want to override where files are saved or use your own yt-dlp
-config. Otherwise, the defaults work out of the box.
+   This gives you `compose.yaml` and `.env.template` files with defaults,
+   containing configuration variables — see [Configuration](#configuration)
+   below for what's available.
+
+2. Copy `.env.template` to `.env` and edit that copy:
+
+   ```shell
+   cp .env.template .env
+   ```
+
+   `.env` is yours to customize and won't be overwritten by future updates.
+
+### Set up cookies (recommended)
+
+YouTube may respond with a "Sign in to confirm you're not a bot" error
+without cookies, so setting them up is recommended. To avoid this:
+
+1. Export cookies from your browser into a `cookies.txt` file.
+2. In `.env`, set `YPB_YTDLP_CONFIG_DIR` to the directory where you want
+   to store yt-dlp related config files.
+3. Place `cookies.txt` inside that directory.
+4. Reference it from your yt-dlp config file (`config`, `config.txt`):
+
+        --cookies /path/to/cookies.txt
 
 ## Usage
 
@@ -67,7 +90,8 @@ podman compose down
 
 ## Configuration
 
-The `.env` file holds environment variables you can set:
+The `.env.template` file (copied to `.env` during [setup](#set-up)) holds
+environment variables you can set:
 
 ### YPB_MEDIA_DIR
 
@@ -77,18 +101,21 @@ created automatically if it doesn't already exist.
 ### YPB_YTDLP_CONFIG_DIR
 
 By default, `ypb` uses its own built-in yt-dlp configuration. Mounting your
-own config directory here lets you add your own settings on top.
-
-For example, to use cookies, export them from your browser into a `cookies.txt`
-file, put it inside your `YPB_YTDLP_CONFIG_DIR`, then reference it from your yt-dlp config
-file (`config`, `config.txt`):
-
-```
---cookies /path/to/cookies.txt
-```
+own config directory here lets you add your own settings on top — see
+[Set up cookies](#set-up-cookies-recommended) above for an example.
 
 ## Update the app
 
+To update the container images:
+
 ```shell
 podman compose pull
+```
+
+To pick up changes to `compose.yaml` or `.env.template`, re-run the extract
+step. This leaves your `.env` untouched:
+
+```shell
+podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose .
 ```
