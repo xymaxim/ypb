@@ -22,15 +22,16 @@ func AssertGolden(t *testing.T, got, path string) {
 		return
 	}
 
-	want, err := os.ReadFile(path)
+	wantRaw, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("reading golden file %s: %v (run with -update to create it)", path, err)
+		t.Fatalf("reading golden file %s: %v", path, err)
 	}
 
-	// Normalize CRLF to LF so golden files match on Windows.
+	// Normalize CRLF to LF in both golden and output files.
+	want := strings.ReplaceAll(string(wantRaw), "\r\n", "\n")
 	got = strings.ReplaceAll(got, "\r\n", "\n")
 
-	if diff := cmp.Diff(string(want), got); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("output does not match %s (-want +got):\n%s", path, diff)
 	}
 }
