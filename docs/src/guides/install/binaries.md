@@ -2,11 +2,25 @@
 
 ## Prerequisites
 
-Ensure the following [requirements](install.md#requirements) are installed based
-on your intended usage:
+While `ypb` itself is lightweight, it relies on `yt-dlp`:
 
-* `ypb serve`: yt-dlp with additional dependencies (to avoid 403 HTTP errors)
-* `ypb download`: All of the above plus FFmpeg (for muxing during downloads)
+* [yt-dlp](https://github.com/yt-dlp/yt-dlp/wiki/Installation): For video info
+  extraction and downloading. Nightly builds are recommended. If you use
+  binaries, update with: `yt-dlp --update-to nightly`.
+
+* [FFmpeg](https://ffmpeg.org/) (*optional*): For muxing downloads with `ypb
+  download`
+
+### Additional dependencies
+
+The following dependencies are optional, but strongly recommended in practice:
+
+* [External JavaScript runtime](https://github.com/yt-dlp/yt-dlp/issues/15012):
+  Required for full YouTube support
+
+* Proof-of-Origin (PO) token [provider
+  plugin](https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide): Required to
+  avoid HTTP 403 errors
 
 ## Install from binaries
 
