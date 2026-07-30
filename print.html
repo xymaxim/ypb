@@ -38,10 +38,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b3ac5b6f.js";
+            window.path_to_searchindex_js = "searchindex-804d7d2b.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-c247a560.js"></script>
+        <script src="toc-00691880.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1185,10 +1185,6 @@ the <code>Accept: application/json</code> header.</p>
 <h4 id="response-2"><a class="header" href="#response-2">Response</a></h4>
 <p>The bytes of the requested media segment.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="support"><a class="header" href="#support">Support</a></h1>
-<p>You can support this project by
-<a href="https://xymaxim.github.io/rewyt/docs/sponsoring.html">sponsoring</a> it.</p>
-<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>
 <p>The format of this changelog is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a
 Changelog</a>. Versions follow <a href="https://calver.org">Calendar
@@ -1303,6 +1299,25 @@ Versioning</a>.</p>
 </ul>
 <h2 id="2026210"><a class="header" href="#2026210"><a href="https://github.com/xymaxim/ypb/releases/tag/v2026.2.10">2026.2.10</a></a></h2>
 <p>First release.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="anticipated-questions"><a class="header" href="#anticipated-questions">Anticipated questions</a></h1>
+<p>Here are the answers to the most asked/anticipated questions.</p>
+<h2 id="why-is-the-duration-longer-than-the-input-interval"><a class="header" href="#why-is-the-duration-longer-than-the-input-interval">Why is the duration longer than the input interval?</a></h2>
+<p>Right now, downloaded media segments are merged as-is, without precise trimming
+of the boundary segments to match the requested interval. The maximum positive
+difference equals the duration of two segments, the start and end ones, and
+depends on the type of live-streaming latency: up to 2 seconds (ultra-low
+latency), 4 seconds (low), or 10 seconds (normal).</p>
+<h2 id="why-is-the-duration-shorter-than-the-input-interval"><a class="header" href="#why-is-the-duration-shorter-than-the-input-interval">Why is the duration shorter than the input interval?</a></h2>
+<p>Streams may contain gaps due to instability. A decrease in the duration of an
+output excerpt (by seconds, minutes, or even hours) can result from: (a) the
+start and/or end point falling within a gap, in which case the nearest available
+segment is used instead, or (b) the excerpt containing one or more gaps
+internally.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="support"><a class="header" href="#support">Support</a></h1>
+<p>You can support this project by
+<a href="https://xymaxim.github.io/rewyt/docs/sponsoring.html">sponsoring</a> it.</p>
 
                     </main>
 
