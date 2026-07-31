@@ -23,8 +23,11 @@
 - [CLI](reference/cli.md)
 - [API](reference/api.md)
 
+# Appendix
+
+- [Questions](appendix/questions.md)
+
 # About
 
 - [Changelog](changelog.md)
-- [Questions](questions.md)
 - [Support](support.md)
