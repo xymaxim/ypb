@@ -14,6 +14,10 @@
 
 - [Create a time-lapse video](tutorials/timelapse.md)
 
+# How-to guides
+
+- [Download raw media segments](guides/download-segments.md)
+
 # Reference
 
 - [CLI](reference/cli.md)
