@@ -152,11 +152,5 @@ func formatActualLine(side string, moment *playback.RewindMoment) string {
 }
 
 func buildOutputName(ctx *actions.LocateOutputContext) string {
-	return fmt.Sprintf(
-		"%s_%s_%s_%s.%%(ext)s",
-		AdjustForFilename(ctx.Title, 0),
-		ctx.ID,
-		FormatTime(ctx.InputStartTime),
-		FormatDuration(ctx.InputDuration),
-	)
+	return actions.BuildOutputStem(ctx) + ".%(ext)s"
 }

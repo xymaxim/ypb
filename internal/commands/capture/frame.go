@@ -66,9 +66,9 @@ func (c *Frame) Run() error {
 
 	config.OutputPath = fmt.Sprintf(
 		"%s_%s_%s.%s",
-		commands.AdjustForFilename(app.Playback.Info().Title, 0),
+		actions.AdjustForFilename(app.Playback.Info().Title, 0),
 		app.Playback.Info().ID,
-		commands.FormatTime(rewindMoment.TargetTime),
+		actions.FormatTime(rewindMoment.TargetTime),
 		c.OutputFormat,
 	)
 	err = actions.CaptureFrame(app.Playback, rewindMoment, config.OutputPath, app.FFmpegRunner)

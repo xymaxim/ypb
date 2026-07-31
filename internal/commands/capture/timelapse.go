@@ -156,10 +156,10 @@ func (c *Timelapse) buildOutputPattern(
 ) string {
 	basename := fmt.Sprintf(
 		"%s_%s_%s_e%s",
-		commands.AdjustForFilename(app.Playback.Info().Title, 0),
+		actions.AdjustForFilename(app.Playback.Info().Title, 0),
 		app.Playback.Info().ID,
-		commands.FormatTime(captureTimes[0]),
-		commands.FormatDuration(config.CaptureEvery),
+		actions.FormatTime(captureTimes[0]),
+		actions.FormatDuration(config.CaptureEvery),
 	)
 	outputDirectory := basename
 	outputFilename := fmt.Sprintf("%s_%%04d.%s", basename, config.OutputFormat)
@@ -229,7 +229,7 @@ func printCapturePlan(times []time.Time, duration time.Duration) {
 		"Will capture %d %s at %s intervals:\n",
 		total,
 		frameWord,
-		commands.FormatDuration(duration),
+		actions.FormatDuration(duration),
 	)
 
 	formatTime := func(t time.Time) string {

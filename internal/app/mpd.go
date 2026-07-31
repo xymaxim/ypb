@@ -25,6 +25,7 @@ type intervalInfo struct {
 type mpdMetadata struct {
 	VideoTitle      string     `json:"videoTitle"`
 	VideoURL        string     `json:"videoUrl"`
+	OutputName      string     `json:"outputName,omitempty"`
 	StartActualTime time.Time  `json:"startActualTime"`
 	StartTargetTime time.Time  `json:"startTargetTime"`
 	EndActualTime   *time.Time `json:"endActualTime,omitempty"`
@@ -69,7 +70,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return fmt.Errorf("building locate context: %w", err)
 	}
 
-	rewindInterval, _, err := actions.LocateInterval(
+	rewindInterval, outputContext, err := actions.LocateInterval(
 		h.Playback,
 		startParsed,
 		endParsed,
@@ -97,7 +98,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		StartTargetTime: rewindInterval.Start.TargetTime.UTC(),
 		EndActualTime:   &ea,
 		EndTargetTime:   &et,
-	})
+	}, outputContext)
 }
 
 func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
@@ -128,7 +129,7 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 	return h.serveMPD(w, r, out, intervalInfo{
 		StartActualTime: rewindMoment.ActualTime.UTC(),
 		StartTargetTime: rewindMoment.TargetTime.UTC(),
-	})
+	}, nil)
 }
 
 func (h *MPDHandler) serveMPD(
@@ -136,6 +137,7 @@ func (h *MPDHandler) serveMPD(
 	r *http.Request,
 	mpd []byte,
 	info intervalInfo,
+	outputContext *actions.LocateOutputContext,
 ) error {
 	metadata := mpdMetadata{
 		VideoTitle:      h.Playback.Info().Title,
@@ -144,6 +146,9 @@ func (h *MPDHandler) serveMPD(
 		StartTargetTime: info.StartTargetTime,
 		EndActualTime:   info.EndActualTime,
 		EndTargetTime:   info.EndTargetTime,
+	}
+	if outputContext != nil {
+		metadata.OutputName = actions.BuildOutputStem(outputContext)
 	}
 
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {

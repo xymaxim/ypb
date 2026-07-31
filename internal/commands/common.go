@@ -3,11 +3,9 @@ package commands
 import (
 	"fmt"
 	osexec "os/exec"
-	"strings"
 	"time"
 
-	"github.com/gosimple/slug"
-
+	"github.com/xymaxim/ypb/internal/actions"
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/input"
 )
@@ -61,34 +59,10 @@ func NormalizeYtdlpOptions(opts []string) []string {
 	return opts
 }
 
-func AdjustForFilename(s string, length int) string {
-	const maxAdjustedLength = 30
-
-	if length == 0 {
-		length = maxAdjustedLength
-	}
-
-	slug.MaxLength = length
-	slug.Lowercase = false
-
-	return slug.Make(s)
-}
-
-func FormatTime(t time.Time) string {
-	return t.Format("20060102T150405-07")
-}
-
-func FormatDuration(d time.Duration) string {
-	s := d.Truncate(time.Second).String()
-	s = strings.ReplaceAll(s, "m0s", "m")
-	s = strings.ReplaceAll(s, "h0m", "h")
-	return s
-}
-
 func FormatDifference(diff time.Duration, showPlus bool) string {
 	sign := ""
 	if diff > 0 && showPlus {
 		sign = "+"
 	}
-	return sign + FormatDuration(diff)
+	return sign + actions.FormatDuration(diff)
 }
