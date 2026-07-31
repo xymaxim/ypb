@@ -25,6 +25,7 @@
 
 # Appendix
 
+- [Cookbook](appendix/cookbook.md)
 - [Questions](appendix/questions.md)
 
 # About
