@@ -62,6 +62,7 @@ The JSON response has the following structure:
     "metadata": {
         "videoTitle": "Stream title",
         "videoUrl": "https://www.youtube.com/live/...",
+        "outputName": "Stream-title_abcdefgh123_20260102T102030+00_30m",
         "startActualTime": "2026-01-02T10:00:02Z",
         "startTargetTime": "2026-01-02T10:00:00Z",
         "endActualTime": "2026-01-02T10:30:03Z",
@@ -71,7 +72,8 @@ The JSON response has the following structure:
 }
 ```
 
-For dynamic manifests, `endActualTime` and `endTargetTime` are omitted.
+For dynamic manifests, `outputName`, `endActualTime`, and `endTargetTime` are
+omitted.
 
 ### /segments/itag/\{itag\}/sq/\{sq\}
 
