@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>API - Ypb documentation</title>
+        <title>Download raw media segments - Ypb documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -176,85 +176,103 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="api"><a class="header" href="#api">API</a></h1>
-<h2 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h2>
-<h3 id="info"><a class="header" href="#info">/info</a></h3>
-<p>Returns information about the YouTube live stream being served.</p>
-<h4 id="response"><a class="header" href="#response">Response</a></h4>
-<pre><code class="language-json">{
-    "id": "0ujj4HexRpk",
-    "title": "Stream title",
-    "channelId": "UC6OWqjtFTsdtHAAuGWv1kPw",
-    "channelTitle": "Channel name",
-    "actualStartTime": "2026-01-02T10:20:30Z"
-}
+                        <h1 id="download-raw-media-segments"><a class="header" href="#download-raw-media-segments">Download raw media segments</a></h1>
+<p>By default, ypb downloads YouTube live stream excerpts and merges them into a
+single output file. To keep the raw media segments for your own post-processing
+instead (including custom muxing and encoding, inspecting the embedded metadata,
+etc.), use one of the two methods below.</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<ul>
+<li><code>ypb</code> installed locally, or running in a container</li>
+<li><code>yt-dlp</code> installed (already included as a requirement)</li>
+</ul>
+<h2 id="download-with-yt-dlp"><a class="header" href="#download-with-yt-dlp">Download with yt-dlp</a></h2>
+<ol>
+<li>
+<p>Append <code>-- --keep-fragments --ffmpeg-location /dev/null</code> to your download command:</p>
+<pre><code>ypb download --interval 10s/now Mm_zVDDUeNA-g -- --keep-fragments --ffmpeg-location /dev/null
 </code></pre>
-<h3 id="mpdinterval"><a class="header" href="#mpdinterval">/mpd/{interval}</a></h3>
-<p>Returns an MPEG-DASH manifest for the given interval. The manifest is <em>static</em>
-when a bounded interval is provided, or <em>dynamic</em> when an open-ended interval
-is provided.</p>
-<h4 id="parameters"><a class="header" href="#parameters">Parameters</a></h4>
-<dl>
-<dt id="interval"><a class="header" href="#interval">interval</a></dt>
-<dd>
-<p>The rewind interval to retrieve.</p>
-<blockquote class="blockquote-tag blockquote-tag-note">
-<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>See <a href="cli.html#specifying-the-rewind-interval">Specifying the rewind interval</a>
-for all available interval format options. When using absolute timestamps,
-prefer the <code>Z</code> suffix for UTC (e.g., <code>2026-01-02T10:20:30Z</code>) over <code>+00:00</code>,
-since <code>+</code> must be percent-encoded as <code>%2B</code>. In general, ensure the path
-parameter is properly URL-encoded: use <code>--</code> as the interval separator
-instead of <code>/</code> and avoid unencoded whitespace.</p>
-</blockquote>
-</dd>
-</dl>
-<h4 id="usage-examples"><a class="header" href="#usage-examples">Usage examples</a></h4>
-<p>Rewind a 30-minute excerpt from one day ago (static):</p>
-<pre><code>$ curl localhost:9000/mpd/now-1d--30m
+<ul>
+<li><code>--keep-fragments</code> keeps the individual <code>.part-FragN</code> files alongside each format’s assembled file</li>
+<li><code>--ffmpeg-location /dev/null</code> points yt-dlp at a missing ffmpeg binary, so
+the final audio and video merge fails while fragment download and assembly
+(which don’t need ffmpeg) still succeed.</li>
+</ul>
+<p>If you only need one stream, select it directly and drop –ffmpeg-location:</p>
+<pre><code> ypb download --interval 10s/now Mm_zVDDUeNA-g -- --keep-fragments -f bestvideo
 </code></pre>
-<p>Playback starting from ten minutes ago, continuing live (dynamic):</p>
-<pre><code>curl localhost:9000/mpd/now-10m
+</li>
+<li>
+<p>Run as usual. yt-dlp will report a merge warning, then download each format separately:</p>
+<pre><code>(&lt;&lt;) Downloading and merging media...
+[generic] Extracting URL: http://localhost:9000/mpd
+[generic] mpd: Downloading webpage
+WARNING: [generic] Forcing generic information extractor
+[generic] mpd: Extracting information
+[info] mpd: Downloading 1 format(s): 313+140
+WARNING: You have requested merging of multiple formats but ffmpeg is not installed. The formats won't be merged
+[dashsegments] Total fragments: 2
+[download] Destination: MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f313.webm
+[download] 100% of    5.52MiB in 00:00:17 at 323.13KiB/s
+[dashsegments] Total fragments: 2
+[download] Destination: MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f140.m4a
+[download] 100% of  159.71KiB in 00:00:20 at 7.82KiB/s
 </code></pre>
-<h4 id="response-1"><a class="header" href="#response-1">Response</a></h4>
-<p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To
-receive a JSON representation including the raw manifest and metadata, set
-the <code>Accept: application/json</code> header.</p>
-<p>The JSON response has the following structure:</p>
-<pre><code class="language-json">{
-    "metadata": {
-        "videoTitle": "Stream title",
-        "videoUrl": "https://www.youtube.com/live/...",
-        "startActualTime": "2026-01-02T10:00:02Z",
-        "startTargetTime": "2026-01-02T10:00:00Z",
-        "endActualTime": "2026-01-02T10:30:03Z",
-        "endTargetTime": "2026-01-02T10:30:00Z",
-    },
-    "mpd": "&lt;?xml version=\"1.0\" ...&gt;"
-}
+</li>
+<li>
+<p>Check your working directory:</p>
+<pre><code>MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f140.m4a
+MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f140.m4a.part-Frag1
+MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f140.m4a.part-Frag2
+MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f313.webm
+MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f313.webm.part-Frag1
+MaunaKea-West-view-and-Meteor_MPokOMJvZ-g_20260731T085352+00_10s.f313.webm.part-Frag2
 </code></pre>
-<p>For dynamic manifests, <code>endActualTime</code> and <code>endTargetTime</code> are omitted.</p>
-<h3 id="segmentsitagitagsqsq"><a class="header" href="#segmentsitagitagsqsq">/segments/itag/{itag}/sq/{sq}</a></h3>
-<p>Serves a media segment indentified by itag and sequence number.</p>
-<h4 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h4>
-<dl>
-<dt id="itag"><a class="header" href="#itag">itag</a></dt>
-<dd>The segment itag value.</dd>
-<dt id="sq"><a class="header" href="#sq">sq</a></dt>
-<dd>The segment sequence number.</dd>
-</dl>
-<h4 id="response-2"><a class="header" href="#response-2">Response</a></h4>
-<p>The bytes of the requested media segment.</p>
+<p>The plain <code>.f140.m4a</code> / <code>.f313.webm</code> files are each format’s assembled
+stream; <code>.part-FragN</code> are its raw segments.</p>
+</li>
+</ol>
+<h2 id="download-with-dash-mpd-cli"><a class="header" href="#download-with-dash-mpd-cli">Download with dash-mpd-cli</a></h2>
+<p>As an alternative, dash-mpd-cli, a command-line application for downloading
+media content from a MPEG-DASH manifest file, can save the raw media segments
+and skip keeping the merged output entirely.</p>
+<p><strong>Prerequisite:</strong> <a href="https://emarsden.github.io/dash-mpd-cli/">dash-mpd-cli</a>
+installed.</p>
+<ol>
+<li>
+<p>Start a playback server for the video:</p>
+<pre><code> ypb serve MPokOMJvZ-g
+</code></pre>
+</li>
+<li>
+<p>In another terminal, point <code>dash-mpd-cli</code> at it and save segments to a directory:</p>
+<pre><code> dash-mpd-cli http://localhost:9000/mpd/10s--now --save-fragments output -o /dev/null
+</code></pre>
+<p>Use <code>NUL</code> instead of <code>/dev/null</code> on Windows.</p>
+</li>
+<li>
+<p>Check the output directory. Segments are split into <code>audio</code> and <code>video</code>
+subfolders:</p>
+<pre><code>output
+├── audio
+│   ├── 1974777
+│   └── 1974778
+└── video
+    ├── 1974777
+    └── 1974778
+</code></pre>
+</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../reference/cli.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../tutorials/timelapse.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../changelog.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../reference/cli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -264,11 +282,11 @@ the <code>Accept: application/json</code> header.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../reference/cli.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../tutorials/timelapse.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../changelog.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../reference/cli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
