@@ -1,0 +1,15 @@
+[project]
+name = "ypb-docs"
+version = "0.1.0"
+description = "Documentation build tooling for ypb"
+requires-python = ">=3.9"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "zensical",
+  "markdown-exec[ansi]",
+]
+
+[tool.uv]
+package = false
