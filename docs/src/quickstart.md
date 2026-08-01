@@ -16,7 +16,7 @@ your preferences.
 ### Install from binaries
 
 Ypb requires `yt-dlp` and the [related
-dependencies](guides/install/install.md#requirements). If you already have a
+dependencies](guides/install/install.md). If you already have a
 working `yt-dlp` installation on your computer (ensure it is in your `PATH`),
 the quickest way to start is to download the pre-built binaries.
 
@@ -118,30 +118,30 @@ yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T
 yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f140.m4a (pass -k to keep)
 ```
 
-> [!WARNING]
-> You may see warnings about a missing JavaSript runtime, if you have not
-> installed or enabled it:
->
-> ```shell
-> WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
-> enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
-> your command/config. YouTube extraction without a JS runtime has been
-> deprecated, and some formats may be missing. See
-> https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
-> ```
-> 
-> You may also get HTTP 403 errors (approximately every 30 seconds) during the
-> download:
-> 
-> ```shell
-> time=2026-02-08T11:23:05.127+00:00 level=WARN msg="got transient HTTP error,
-> retrying" status=403 method=GET url=...
-> ```
->
-> While this currently works by retrying and collecting video info again, it is
-> highly recommended to set up the [additional
-> dependencies](guides/install/install.md#additional-dependencies) to help avoid
-> such errors.
+!!! warning
+    You may see warnings about a missing JavaSript runtime, if you have not
+    installed or enabled it:
+
+    ```shell
+    WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
+    enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
+    your command/config. YouTube extraction without a JS runtime has been
+    deprecated, and some formats may be missing. See
+    https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
+    ```
+
+    You may also get HTTP 403 errors (approximately every 30 seconds) during the
+    download:
+
+    ```shell
+    time=2026-02-08T11:23:05.127+00:00 level=WARN msg="got transient HTTP error,
+    retrying" status=403 method=GET url=...
+    ```
+
+    While this currently works by retrying and collecting video info again, it is
+    highly recommended to set up the [additional
+    dependencies](guides/install/install.md) to help avoid
+    such errors.
 
 As you can see, downloading consists of three steps: (1) collecting video
 information, (2) locating start and end moments, and (3) the download itself

@@ -73,7 +73,7 @@ Versioning](https://calver.org).
 - Set MPD@availabilityStartTime to now for dynamic DASH manifests
 ### Changed
 
-- Use yt-dlp's --write-info-json to dump info JSON
+- Use yt-dlp's `--write-info-json` to dump info JSON
 - Change license from MIT to GPLv3
 
 ## [2026.2.24](https://github.com/xymaxim/ypb/releases/tag/v2026.2.24)

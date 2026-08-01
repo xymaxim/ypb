@@ -6,6 +6,9 @@ on:
     paths:
       - 'docs/**'
       - 'CHANGELOG.md'
+      - 'zensical.toml'
+      - 'pyproject.toml'
+      - 'uv.lock'
   pull_request: 
   workflow_dispatch:
 
@@ -15,16 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v2
-        with:
-          mdbook-version: '0.5.2'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
 
-      - name: Add mdBook variables
-        run: cargo install mdbook-variables
-
-      - name: Add mdBook cmdrun
-        run: cargo install --git https://github.com/roberth/mdbook-cmdrun --branch mdbook-0.5
+      - name: Install dependencies
+        run: uv sync
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -36,11 +34,11 @@ jobs:
         run: make build
         
       - name: Build docs
-        run: mdbook build docs
+        run: uv run zensical build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/book
+          publish_dir: ./docs/site

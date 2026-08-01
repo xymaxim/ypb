@@ -2,11 +2,11 @@
 
 Running ypb with containers is the recommended way to get started.
 
-> [!NOTE]
-> This guide uses Podman, but Docker works too. Commands are mostly the
-> same with `docker` in place of `podman`, though some steps (like
-> `podman machine` and `podman artifact`) don't have a direct Docker
-> equivalent.
+!!! note
+    This guide uses Podman, but Docker works too. Commands are mostly the
+    same with `docker` in place of `podman`, though some steps (like
+    `podman machine` and `podman artifact`) don't have a direct Docker
+    equivalent.
 
 The app runs as two containers managed by [Compose](https://compose-spec.io/):
 

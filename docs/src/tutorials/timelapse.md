@@ -38,10 +38,10 @@ alt="Captured frame: --moment &#39;20:00:00+00 - 1d&#39;" />
 <code>--moment '20:00:00+00 - 1d'</code></figcaption>
 </figure>
 
-> [!NOTE]
-> All commands in this tutorial were supposed to run on February
-> 16, 2026. The flag `20:00:00+00 - 1d` subtracts one day from the given time,
-> so it means yesterday at 20:00 UTC.
+!!! note
+    All commands in this tutorial were supposed to run on February
+    16, 2026. The flag `20:00:00+00 - 1d` subtracts one day from the given time,
+    so it means yesterday at 20:00 UTC.
 
 Notice that the in-video timestamp is about 3 seconds earlier than the
 moment we requested. This is a live stream delay. To get a frame where
@@ -92,10 +92,10 @@ alt="All frames: 2026-02-15 19:30:00 UTC–2026-02-16 07:30:00 UTC, every 30 min
 UTC–2026-02-16 07:30:00 UTC, every 30 min</figcaption>
 </figure>
 
-> [!TIP]
-> The contact sheet above was created with ImageMagick:
->
->     montage *.png -tile 5x5 -mode concatenate grid.jpg
+!!! tip
+    The contact sheet above was created with ImageMagick:
+
+        montage *.png -tile 5x5 -mode concatenate grid.jpg
 
 It was a clear, moonless night with active aurora. The bright flashes
 are cleary visible, but it would be more interesting to get more detailed
@@ -209,10 +209,10 @@ The key options:
 - `-pattern_type glob -i "*.png"` — match all PNG files in the current directory
 - `-c:v libsvtav1` — encode using the SVT-AV1 codec
 
-> [!NOTE]
-> On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:
->
->     -i Live-Aurora-..._e5s_%04d.png
+!!! note
+    On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:
+
+        -i Live-Aurora-..._e5s_%04d.png
 
 We used the [SVT-AV1 encoder](https://trac.ffmpeg.org/wiki/Encode/AV1)
 here for its excellent balance of compression and speed, but any encoder

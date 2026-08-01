@@ -27,15 +27,15 @@ is provided.
 #### Parameters
 
 interval
-: The rewind interval to retrieve.
+:   The rewind interval to retrieve.
 
-  > [!NOTE]
-  > See [Specifying the rewind interval](cli.md#specifying-the-rewind-interval)
-  > for all available interval format options. When using absolute timestamps,
-  > prefer the `Z` suffix for UTC (e.g., `2026-01-02T10:20:30Z`) over `+00:00`,
-  > since `+` must be percent-encoded as `%2B`. In general, ensure the path
-  > parameter is properly URL-encoded: use `--` as the interval separator
-  > instead of `/` and avoid unencoded whitespace.
+    !!! note
+        See [Specifying the rewind interval](cli.md#specifying-the-rewind-interval)
+        for all available interval format options. When using absolute timestamps,
+        prefer the `Z` suffix for UTC (e.g., `2026-01-02T10:20:30Z`) over `+00:00`,
+        since `+` must be percent-encoded as `%2B`. In general, ensure the path
+        parameter is properly URL-encoded: use `--` as the interval separator
+        instead of `/` and avoid unencoded whitespace.
 
 #### Usage examples
 

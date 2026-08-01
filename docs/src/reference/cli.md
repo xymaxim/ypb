@@ -1,39 +1,39 @@
 # Command Line Interface
 
-```shell
-<!-- cmdrun ../../../ypb --help -->
+```console exec="1" source="console"
+$ ./ypb --help
 ```
 
 ## Commands 
 
 ### capture
 
-```shell
-<!-- cmdrun ../../../ypb capture --help -->
+```console exec="1" source="console"
+$ ./ypb capture --help
 ```
 
 #### frame
 
-```shell
-<!-- cmdrun ../../../ypb capture frame --help -->
+```console exec="1" source="console"
+$ ./ypb capture frame --help
 ```
 
 #### timelapse
 
-``` shell
-<!-- cmdrun ../../../ypb capture timelapse --help -->
+```console exec="1" source="console"
+$ ./ypb capture timelapse --help
 ```
 
 ### download 
 
-```shell
-<!-- cmdrun ../../../ypb download --help -->
+```console exec="1" source="console"
+$ ./ypb download --help
 ```
 
 ### serve
 
-```shell
-<!-- cmdrun ../../../ypb serve --help -->
+```console exec="1" source="console"
+$ ./ypb serve --help
 ```
 
 ## Specifying the rewind interval
@@ -287,8 +287,8 @@ from a file:
 
     ypb download -i <interval> <stream> -- --cookies file.txt
 
-> [!NOTE]
-> Options can also be set via a [yt-dlp configuration file](https://github.com/yt-dlp/yt-dlp#configuration) as usual.
+!!! note
+    Options can also be set via a [yt-dlp configuration file](https://github.com/yt-dlp/yt-dlp#configuration) as usual.
 
 For a complete list of available options, see the [yt-dlp
 documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).

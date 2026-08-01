@@ -23,7 +23,7 @@ etc.), use one of the two methods below.
      the final audio and video merge fails while fragment download and assembly
      (which don't need ffmpeg) still succeed.
 
-   If you only need one stream, select it directly and drop --ffmpeg-location:
+   If you only need one stream, select it directly and drop `--ffmpeg-location`:
    
         ypb download --interval 10s/now Mm_zVDDUeNA-g -- --keep-fragments -f bestvideo
 

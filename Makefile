@@ -31,4 +31,4 @@ snapshot:
 
 .PHONY: docs
 docs:
-	mdbook build docs
+	uv run zensical build
