@@ -1,0 +1,1403 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://xymaxim.github.io/ypb/tutorials/timelapse/">
+      
+      
+        <link rel="prev" href="../../guides/install/container/">
+      
+      
+        <link rel="next" href="../../guides/download-segments/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.52">
+    
+    
+      
+        <title>Create a time-lapse video - Ypb documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.8b3b5a67.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#create-a-time-lapse-video" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ypb documentation" class="md-header__button md-logo" aria-label="Ypb documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ypb documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Create a time-lapse video
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ypb documentation" class="md-nav__button md-logo" aria-label="Ypb documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    Ypb documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Ypb &mdash; A playback for YouTube live streams
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Getting started
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Getting started
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started with ypb
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Installation
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Installation
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/install/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Install
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/install/binaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Pre-built binaries
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/install/container/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Container (Compose)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Tutorials
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Tutorials
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Create a time-lapse video
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Create a time-lapse video
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Prerequisites
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-capture-the-first-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1. Capture the first frame
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-capture-all-night" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2. Capture all night
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-plan-the-final-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Plan the final capture
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-capture-the-final-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 4. Capture the final frames
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-assemble-the-video" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 5. Assemble the video
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Useful links
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  How-to guides
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  How-to guides
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/download-segments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Download raw media segments
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reference
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Appendix
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Appendix
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/cookbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Cookbook
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/questions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Anticipated questions
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  About
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  About
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Support
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Prerequisites
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-capture-the-first-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1. Capture the first frame
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-capture-all-night" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2. Capture all night
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-plan-the-final-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Plan the final capture
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-capture-the-final-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 4. Capture the final frames
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-assemble-the-video" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 5. Assemble the video
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Useful links
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="create-a-time-lapse-video">Create a time-lapse video<a class="headerlink" href="#create-a-time-lapse-video" title="Permanent link">&para;</a></h1>
+<p>In this tutorial, you will capture frames from a YouTube live stream and
+assemble them into a short time-lapse video. We’ll work through the full process
+from a single frame to a finished video using a <a href="https://www.youtube.com/live/0ujj4HexRpk/">live
+stream</a> from <a href="https://aurorareykjavik.is/">Aurora Reykjavik – The
+Northern Lights Center</a> as an example. Throughout,
+we’ll use the <a href="../../reference/cli/#capture">ypb capture</a> subcommands, which
+extract frames with per-second precision (unlike <a href="../../reference/cli/#download">ypb
+download</a>, which operates at the segment level).</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>Before you begin, make sure you have:</p>
+<ol>
+<li><code>ypb</code> <a href="../../guides/install/install/">installed</a> (from pre-built binaries or a container)</li>
+<li><code>ffmpeg</code> installed (required by <code>ypb</code>)</li>
+</ol>
+<h2 id="step-1-capture-the-first-frame">Step 1. Capture the first frame<a class="headerlink" href="#step-1-capture-the-first-frame" title="Permanent link">&para;</a></h2>
+<p>Let’s start with a single frame to confirm everything is working correctly using
+the <a href="../../reference/cli/#frame">capture frame</a> subcommand:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>capture<span class="w"> </span>frame<span class="w"> </span>--moment<span class="w"> </span><span class="s1">&#39;20:00:00+00 - 1d&#39;</span><span class="w"> </span>0ujj4HexRpk
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Collecting<span class="w"> </span>info<span class="w"> </span>about<span class="w"> </span>https://www.youtube.com/live/0ujj4HexRpk...
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Stream<span class="w"> </span><span class="s1">&#39;Live Aurora stream from The Golden Circle in Iceland&#39;</span><span class="w"> </span>is<span class="w"> </span>alive!
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Locating<span class="w"> </span>and<span class="w"> </span>capturing<span class="w"> </span>the<span class="w"> </span>moment...
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Frame<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>captured:<span class="w"> </span>Sun,<span class="w"> </span><span class="m">15</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">20</span>:00:00<span class="w"> </span>+0000,<span class="w"> </span><span class="nv">sq</span><span class="o">=</span><span class="m">38945</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Success!<span class="w"> </span>Saved<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png&#39;</span>
+</span></code></pre></div>
+<figure>
+<img
+src="../timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200000+00.png"
+alt="Captured frame: --moment &#39;20:00:00+00 - 1d&#39;" />
+<figcaption aria-hidden="true">Captured frame:
+<code>--moment '20:00:00+00 - 1d'</code></figcaption>
+</figure>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All commands in this tutorial were supposed to run on February
+16, 2026. The flag <code>20:00:00+00 - 1d</code> subtracts one day from the given time,
+so it means yesterday at 20:00 UTC.</p>
+</div>
+<p>Notice that the in-video timestamp is about 3 seconds earlier than the
+moment we requested. This is a live stream delay. To get a frame where
+the on-screen clock reads exactly 20:00:00, we need to shift the
+requested moment forward by that amount:</p>
+<div class="language-text highlight"><pre><span></span><code>ypb capture frame --moment &#39;20:00:03+00 - 1d&#39; 0ujj4HexRpk
+</code></pre></div>
+<figure>
+<img
+src="../timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T200003+00.png"
+alt="Captured frame (shifted): --moment '20:00:03+00 - 1d'" />
+<figcaption aria-hidden="true">Captured frame (shifted):
+<code>--moment '20:00:03+00 - 1d'</code></figcaption>
+</figure>
+
+<p>Now the timestamp matches our request. We’ll apply this 3-second offset
+to all subsequent commands.</p>
+<h2 id="step-2-capture-all-night">Step 2. Capture all night<a class="headerlink" href="#step-2-capture-all-night" title="Permanent link">&para;</a></h2>
+<p>Nautical twilight in Reykjavík ran from 19:49 to 07:35 on February 15.  Let’s
+capture it using the <a href="../../reference/cli/#timelapse">capture timeline</a>
+subcommand with 30-minute intervals to get a quick overview of potential aurora
+activity. The <code>-e/--every</code> flag sets the interval between frames:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>capture<span class="w"> </span>timelapse<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;19:30:03+00 - 1d/07:30:03+00&#39;</span><span class="w"> </span>-e<span class="w"> </span>30m<span class="w"> </span>0ujj4HexRpk
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Collecting<span class="w"> </span>info<span class="w"> </span>about<span class="w"> </span>https://www.youtube.com/live/0ujj4HexRpk...
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Stream<span class="w"> </span><span class="s1">&#39;Live Aurora stream from The Golden Circle in Iceland&#39;</span><span class="w"> </span>is<span class="w"> </span>alive!
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Locating<span class="w"> </span>start<span class="w"> </span>and<span class="w"> </span>end<span class="w"> </span>moments...<span class="w"> </span><span class="k">done</span>.
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Will<span class="w"> </span>capture<span class="w"> </span><span class="m">25</span><span class="w"> </span>frames<span class="w"> </span>at<span class="w"> </span>30m<span class="w"> </span>intervals:
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">   </span>Frame<span class="w"> </span><span class="m">0</span>:<span class="w"> </span>Sun,<span class="w"> </span><span class="m">15</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">19</span>:30:03<span class="w"> </span>+0000
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">   </span>Frame<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>Sun,<span class="w"> </span><span class="m">15</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">20</span>:00:03<span class="w"> </span>+0000
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">                          </span>...
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span>Frame<span class="w"> </span><span class="m">22</span>:<span class="w"> </span>Mon,<span class="w"> </span><span class="m">16</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">07</span>:30:03<span class="w"> </span>+0000
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Capturing<span class="w"> </span>frames<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m&#39;</span>...
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">   </span><span class="m">0</span>%<span class="w"> </span><span class="p">|</span><span class="w">                                                </span><span class="p">|</span><span class="w"> </span><span class="o">(</span><span class="m">0</span>/23,<span class="w"> </span><span class="m">0</span><span class="w"> </span>it/hr<span class="o">)</span><span class="w"> </span><span class="o">[</span>0s:0s<span class="o">]</span>
+</span></code></pre></div>
+<figure>
+<img
+src="../timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T193003+00_e30m_grid.jpg"
+alt="All frames: 2026-02-15 19:30:00 UTC–2026-02-16 07:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">All frames: 2026-02-15 19:30:00
+UTC–2026-02-16 07:30:00 UTC, every 30 min</figcaption>
+</figure>
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The contact sheet above was created with ImageMagick:</p>
+<div class="language-text highlight"><pre><span></span><code>montage *.png -tile 5x5 -mode concatenate grid.jpg
+</code></pre></div>
+</div>
+<p>It was a clear, moonless night with active aurora. The bright flashes
+are cleary visible, but it would be more interesting to get more detailed
+frames. One of the brightest activities appears to be around 22:30 to
+00:30:</p>
+<figure>
+<img
+src="../timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e30m_grid.jpg"
+alt="Selected moment: 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 30 min" />
+<figcaption aria-hidden="true">Selected moment: 2026-02-15 22:30:00
+UTC–2026-02-16 00:30:00 UTC, every 30 min</figcaption>
+</figure>
+
+<p>Let’s capture this fragment at finer intervals of 5 minutes to see the
+aurora’s movement in more detail:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ypb<span class="w"> </span>capture<span class="w"> </span>timelapse<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;22:30:03+00 - 1d/00:30:03+00&#39;</span><span class="w"> </span>-e<span class="w"> </span>5m<span class="w"> </span>0ujj4HexRpk
+</span></code></pre></div>
+<figure>
+<img
+src="../timelapse-files/Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T223003+00_e5m_grid.jpg"
+alt="Selected moment (detailed): 2026-02-15 22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min" />
+<figcaption aria-hidden="true">Selected moment (detailed): 2026-02-15
+22:30:00 UTC–2026-02-16 00:30:00 UTC, every 5 min</figcaption>
+</figure>
+
+<p>Beautiful! This is the fragment we’ll use for the final video.</p>
+<h2 id="step-3-plan-the-final-capture">Step 3: Plan the final capture<a class="headerlink" href="#step-3-plan-the-final-capture" title="Permanent link">&para;</a></h2>
+<p>Before capturing hundreds of frames, calculate the output video length.</p>
+<p>We want to cover 50 minutes of footage (3,000 seconds) and play the
+result back at 24 fps. With a 5-second capture interval:</p>
+<ol>
+<li><strong>Total frames</strong>: 3,000 s / 5 s = 601 frames</li>
+<li><strong>Output video length</strong>: 601 frames / 24 fps = 25 s</li>
+</ol>
+<p>25 seconds is a reasonable length for a time-lapse. If you want a longer
+or shorter video, adjust the interval or the playback rate accordingly.</p>
+<h2 id="step-4-capture-the-final-frames">Step 4. Capture the final frames<a class="headerlink" href="#step-4-capture-the-final-frames" title="Permanent link">&para;</a></h2>
+<p>Now run the full capture over the 50-minute fragment at 5-second
+intervals:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>capture<span class="w"> </span>timelapse<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;22:50:03+00 - 1d/23:40:03+00&#39;</span><span class="w"> </span>-e<span class="w"> </span>5s<span class="w"> </span>0ujj4HexRpk
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>tree<span class="w"> </span>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>├──<span class="w"> </span>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0000.png
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>├──<span class="w"> </span>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0001.png
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>├──<span class="w"> </span>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0002.png
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span>...
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>└──<span class="w"> </span>Live-Aurora-stream-from-The_0ujj4HexRpk_20260215T225003+00_e5s_0600.png
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="m">1</span><span class="w"> </span>directory,<span class="w"> </span><span class="m">601</span><span class="w"> </span>files
+</span></code></pre></div>
+<h2 id="step-5-assemble-the-video">Step 5. Assemble the video<a class="headerlink" href="#step-5-assemble-the-video" title="Permanent link">&para;</a></h2>
+<p>With all frames captured, use <code>ffmpeg</code> to convert the frames into a
+video:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>ffmpeg<span class="w"> </span>-r<span class="w"> </span><span class="m">24</span><span class="w"> </span>-i<span class="w"> </span>pattern_type<span class="w"> </span>glob<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;*.png&quot;</span><span class="w"> </span>-c:v<span class="w"> </span>libsvtav1<span class="w"> </span>-y<span class="w"> </span>output.mp4
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Input<span class="w"> </span><span class="c1">#0, image2, from &#39;*.png&#39;:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>Duration:<span class="w"> </span><span class="m">00</span>:00:25.04,<span class="w"> </span>start:<span class="w"> </span><span class="m">0</span>.000000,<span class="w"> </span>bitrate:<span class="w"> </span>N/A
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>Stream<span class="w"> </span><span class="c1">#0:0: Video: png, rgb24(pc, gbr/unknown/unknown), 640x360, 24 fps, 24 tbr, 24 tbn</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Stream<span class="w"> </span>mapping:
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>Stream<span class="w"> </span><span class="c1">#0:0 -&gt; #0:0 (png (native) -&gt; av1 (libsvtav1))</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Press<span class="w"> </span><span class="o">[</span>q<span class="o">]</span><span class="w"> </span>to<span class="w"> </span>stop,<span class="w"> </span><span class="o">[</span>?<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">help</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>-------------------------------------------
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>version<span class="o">]</span>:<span class="w">       </span>SVT-AV1<span class="w"> </span>Encoder<span class="w"> </span>Lib<span class="w"> </span>v3.1.2
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>build<span class="o">]</span><span class="w">  </span>:<span class="w">       </span>GCC<span class="w"> </span><span class="m">15</span>.2.1<span class="w"> </span><span class="m">20250924</span><span class="w"> </span><span class="o">(</span>Red<span class="w"> </span>Hat<span class="w"> </span><span class="m">15</span>.2.1-2<span class="o">)</span><span class="w">   </span><span class="m">64</span><span class="w"> </span>bit
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>-------------------------------------------
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>Level<span class="w"> </span>of<span class="w"> </span>Parallelism:<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>Number<span class="w"> </span>of<span class="w"> </span>PPCS<span class="w"> </span><span class="m">107</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span><span class="o">[</span>asm<span class="w"> </span>level<span class="w"> </span>on<span class="w"> </span>system<span class="w"> </span>:<span class="w"> </span>up<span class="w"> </span>to<span class="w"> </span>sse4_1<span class="o">]</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span><span class="o">[</span>asm<span class="w"> </span>level<span class="w"> </span>selected<span class="w"> </span>:<span class="w"> </span>up<span class="w"> </span>to<span class="w"> </span>sse4_1<span class="o">]</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>-------------------------------------------
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>main<span class="w"> </span>profile<span class="w">   </span>tier<span class="w"> </span><span class="o">(</span>auto<span class="o">)</span><span class="w">     </span>level<span class="w"> </span><span class="o">(</span>auto<span class="o">)</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>width<span class="w"> </span>/<span class="w"> </span>height<span class="w"> </span>/<span class="w"> </span>fps<span class="w"> </span>numerator<span class="w"> </span>/<span class="w"> </span>fps<span class="w"> </span>denominator<span class="w">               </span>:<span class="w"> </span><span class="m">640</span><span class="w"> </span>/<span class="w"> </span><span class="m">360</span><span class="w"> </span>/<span class="w"> </span><span class="m">24</span><span class="w"> </span>/<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>bit-depth<span class="w"> </span>/<span class="w"> </span>color<span class="w"> </span>format<span class="w">                                       </span>:<span class="w"> </span><span class="m">8</span><span class="w"> </span>/<span class="w"> </span>YUV420
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>preset<span class="w"> </span>/<span class="w"> </span>tune<span class="w"> </span>/<span class="w"> </span>pred<span class="w"> </span>struct<span class="w">                                    </span>:<span class="w"> </span><span class="m">8</span><span class="w"> </span>/<span class="w"> </span>PSNR<span class="w"> </span>/<span class="w"> </span>random<span class="w"> </span>access
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>gop<span class="w"> </span>size<span class="w"> </span>/<span class="w"> </span>mini-gop<span class="w"> </span>size<span class="w"> </span>/<span class="w"> </span>key-frame<span class="w"> </span><span class="nb">type</span><span class="w">                      </span>:<span class="w"> </span><span class="m">161</span><span class="w"> </span>/<span class="w"> </span><span class="m">32</span><span class="w"> </span>/<span class="w"> </span>key<span class="w"> </span>frame
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>BRC<span class="w"> </span>mode<span class="w"> </span>/<span class="w"> </span>rate<span class="w"> </span>factor<span class="w">                                         </span>:<span class="w"> </span>CRF<span class="w"> </span>/<span class="w"> </span><span class="m">35</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>AQ<span class="w"> </span>mode<span class="w"> </span>/<span class="w"> </span>Variance<span class="w"> </span>Boost<span class="w">                                       </span>:<span class="w"> </span><span class="m">2</span><span class="w"> </span>/<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>SVT<span class="w"> </span><span class="o">[</span>config<span class="o">]</span>:<span class="w"> </span>sharpness<span class="w"> </span>/<span class="w"> </span>luminance-based<span class="w"> </span>QP<span class="w"> </span>bias<span class="w">                            </span>:<span class="w"> </span><span class="m">0</span><span class="w"> </span>/<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>Svt<span class="o">[</span>info<span class="o">]</span>:<span class="w"> </span>-------------------------------------------
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>Output<span class="w"> </span><span class="c1">#0, mp4, to &#39;output.mp4&#39;:</span>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">  </span>Metadata:
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">    </span>encoder<span class="w">         </span>:<span class="w"> </span>Lavf61.7.100
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">  </span>Stream<span class="w"> </span><span class="c1">#0:0: Video: av1 (av01 / 0x31307661), yuv420p(tv, progressive), 640x360, q=2-31, 24 fps, 12288 tbn</span>
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">      </span>Metadata:
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">        </span>encoder<span class="w">         </span>:<span class="w"> </span>Lavc61.19.101<span class="w"> </span>libsvtav1
+</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="o">[</span>out#0/mp4<span class="w"> </span>@<span class="w"> </span>0x56502bfa4380<span class="o">]</span><span class="w"> </span>video:500KiB<span class="w"> </span>audio:0KiB<span class="w"> </span>subtitle:0KiB<span class="w"> </span>other<span class="w"> </span>streams:0KiB<span class="w"> </span>global<span class="w"> </span>headers:0KiB<span class="w"> </span>muxing<span class="w"> </span>overhead:<span class="w"> </span><span class="m">0</span>.517067%
+</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="nv">frame</span><span class="o">=</span><span class="w">  </span><span class="m">601</span><span class="w"> </span><span class="nv">fps</span><span class="o">=</span><span class="w"> </span><span class="m">67</span><span class="w"> </span><span class="nv">q</span><span class="o">=</span><span class="m">35</span>.0<span class="w"> </span><span class="nv">Lsize</span><span class="o">=</span><span class="w">     </span>503KiB<span class="w"> </span><span class="nv">time</span><span class="o">=</span><span class="m">00</span>:00:25.00<span class="w"> </span><span class="nv">bitrate</span><span class="o">=</span><span class="w"> </span><span class="m">164</span>.8kbits/s<span class="w"> </span><span class="nv">speed</span><span class="o">=</span><span class="m">2</span>.77x
+</span></code></pre></div>
+<p>Here is the output video: <a href="https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg">https://video.liberta.vip/w/6egVMr9pLwwGi32o3tg6Gg</a></p>
+<iframe title="Aurores en accéléré à Reykjavik le 15 février" width="560" height="315" src="https://video.liberta.vip/videos/embed/6egVMr9pLwwGi32o3tg6Gg" allow="fullscreen" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="border: 0px;"></iframe>
+
+<p>The key options:</p>
+<ul>
+<li><code>-r 24</code> — set output frame rate (frames per second) to 24 fps</li>
+<li><code>-pattern_type glob -i "*.png"</code> — match all PNG files in the current directory</li>
+<li><code>-c:v libsvtav1</code> — encode using the SVT-AV1 codec</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On Windows, glob patterns are not supported. Use the explicit numeric pattern instead:</p>
+<div class="language-text highlight"><pre><span></span><code>-i Live-Aurora-..._e5s_%04d.png
+</code></pre></div>
+</div>
+<p>We used the <a href="https://trac.ffmpeg.org/wiki/Encode/AV1">SVT-AV1 encoder</a>
+here for its excellent balance of compression and speed, but any encoder
+will work. To see what’s available on your machine:</p>
+<div class="language-text highlight"><pre><span></span><code>ffmpeg -hide_banner -encoders
+</code></pre></div>
+<h2 id="useful-links">Useful links<a class="headerlink" href="#useful-links" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="https://en.vedur.is/weather/forecasts/aurora/">https://en.vedur.is/weather/forecasts/aurora/</a> — Aurora forecast from the Icelandic Met Office</li>
+<li><a href="https://aurorareykjavik.is/aurora-forecast/">https://aurorareykjavik.is/aurora-forecast/</a> — Aurora forecast on Aurora Reykjavik</li>
+<li><a href="https://www.youtube.com/@aurorareykjavik/">https://www.youtube.com/@aurorareykjavik/</a> — Aurora Reykjavik on YouTube</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ed145cee.min.js"></script>
+      
+    
+  </body>
+</html>

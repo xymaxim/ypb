@@ -1,0 +1,1560 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://xymaxim.github.io/ypb/quickstart/">
+      
+      
+        <link rel="prev" href="./..">
+      
+      
+        <link rel="next" href="../guides/install/install/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.52">
+    
+    
+      
+        <title>Get started with ypb - Ypb documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.8b3b5a67.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#get-started-with-ypb" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="Ypb documentation" class="md-header__button md-logo" aria-label="Ypb documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ypb documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Get started with ypb
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="Ypb documentation" class="md-nav__button md-logo" aria-label="Ypb documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    Ypb documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Ypb &mdash; A playback for YouTube live streams
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Getting started
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Getting started
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started with ypb
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started with ypb
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Installation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-from-binaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Install from binaries
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-in-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Try in a container
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Download excerpts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Download excerpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specify-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specify formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-start-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specify start and end
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serve-and-play-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Serve and play excerpts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serve and play excerpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-a-playback-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Start a playback server
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#send-rewind-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Send rewind requests
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-stream-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Play stream excerpts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Download media
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Installation
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Installation
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/install/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Install
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/install/binaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Pre-built binaries
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/install/container/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Container (Compose)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Tutorials
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Tutorials
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/timelapse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Create a time-lapse video
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  How-to guides
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  How-to guides
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/download-segments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Download raw media segments
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reference
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Appendix
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Appendix
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix/cookbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Cookbook
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix/questions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Anticipated questions
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  About
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  About
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Support
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Installation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-from-binaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Install from binaries
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-in-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Try in a container
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Download excerpts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Download excerpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specify-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specify formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-start-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specify start and end
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serve-and-play-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Serve and play excerpts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serve and play excerpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-a-playback-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Start a playback server
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#send-rewind-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Send rewind requests
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-stream-excerpts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Play stream excerpts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Download media
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="get-started-with-ypb">Get started with ypb<a class="headerlink" href="#get-started-with-ypb" title="Permanent link">&para;</a></h1>
+<p>This tutorial shows how to install <code>ypb</code> and demonstrates its main usage
+scenarios.</p>
+<p>You will explore two running modes: download and serve. We will download a live
+stream excerpt, explaining the main command options. Next, we will see how to
+play past moments without downloading.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>There are two ways to get <code>ypb</code> running: install from pre-built binaries or run in
+a container. The choice depends on what&rsquo;s already installed on your system and
+your preferences.</p>
+<h3 id="install-from-binaries">Install from binaries<a class="headerlink" href="#install-from-binaries" title="Permanent link">&para;</a></h3>
+<p>Ypb requires <code>yt-dlp</code> and the <a href="../guides/install/install/">related
+dependencies</a>. If you already have a
+working <code>yt-dlp</code> installation on your computer (ensure it is in your <code>PATH</code>),
+the quickest way to start is to download the pre-built binaries.</p>
+<p>Use the links from the <a href="https://github.com/xymaxim/ypb/releases/latest">latest
+release</a> below for your platform
+and architecture:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Linux</th>
+<th>macOS</th>
+<th>Windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMD64</td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-linux-amd64.zip">ypb-linux-amd64.zip</a></td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-darwin-amd64.zip">ypb-darwin-amd64.zip</a></td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-windows-amd64.zip">ypb-windows-amd64.zip</a></td>
+</tr>
+<tr>
+<td>ARM64</td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-linux-arm64.zip">ypb-linux-arm64.zip</a></td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-darwin-arm64.zip">ypb-darwin-arm64.zip</a></td>
+<td><a href="https://github.com/xymaxim/ypb/releases/download/v2026.7.27/ypb-v2026.7.27-windows-arm64.zip">ypb-windows-arm64.zip</a></td>
+</tr>
+</tbody>
+</table>
+<p>Download and unzip a file to your working directory.</p>
+<p>Verify the version with the following command:</p>
+<p><strong>Linux/macOS</strong></p>
+<div class="language-text highlight"><pre><span></span><code>chmod +x ypb &amp;&amp; ./ypb version
+</code></pre></div>
+<p><strong>Windows</strong></p>
+<p>(Type <code>ypb.exe</code> instead of <code>ypb</code>; no installation needed.)</p>
+<div class="language-text highlight"><pre><span></span><code>.\ypb.exe version
+</code></pre></div>
+<blockquote>
+<p>See <a href="../guides/install/binaries/">Pre-built binaries</a> for more details.</p>
+</blockquote>
+<h3 id="try-in-a-container">Try in a container<a class="headerlink" href="#try-in-a-container" title="Permanent link">&para;</a></h3>
+<p>Running in a container allows you to try <code>ypb</code> in an isolated environment with all required dependencies pre-installed.</p>
+<p><strong>Prerequisites:</strong> <a href="https://podman.io/getting-started/installation">Podman</a> or <a href="https://docs.docker.com/get-docker/">Docker</a>, with Compose</p>
+<p><strong>macOS/Windows only, Podman:</strong> Initialize the Podman machine (one-time setup):</p>
+<div class="language-text highlight"><pre><span></span><code>podman machine init &amp;&amp; podman machine start
+</code></pre></div>
+<p>Pull the compose file and extract it to a local directory:</p>
+<div class="language-text highlight"><pre><span></span><code>podman artifact pull ghcr.io/xymaxim/ypb-compose
+podman artifact extract ghcr.io/xymaxim/ypb-compose ~/ypb-app
+cd ~/ypb-app
+</code></pre></div>
+<p>Verify the version:</p>
+<div class="language-text highlight"><pre><span></span><code>podman compose run --rm ypb version
+</code></pre></div>
+<blockquote>
+<p>See <a href="../guides/install/container/">Container</a> for configuration options and more details.</p>
+</blockquote>
+<h2 id="download-excerpts">Download excerpts<a class="headerlink" href="#download-excerpts" title="Permanent link">&para;</a></h2>
+<p>Let’s start by downloading a small excerpt from a live stream.</p>
+<p>If you are not sure what to watch, the <a href="https://www.allaboutbirds.org/cams/">Cornell Lab Bird
+Cams</a> project provides access to beatiful
+bird cam streams across the world. As an example, let&rsquo;s watch at the <a href="https://www.allaboutbirds.org/cams/royal-albatross/">Northern
+Royal Albatross nesting</a> at
+Taiaroa Head, New Zealand.</p>
+<p>To get the last one-minute excerpt from the <a href="https://www.youtube.com/live/Mm_zVDDUeNA">YouTube
+stream</a>, run this command by providing
+the rewind interval (<code>-i/--interval</code>) and YouTube video ID (required
+argument):</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>--interval<span class="w"> </span>1m/now<span class="w"> </span>Mm_zVDDUeNA
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Collecting<span class="w"> </span>info<span class="w"> </span>about<span class="w"> </span>https://www.youtube.com/live/Mm_zVDDUeNA...
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>WARNING:<span class="w"> </span><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>No<span class="w"> </span>supported<span class="w"> </span>JavaScript<span class="w"> </span>runtime<span class="w"> </span>could<span class="w"> </span>be<span class="w"> </span>found.<span class="w"> </span>Only<span class="w"> </span>deno<span class="w"> </span>is
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>enabled<span class="w"> </span>by<span class="w"> </span>default<span class="p">;</span><span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span>another<span class="w"> </span>runtime<span class="w"> </span>add<span class="w"> </span>--js-runtimes<span class="w"> </span>RUNTIME<span class="o">[</span>:PATH<span class="o">]</span><span class="w"> </span>to
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>your<span class="w"> </span>command/config.<span class="w"> </span>YouTube<span class="w"> </span>extraction<span class="w"> </span>without<span class="w"> </span>a<span class="w"> </span>JS<span class="w"> </span>runtime<span class="w"> </span>has<span class="w"> </span>been
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>deprecated,<span class="w"> </span>and<span class="w"> </span>some<span class="w"> </span>formats<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>missing.<span class="w"> </span>See
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>https://github.com/yt-dlp/yt-dlp/wiki/EJS<span class="w"> </span><span class="k">for</span><span class="w"> </span>details<span class="w"> </span>on<span class="w"> </span>installing<span class="w"> </span>one
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Stream<span class="w"> </span><span class="s1">&#39;Live &amp; Just Hatched! Royal Albatross Cam - NZ Dept. of Conservation | Cornell Lab&#39;</span><span class="w"> </span>is<span class="w"> </span>alive!
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Locating<span class="w"> </span>start<span class="w"> </span>and<span class="w"> </span>end<span class="w"> </span>moments...
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>Actual<span class="w"> </span>start:<span class="w"> </span>Sun,<span class="w"> </span><span class="m">08</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">11</span>:22:50<span class="w"> </span>+0000<span class="w"> </span><span class="o">(</span>-2s<span class="o">)</span>,<span class="w"> </span><span class="nv">sq</span><span class="o">=</span><span class="m">1647523</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span>Actual<span class="w"> </span>end:<span class="w"> </span>Sun,<span class="w"> </span><span class="m">08</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">2026</span><span class="w"> </span><span class="m">11</span>:23:55<span class="w"> </span>+0000,<span class="w"> </span><span class="nv">sq</span><span class="o">=</span><span class="m">1647535</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Downloading<span class="w"> </span>and<span class="w"> </span>merging<span class="w"> </span>media...
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>generic<span class="o">]</span><span class="w"> </span>Extracting<span class="w"> </span>URL:<span class="w"> </span>http://localhost:9000/mpd
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>generic<span class="o">]</span><span class="w"> </span>mpd:<span class="w"> </span>Downloading<span class="w"> </span>webpage
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>yt-dlp:<span class="w"> </span>WARNING:<span class="w"> </span><span class="o">[</span>generic<span class="o">]</span><span class="w"> </span>Falling<span class="w"> </span>back<span class="w"> </span>on<span class="w"> </span>generic<span class="w"> </span>information<span class="w"> </span>extractor
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>generic<span class="o">]</span><span class="w"> </span>mpd:<span class="w"> </span>Extracting<span class="w"> </span>information
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>info<span class="o">]</span><span class="w"> </span>mpd:<span class="w"> </span>Downloading<span class="w"> </span><span class="m">1</span><span class="w"> </span>format<span class="o">(</span>s<span class="o">)</span>:<span class="w"> </span><span class="m">137</span>+140
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>dashsegments<span class="o">]</span><span class="w"> </span>Total<span class="w"> </span>fragments:<span class="w"> </span><span class="m">13</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>download<span class="o">]</span><span class="w"> </span>Destination:<span class="w"> </span>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>download<span class="o">]</span><span class="w"> </span><span class="m">100</span>.0%<span class="w"> </span>of<span class="w"> </span>~<span class="w">   </span><span class="m">1</span>.00KiB<span class="w"> </span>at<span class="w">      </span><span class="m">0</span>.00B/s<span class="w"> </span>ETA<span class="w"> </span>Unknown<span class="w"> </span><span class="o">(</span>frag<span class="w"> </span><span class="m">0</span>/13<span class="o">)</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>...
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>yt-dlp:<span class="w"> </span><span class="o">[</span>Merger<span class="o">]</span><span class="w"> </span>Merging<span class="w"> </span>formats<span class="w"> </span>into<span class="w"> </span><span class="s2">&quot;Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4&quot;</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>yt-dlp:<span class="w"> </span>Deleting<span class="w"> </span>original<span class="w"> </span>file<span class="w"> </span>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4<span class="w"> </span><span class="o">(</span>pass<span class="w"> </span>-k<span class="w"> </span>to<span class="w"> </span>keep<span class="o">)</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>yt-dlp:<span class="w"> </span>Deleting<span class="w"> </span>original<span class="w"> </span>file<span class="w"> </span>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f140.m4a<span class="w"> </span><span class="o">(</span>pass<span class="w"> </span>-k<span class="w"> </span>to<span class="w"> </span>keep<span class="o">)</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You may see warnings about a missing JavaSript runtime, if you have not
+installed or enabled it:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>WARNING:<span class="w"> </span><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>No<span class="w"> </span>supported<span class="w"> </span>JavaScript<span class="w"> </span>runtime<span class="w"> </span>could<span class="w"> </span>be<span class="w"> </span>found.<span class="w"> </span>Only<span class="w"> </span>deno<span class="w"> </span>is
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>enabled<span class="w"> </span>by<span class="w"> </span>default<span class="p">;</span><span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span>another<span class="w"> </span>runtime<span class="w"> </span>add<span class="w"> </span>--js-runtimes<span class="w"> </span>RUNTIME<span class="o">[</span>:PATH<span class="o">]</span><span class="w"> </span>to
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>your<span class="w"> </span>command/config.<span class="w"> </span>YouTube<span class="w"> </span>extraction<span class="w"> </span>without<span class="w"> </span>a<span class="w"> </span>JS<span class="w"> </span>runtime<span class="w"> </span>has<span class="w"> </span>been
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>deprecated,<span class="w"> </span>and<span class="w"> </span>some<span class="w"> </span>formats<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>missing.<span class="w"> </span>See
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>https://github.com/yt-dlp/yt-dlp/wiki/EJS<span class="w"> </span><span class="k">for</span><span class="w"> </span>details<span class="w"> </span>on<span class="w"> </span>installing<span class="w"> </span>one
+</span></code></pre></div>
+<p>You may also get HTTP 403 errors (approximately every 30 seconds) during the
+download:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">time</span><span class="o">=</span><span class="m">2026</span>-02-08T11:23:05.127+00:00<span class="w"> </span><span class="nv">level</span><span class="o">=</span>WARN<span class="w"> </span><span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;got transient HTTP error,</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="s2">retrying&quot;</span><span class="w"> </span><span class="nv">status</span><span class="o">=</span><span class="m">403</span><span class="w"> </span><span class="nv">method</span><span class="o">=</span>GET<span class="w"> </span><span class="nv">url</span><span class="o">=</span>...
+</span></code></pre></div>
+<p>While this currently works by retrying and collecting video info again, it is
+highly recommended to set up the <a href="../guides/install/install/">additional
+dependencies</a> to help avoid
+such errors.</p>
+</div>
+<p>As you can see, downloading consists of three steps: (1) collecting video
+information, (2) locating start and end moments, and (3) the download itself
+with audio and video merging at the end. The first and third stages are carried
+out by <code>yt-dlp</code>.</p>
+<p>Once the download finished, a single MP4 file can be found in the current
+working directory:</p>
+<div class="language-text highlight"><pre><span></span><code>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
+</code></pre></div>
+<h3 id="specify-formats">Specify formats<a class="headerlink" href="#specify-formats" title="Permanent link">&para;</a></h3>
+<p>By default, we let <code>yt-dlp</code> choose the audio and video formats automatically,
+following its own defaults or any preferences set in your configuration file.</p>
+<p>You can pass options directly to <code>yt-dlp</code> by adding them after the <code>--</code>
+separator.</p>
+<blockquote>
+<p>See <a href="../reference/cli/#passing-options-to-yt-dlp">Pass options to yt-dlp</a> for more details
+and examples.</p>
+</blockquote>
+<p>For example, let&rsquo;s use the <code>yt-dlp</code>&rsquo;s <code>-f</code> option to download only the best
+quality audio:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span>30s/now<span class="w"> </span>Mm_zVDDUeNA<span class="w"> </span>--<span class="w"> </span>-f<span class="w"> </span>bestaudio<span class="w"> </span>-x
+</span></code></pre></div>
+<p>Alternatively, any yt-dlp option can be set in your<a href="https://github.com/yt-dlp/yt-dlp#configuration"> yt-dlp configuration
+file</a> as usual, without having
+to pass them on the command line every time.</p>
+<p>Running <code>yt-dlp -F ...</code> can be helpful here to list all available formats:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>-F<span class="w"> </span>--live-from-start<span class="w"> </span>Mm_zVDDUeNA
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>Extracting<span class="w"> </span>URL:<span class="w"> </span>Mm_zVDDUeNA
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>Mm_zVDDUeNA:<span class="w"> </span>Downloading<span class="w"> </span>webpage
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>Mm_zVDDUeNA:<span class="w"> </span>Downloading<span class="w"> </span>android<span class="w"> </span>sdkless<span class="w"> </span>player<span class="w"> </span>API<span class="w"> </span>JSON
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>Mm_zVDDUeNA:<span class="w"> </span>Downloading<span class="w"> </span>web<span class="w"> </span>safari<span class="w"> </span>player<span class="w"> </span>API<span class="w"> </span>JSON
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="o">[</span>youtube<span class="o">]</span><span class="w"> </span>Mm_zVDDUeNA:<span class="w"> </span>Downloading<span class="w"> </span>MPD<span class="w"> </span>manifest
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="o">[</span>info<span class="o">]</span><span class="w"> </span>Available<span class="w"> </span>formats<span class="w"> </span><span class="k">for</span><span class="w"> </span>Mm_zVDDUeNA:
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>ID<span class="w">  </span>EXT<span class="w"> </span>RESOLUTION<span class="w"> </span>FPS<span class="w"> </span>│<span class="w">   </span>TBR<span class="w"> </span>PROTO<span class="w"> </span>│<span class="w"> </span>VCODEC<span class="w">        </span>VBR<span class="w"> </span>ACODEC<span class="w">      </span>ABR<span class="w"> </span>ASR<span class="w"> </span>MORE<span class="w"> </span>INFO
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>─────────────────────────────────────────────────────────────────────────────────────────────────
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="m">139</span><span class="w"> </span>m4a<span class="w"> </span>audio<span class="w"> </span>only<span class="w">     </span>│<span class="w">   </span>64k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>audio<span class="w"> </span>only<span class="w">        </span>mp4a.40.5<span class="w">   </span>64k<span class="w"> </span>22k<span class="w"> </span>DASH<span class="w"> </span>audio,<span class="w"> </span>m4a_dash
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="m">140</span><span class="w"> </span>m4a<span class="w"> </span>audio<span class="w"> </span>only<span class="w">     </span>│<span class="w">  </span>144k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>audio<span class="w"> </span>only<span class="w">        </span>mp4a.40.2<span class="w">  </span>144k<span class="w"> </span>44k<span class="w"> </span>DASH<span class="w"> </span>audio,<span class="w"> </span>m4a_dash
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="m">160</span><span class="w"> </span>mp4<span class="w"> </span>256x144<span class="w">     </span><span class="m">15</span><span class="w"> </span>│<span class="w">  </span>212k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.42c00b<span class="w">  </span>212k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="m">133</span><span class="w"> </span>mp4<span class="w"> </span>426x240<span class="w">     </span><span class="m">30</span><span class="w"> </span>│<span class="w">  </span>456k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.4d4015<span class="w">  </span>456k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="m">134</span><span class="w"> </span>mp4<span class="w"> </span>640x360<span class="w">     </span><span class="m">30</span><span class="w"> </span>│<span class="w"> </span>1008k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.4d401e<span class="w"> </span>1008k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="m">135</span><span class="w"> </span>mp4<span class="w"> </span>854x480<span class="w">     </span><span class="m">30</span><span class="w"> </span>│<span class="w"> </span>1350k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.4d401f<span class="w"> </span>1350k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="m">136</span><span class="w"> </span>mp4<span class="w"> </span>1280x720<span class="w">    </span><span class="m">30</span><span class="w"> </span>│<span class="w"> </span>2684k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.4d401f<span class="w"> </span>2684k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="m">137</span><span class="w"> </span>mp4<span class="w"> </span>1920x1080<span class="w">   </span><span class="m">30</span><span class="w"> </span>│<span class="w"> </span>5019k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.640028<span class="w"> </span>5019k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>DASH<span class="w"> </span>video,<span class="w"> </span>mp4_dash
+</span></code></pre></div>
+<blockquote>
+<p>See <code>yt-dlp</code>&rsquo;s <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#format-selection">Format
+selection</a>
+for the option syntax and some examples.</p>
+</blockquote>
+<h3 id="specify-start-and-end">Specify start and end<a class="headerlink" href="#specify-start-and-end" title="Permanent link">&para;</a></h3>
+<p>The interval start and end moments supports flexible formats including date and
+times, durations, keywords, and even time arithmetic expressions.</p>
+<p>The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
+might be nighttime on the stream depending on your location. For example, let&rsquo;s
+see what&rsquo;s on the stream at noon:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># If it is already noon there</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;12:00+13/1m&#39;</span><span class="w"> </span>Mm_zVDDUeNA
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Or noon yesterday</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;12:00+13 - 1d/1m&#39;</span><span class="w"> </span>Mm_zVDDUeNA
+</span></code></pre></div>
+<blockquote>
+<p>See <a href="../reference/cli/#specifying-the-rewind-interval">Specifying the rewind
+interval</a> for the reference
+on interval part formats.</p>
+</blockquote>
+<h2 id="serve-and-play-excerpts">Serve and play excerpts<a class="headerlink" href="#serve-and-play-excerpts" title="Permanent link">&para;</a></h2>
+<p>Now let&rsquo;s explore another feature: play without downloading.</p>
+<h3 id="start-a-playback-server">Start a playback server<a class="headerlink" href="#start-a-playback-server" title="Permanent link">&para;</a></h3>
+<p>This requires us to start a playback in serve mode:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>serve<span class="w"> </span>Mm_zVDDUeNA
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Served<span class="w"> </span>started<span class="w"> </span>and<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://localhost:9000
+</span></code></pre></div>
+<p>As you see, we are not using the interval option here. Format selection is also
+not applicable. The playback server is now running and waiting for our requests.</p>
+<h3 id="send-rewind-requests">Send rewind requests<a class="headerlink" href="#send-rewind-requests" title="Permanent link">&para;</a></h3>
+<p>To rewind an excerpt, open another terminal and type:</p>
+<div class="language-text highlight"><pre><span></span><code>curl localhost:9000/mpd/30m--now
+</code></pre></div>
+<p>This should return the raw content of the composed static MPEG-DASH manifest.</p>
+<p>The rewind path parameter <code>/mpd/{interval}</code> has the same format as the
+<code>-i/--interval</code> option except that it should be properly URL escaped: use <code>--</code>
+instead of <code>/</code>, avoid whitespaces or use percent encoding.</p>
+<blockquote>
+<p>See the <a href="../reference/api/">API</a> reference for available endpoints.</p>
+</blockquote>
+<h3 id="play-stream-excerpts">Play stream excerpts<a class="headerlink" href="#play-stream-excerpts" title="Permanent link">&para;</a></h3>
+<p>Now the intriguing part: playing the excerpt.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ffplay<span class="w"> </span>-autoexit<span class="w"> </span>-protocol_whitelist<span class="w"> </span>file,http,https,tcp,tls<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>localhost:9000/mpd/30m--now
+</span></code></pre></div>
+<p>The option <code>-protocol_whitelist</code> is required to allow <code>ffplay</code> openining the
+manifest and fetching media segments.</p>
+<p>However, the choice is not limited to <code>ffplay</code>: you can use any MPEG-DASH
+compatible player you prefer.</p>
+<h3 id="download-media">Download media<a class="headerlink" href="#download-media" title="Permanent link">&para;</a></h3>
+<p>As a bonus, let&rsquo;s see how to download media content from the composed manifest.</p>
+<p>This is actually almost how <code>ypb download</code> works behind the scenes:</p>
+<div class="language-text highlight"><pre><span></span><code>yt-dlp -o output.mp4 http://localhost:9000/mpd/30m--now
+</code></pre></div>
+<blockquote>
+<p>Other downloader options: <a href="https://www.ffmpeg.org/">FFmpeg</a>, GPAC&rsquo;s
+<a href="https://github.com/gpac/gpac/wiki/MP4Box/">MP4Box</a>, or
+<a href="https://emarsden.github.io/dash-mpd-cli/">dash-mpd-cli</a>.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":[],"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ed145cee.min.js"></script>
+      
+    
+  </body>
+</html>
