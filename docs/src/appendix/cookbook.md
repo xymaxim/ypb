@@ -19,25 +19,58 @@ ID  EXT  RESOLUTION FPS CH │    TBR PROTO │ VCODEC         VBR ACODEC      A
 248 webm 1920x1080   30    │  2896k dashG │ vp9          2896k video only          1080p, webm_dash
 ```
 
+## Play a saved manifest with mpv
+
+mpv can play a saved MPEG-DASH manifest (MPD) directly, without
+downloading anything first.
+
+The manifest's `SegmentTemplate`s reference `http://localhost:9000/...`
+segments, but by default ffmpeg's demuxer only allows the `file` and
+`crypto` protocols for local files. Whitelist the ones the manifest needs:
+
+```
+mpv --demuxer-lavf-o='protocol_whitelist="file,crypto,data,http,https,tcp,tls"' \
+  manifest.mpd
+```
+
+To pick a specific stream, use mpv's interactive track selector: press `g`
+then `v` for video, or `g` then `a` for audio. Each opens a console menu
+listing the available tracks to choose from.
+
 ## Pass the output name to external programs
 
-`ypb serve`'s JSON response includes `metadata.outputName`. It's the same name
-`ypb download` would use for the same input internal. Reuse it when driving
-another tool against the stream:
+`ypb serve`'s JSON response includes `metadata.outputName`, the same name
+`ypb download` would use for the same input. Reuse it when running another
+tool against the stream:
 
 ```shell
 $ ypb serve STREAM
-$ response=$(curl -s http://localhost:9000/mpd/10s--now)
-$ output_name=$(echo "$response" | jq -r '.metadata.outputName')
+$ response=$(curl -s -H 'Accept: application/json' http://localhost:9000/mpd/10s--now)
+$ filename=$(printf '%s' "$response" | jq -r '.metadata.outputName')
 ```
 
-For example, downloading a single muxed file with [gpac], piping the
-manifest straight from the same response:
+yt-dlp can read the manifest off disk instead of fetching it again, so save it
+and pass `filename` for the output location:
 
 ```shell
-$ echo "$response" | jq -r '.mpd' \
-  | gpac -i -:ext=mpd \
-         -o "${output_name}.mp4":SID=#Representation=137,140
+$ printf '%s' "$response" | jq -r '.mpd' > /tmp/manifest.mpd
+$ yt-dlp --enable-file-urls -o "${output_name}.%(ext)s" "file:///tmp/manifest.mpd"
 ```
 
-[gpac]: https://gpac.io/
+## Download multiple formats from one saved manifest
+
+Requesting `/mpd` from `ypb serve` lets you rewind once and save the manifest, then run
+`yt-dlp` against it as many times as you like. Each run reads the same
+saved segments instead of triggering a new rewind, as `ypb download` would:
+
+```shell
+$ ypb serve STREAM
+$ response=$(curl -s -H 'Accept: application/json' http://localhost:9000/mpd/10s--now)
+$ printf '%s' "$response" | jq -r '.mpd' > /tmp/manifest.mpd
+
+$ yt-dlp --enable-file-urls -o "output.f%(format_id)s.%(ext)s" -f 137 "file:///tmp/manifest.mpd"
+$ yt-dlp --enable-file-urls -o "output.f%(format_id)s.%(ext)s" -f 140 "file:///tmp/manifest.mpd"
+```
+
+You could get the same files with a single `-f "137,140"` call, but keeping the
+manifest around lets you work incrementally.
