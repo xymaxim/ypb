@@ -6,6 +6,8 @@ site_url = "https://xymaxim.github.io/ypb/"
 docs_dir = "docs/src"
 site_dir = "docs/site"
 
+extra_css = ["stylesheets/extra.css"]
+
 nav = [
   "index.md",
   { "Getting started" = [
@@ -35,6 +37,10 @@ nav = [
     "support.md",
   ]},
 ]
+
+[project.theme]
+font.text = "Atkinson Hyperlegible Next"
+font.code = "Atkinson Hyperlegible Mono"
 
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]

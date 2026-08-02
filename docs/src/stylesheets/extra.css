@@ -1,0 +1,16 @@
+.md-typeset {
+  font-size: .8rem;
+}
+
+.md-typeset code {
+  font-size: .875em;
+}
+
+.md-typeset pre > code {
+  font-size: .875em;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: .75rem;
+}
