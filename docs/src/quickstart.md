@@ -29,12 +29,12 @@ and architecture:
 | AMD64 | [ypb-linux-amd64.zip] | [ypb-darwin-amd64.zip] | [ypb-windows-amd64.zip] |
 | ARM64 | [ypb-linux-arm64.zip] | [ypb-darwin-arm64.zip] | [ypb-windows-arm64.zip] |
 
-[ypb-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-amd64.zip
-[ypb-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-linux-arm64.zip
-[ypb-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-amd64.zip
-[ypb-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-darwin-arm64.zip
-[ypb-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-amd64.zip
-[ypb-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ release_version }}/ypb-{{ release_version }}-windows-arm64.zip
+[ypb-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-amd64.zip
+[ypb-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-arm64.zip
+[ypb-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-amd64.zip
+[ypb-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-arm64.zip
+[ypb-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-amd64.zip
+[ypb-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-arm64.zip
 
 Download and unzip a file to your working directory.
 

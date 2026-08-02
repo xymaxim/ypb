@@ -80,5 +80,4 @@ custom_checkbox = true
 [project.markdown_extensions.pymdownx.tilde]
 [project.markdown_extensions.pymdownx.snippets]
 [project.markdown_extensions.zensical.extensions.macros]
-include_yaml = ["docs/variables.yaml"]
 [project.plugins.markdown-exec]
