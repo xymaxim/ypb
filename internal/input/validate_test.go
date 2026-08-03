@@ -71,3 +71,60 @@ func TestValidateMoments(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateNowLatency(t *testing.T) {
+	t.Parallel()
+
+	pastTime := time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)
+
+	testCases := []struct {
+		name    string
+		value   input.MomentValue
+		latency time.Duration
+		wantErr string
+	}{
+		{
+			name:    "now keyword with latency",
+			value:   input.NowKeyword,
+			latency: 30 * time.Second,
+			wantErr: "cannot locate 'now' with latency",
+		},
+		{
+			name:    "now keyword without latency",
+			value:   input.NowKeyword,
+			latency: 0,
+		},
+		{
+			name:    "time with latency",
+			value:   pastTime,
+			latency: 30 * time.Second,
+		},
+		{
+			name:    "duration with latency",
+			value:   time.Minute,
+			latency: 30 * time.Second,
+		},
+		{
+			name: "now minus duration expression with latency",
+			value: input.MomentExpression{
+				Operator: input.OpMinus,
+				Left:     input.NowKeyword,
+				Right:    time.Minute,
+			},
+			latency: 30 * time.Second,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			err := input.ValidateNowLatency(tc.value, tc.latency)
+			if tc.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tc.wantErr)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}

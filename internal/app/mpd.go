@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -65,10 +66,19 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
+	latency, err := parseLatencyParam(r)
+	if err != nil {
+		return err
+	}
+	if err := input.ValidateNowLatency(endParsed, latency); err != nil {
+		return fmt.Errorf("bad input interval: %w", err)
+	}
+
 	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
+	locateCtx.Latency = latency
 
 	rewindInterval, outputContext, err := actions.LocateInterval(
 		h.Playback,
@@ -107,10 +117,19 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
+	latency, err := parseLatencyParam(r)
+	if err != nil {
+		return err
+	}
+	if err := input.ValidateNowLatency(parsed, latency); err != nil {
+		return fmt.Errorf("bad input moment: %w", err)
+	}
+
 	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
+	locateCtx.Latency = latency
 
 	rewindMoment, err := actions.LocateMoment(h.Playback, parsed, locateCtx)
 	if err != nil {
@@ -167,4 +186,25 @@ func (h *MPDHandler) serveMPD(
 		return fmt.Errorf("writing mpd: %w", err)
 	}
 	return nil
+}
+
+func parseLatencyParam(r *http.Request) (time.Duration, error) {
+	raw := r.URL.Query().Get("latency")
+	if raw == "" {
+		return 0, nil
+	}
+
+	latency, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return 0, fmt.Errorf("parsing latency parameter %q: %w", raw, err)
+	}
+
+	if latency < 0 {
+		return 0, fmt.Errorf(
+			"latency parameter %q must be a non-negative number of seconds",
+			raw,
+		)
+	}
+
+	return time.Duration(latency * float64(time.Second)), nil
 }

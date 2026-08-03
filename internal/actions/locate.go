@@ -77,11 +77,16 @@ type LocateOutputContext struct {
 // the 'now' keyword: in strict mode (downloads and capture), it is set to the
 // app start-up time; in non-strict mode (serve), it is nil and 'now' falls back
 // to the end of the most recent segment.
+//
+// Latency is the streaming latency correction applied only to locating: a
+// moment is searched Latency later, while its target and actual times stay
+// unchanged.
 type LocateContext struct {
 	Head         segment.Metadata
 	Reference    segment.Metadata
 	PinnedTime   *time.Time
 	PinnedMoment *playback.RewindMoment
+	Latency      time.Duration
 }
 
 // NewLocateContext creates a new LocateContext.
@@ -246,14 +251,24 @@ func locateWithAbsoluteStart(
 	// Handle duration end
 	if duration, ok := end.(time.Duration); ok {
 		endTime := startMoment.TargetTime.Add(duration)
-		if endTime.After(ctx.Head.EndTime()) {
-			return nil, NewResolveMomentError(
-				end,
-				true,
-				errors.New("end time is after head segment"),
+		if endTime.Add(ctx.Latency).After(ctx.Head.EndTime()) {
+			err := fmt.Errorf(
+				"end time %v is after current moment: %v",
+				endTime,
+				ctx.Head.EndTime(),
 			)
+			if ctx.Latency > 0 {
+				err = fmt.Errorf(
+					"end time %v with latency %v is after current moment: %v > %v",
+					endTime,
+					ctx.Latency,
+					endTime.Add(ctx.Latency),
+					ctx.Head.EndTime(),
+				)
+			}
+			return nil, NewResolveMomentError(end, true, err)
 		}
-		endMoment, err := pb.LocateMoment(endTime, ctx.Reference, true)
+		endMoment, err := locateWithLatency(pb, endTime, ctx.Reference, true, ctx.Latency)
 		if err != nil {
 			return nil, fmt.Errorf("locating end moment: %w", err)
 		}
@@ -279,7 +294,13 @@ func locateWithDurationStart(
 			return nil, NewResolveMomentError(end, true, err)
 		}
 		startTime := endMoment.TargetTime.Add(-startDuration)
-		startMoment, err := pb.LocateMoment(startTime, ctx.Reference, false)
+		startMoment, err := locateWithLatency(
+			pb,
+			startTime,
+			ctx.Reference,
+			false,
+			ctx.Latency,
+		)
 		if err != nil {
 			return nil, fmt.Errorf("locating start moment: %w", err)
 		}
@@ -309,6 +330,25 @@ func resolveMoment(
 	}
 }
 
+// locateWithLatency locates the moment for the target time t: the segment is
+// searched at t.Add(latency), while the returned moment keeps t as its target
+// time, with the actual time compensated back by the latency.
+func locateWithLatency(
+	pb playback.Playbacker,
+	t time.Time,
+	reference segment.Metadata,
+	isEnd bool,
+	latency time.Duration,
+) (*playback.RewindMoment, error) {
+	moment, err := pb.LocateMoment(t.Add(latency), reference, isEnd)
+	if err != nil {
+		return nil, fmt.Errorf("locating moment with latency: %w", err)
+	}
+	out := playback.NewRewindMoment(t, moment.Metadata, isEnd, moment.InGap)
+	out.ActualTime = out.ActualTime.Add(-latency)
+	return out, nil
+}
+
 // resolveTime resolves the target time t into a RewindMoment.
 func resolveTime(
 	pb playback.Playbacker,
@@ -317,9 +357,18 @@ func resolveTime(
 	isEnd bool,
 ) (*playback.RewindMoment, error) {
 	if t.After(ctx.Head.EndTime()) {
-		return nil, fmt.Errorf("time %v is after current moment", t)
+		return nil, fmt.Errorf("time %v is after current moment: %v", t, ctx.Head.EndTime())
 	}
-	moment, err := pb.LocateMoment(t, ctx.Reference, isEnd)
+	if t.Add(ctx.Latency).After(ctx.Head.EndTime()) {
+		return nil, fmt.Errorf(
+			"time %v with latency %v is after current moment: %v > %v",
+			t,
+			ctx.Latency,
+			t.Add(ctx.Latency),
+			ctx.Head.EndTime(),
+		)
+	}
+	moment, err := locateWithLatency(pb, t, ctx.Reference, isEnd, ctx.Latency)
 	if err != nil {
 		return nil, fmt.Errorf("locating moment at %v: %w", t, err)
 	}
@@ -367,15 +416,25 @@ func resolveKeyword(
 			return ctx.PinnedMoment, nil
 		}
 
-		ctx.PinnedMoment = playback.NewRewindMoment(
+		if ctx.Latency > 0 {
+			return nil, errors.New("cannot locate 'now' with latency")
+		}
+
+		moment, err := locateWithLatency(
+			pb,
 			ctx.Head.EndTime(),
 			ctx.Head,
 			isEnd,
-			false,
+			ctx.Latency,
 		)
+		if err != nil {
+			return nil, fmt.Errorf("locating 'now': %w", err)
+		}
+
+		ctx.PinnedMoment = moment
 
 		slog.Debug(
-			"resolved now keyword",
+			"resolved 'now'",
 			slog.Int("sq", ctx.PinnedMoment.Metadata.SequenceNumber),
 			slog.Time("time", ctx.PinnedMoment.TargetTime),
 		)
@@ -400,11 +459,7 @@ func resolveExpression(
 		if expr.Operator == input.OpPlus && ctx.PinnedTime == nil {
 			return nil, fmt.Errorf("'%s' cannot be used with plus", input.NowKeyword)
 		}
-		moment, err := resolveMoment(pb, expr.Left, ctx, false)
-		if err != nil {
-			return nil, NewResolveMomentError(input.NowKeyword, isEnd, err)
-		}
-		leftTime = moment.TargetTime
+		leftTime = ctx.Head.EndTime()
 	} else {
 		leftTime = expr.Left.(time.Time)
 	}

@@ -16,6 +16,7 @@ type Frame struct {
 	CommonCaptureFlags
 	Moment string `help:"Moment to capture" required:"" short:"m"`
 	Stream string `help:"YouTube video ID"  required:""           arg:""`
+	commands.LatencyFlag
 	commands.YtdlpOptionsFlag
 }
 
@@ -23,6 +24,13 @@ type FrameConfig struct {
 	MomentValue  any
 	OutputFormat string
 	OutputPath   string
+}
+
+func (c *Frame) Validate() error {
+	if err := commands.ValidateLatency(c.Latency); err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	return nil
 }
 
 func (c *Frame) Run() error {
@@ -71,7 +79,13 @@ func (c *Frame) Run() error {
 		actions.FormatTime(rewindMoment.TargetTime),
 		c.OutputFormat,
 	)
-	err = actions.CaptureFrame(app.Playback, rewindMoment, config.OutputPath, app.FFmpegRunner)
+	err = actions.CaptureFrame(
+		app.Playback,
+		rewindMoment,
+		config.OutputPath,
+		app.FFmpegRunner,
+		commands.ToLatencyDuration(c.Latency),
+	)
 	if err != nil {
 		return fmt.Errorf("capturing frame: %w", err)
 	}
@@ -85,6 +99,12 @@ func (c *Frame) parseAndValidateInputs(refTime *time.Time) (*FrameConfig, error)
 	momentValue, err := input.ParseIntervalPart(c.Moment, refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input moment: %w", err)
+	}
+	if err := input.ValidateNowLatency(
+		momentValue,
+		commands.ToLatencyDuration(c.Latency),
+	); err != nil {
+		return nil, fmt.Errorf("bad input moment: %w", err)
 	}
 
 	return &FrameConfig{
@@ -104,6 +124,7 @@ func (c *Frame) locateMoment(
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}
+	locateContext.Latency = commands.ToLatencyDuration(c.Latency)
 
 	moment, err := actions.LocateMoment(pb, config.MomentValue, locateContext)
 	if err != nil {

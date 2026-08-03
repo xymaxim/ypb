@@ -43,3 +43,14 @@ func ValidateMoments(start, end MomentValue) error {
 
 	return nil
 }
+
+// ValidateNowLatency rejects the 'now' keyword when a non-zero latency is set.
+func ValidateNowLatency(v MomentValue, latency time.Duration) error {
+	if latency <= 0 {
+		return nil
+	}
+	if k, ok := v.(MomentKeyword); ok && k == NowKeyword {
+		return errors.New("cannot locate 'now' with latency")
+	}
+	return nil
+}

@@ -18,6 +18,7 @@ func CaptureFrame(
 	moment *playback.RewindMoment,
 	outputPath string,
 	runner exec.Runner,
+	latency time.Duration,
 ) error {
 	var buf bytes.Buffer
 
@@ -34,7 +35,7 @@ func CaptureFrame(
 		)
 	}
 
-	err = extractFrame(moment, outputPath, buf.Bytes(), runner)
+	err = extractFrame(moment, outputPath, buf.Bytes(), runner, latency)
 	if err != nil {
 		return fmt.Errorf("extracting frame: %w", err)
 	}
@@ -56,7 +57,13 @@ func CaptureFrames(
 	reference := locateContext.Head
 
 	for frameIndex, t := range times {
-		rewindMoment, err := pb.LocateMoment(t, reference, false)
+		rewindMoment, err := locateWithLatency(
+			pb,
+			t,
+			reference,
+			false,
+			locateContext.Latency,
+		)
 		if err != nil {
 			return captured, skipped, fmt.Errorf(
 				"frame %d at %s: locating moment: %w",
@@ -102,6 +109,7 @@ func CaptureFrames(
 			outputPath,
 			previousSegment,
 			runner,
+			locateContext.Latency,
 		); err != nil {
 			return captured, skipped, fmt.Errorf(
 				"frame %d at %s: extracting frame: %w",
@@ -127,8 +135,9 @@ func extractFrame(
 	outputPath string,
 	segment []byte,
 	runner exec.Runner,
+	latency time.Duration,
 ) error {
-	at := moment.TargetTime.Sub(moment.Metadata.Time()).Seconds()
+	at := moment.TargetTime.Sub(moment.Metadata.Time()).Seconds() + latency.Seconds()
 	slog.Debug("extracting frame", "sq", moment.Metadata.SequenceNumber, "t", at)
 
 	result, err := runner.RunWith(context.Background(), []exec.Option{

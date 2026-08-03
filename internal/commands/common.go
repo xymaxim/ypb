@@ -15,6 +15,10 @@ type CommonFlags struct {
 	Now  string `help:"Pin now to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
 }
 
+type LatencyFlag struct {
+	Latency float64 `help:"Streaming latency (in seconds)" short:"l" default:"0"`
+}
+
 type YtdlpOptionsFlag struct {
 	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""` //nolint:lll
 }
@@ -57,6 +61,20 @@ func NormalizeYtdlpOptions(opts []string) []string {
 		return opts[1:]
 	}
 	return opts
+}
+
+func ToLatencyDuration(latency float64) time.Duration {
+	return time.Duration(latency * float64(time.Second))
+}
+
+func ValidateLatency(latency float64) error {
+	if latency < 0 {
+		return fmt.Errorf(
+			"latency must be a non-negative number of seconds, got %g",
+			latency,
+		)
+	}
+	return nil
 }
 
 func FormatDifference(diff time.Duration, showPlus bool) string {
