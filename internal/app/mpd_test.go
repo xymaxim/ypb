@@ -29,6 +29,7 @@ func TestParseLatencyParam(t *testing.T) {
 		},
 		{name: "negative", query: "latency=-1", wantErr: true},
 		{name: "unparseable", query: "latency=abc", wantErr: true},
+		{name: "short", query: "l=10", expected: 10 * time.Second},
 	}
 
 	for _, tc := range testCases {

@@ -37,7 +37,7 @@ interval
         parameter is properly URL-encoded: use `--` as the interval separator
         instead of `/` and avoid unencoded whitespace.
 
-latency
+latency, l
 :   Correcting for streaming latency by locating the interval later by this many
     seconds (whole or fractional). See [Correcting for streaming
     latency](cli.md#correcting-for-streaming-latency).

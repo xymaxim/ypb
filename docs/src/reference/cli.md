@@ -264,7 +264,7 @@ seconds (whole or fractional):
 ypb download --interval 12:00/30s --latency 10 ...
 ```
 
-With `ypb serve`, use the `latency` query parameter:
+With `ypb serve`, use the `latency` (or `l`) query parameter:
 
 ```
 curl http://localhost:9000/mpd/12:00?latency=10

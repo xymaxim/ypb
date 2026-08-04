@@ -193,6 +193,9 @@ func (h *MPDHandler) serveMPD(
 func parseLatencyParam(r *http.Request) (time.Duration, error) {
 	raw := r.URL.Query().Get("latency")
 	if raw == "" {
+		raw = r.URL.Query().Get("l")
+	}
+	if raw == "" {
 		return 0, nil
 	}
 
