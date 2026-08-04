@@ -73,6 +73,12 @@ func (pb *fakePlayback) LocateMoment(
 	timeDiff := t.Sub(reference.Time()).Nanoseconds()
 	segmentDuration := reference.Duration.Nanoseconds()
 
+	// If the target time falls within the reference segment, use the
+	// reference. Matches the jump-search behavior of the real playback.
+	if 0 <= timeDiff && timeDiff <= segmentDuration {
+		return playback.NewRewindMoment(t, reference, isEnd, false), nil
+	}
+
 	segmentOffset := timeDiff / segmentDuration
 	timeRemainder := timeDiff % segmentDuration
 
