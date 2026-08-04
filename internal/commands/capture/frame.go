@@ -100,7 +100,7 @@ func (c *Frame) parseAndValidateInputs(refTime *time.Time) (*FrameConfig, error)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input moment: %w", err)
 	}
-	if err := input.ValidateNowLatency(
+	if err := input.ValidateLatencyWindow(
 		momentValue,
 		commands.ToLatencyDuration(c.Latency),
 	); err != nil {

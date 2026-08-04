@@ -62,3 +62,62 @@ func TestMPDHandlerNowWithLatency(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, w.Code)
 	require.Contains(t, w.Body.String(), "cannot locate 'now' with latency")
 }
+
+func TestMPDHandlerNowMinusDurationWithLatency(t *testing.T) {
+	t.Parallel()
+
+	// Playback is nil; validation must fail before it is used.
+	h := &MPDHandler{}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc(MPDPath, WithError(h.ServeHTTP))
+
+	req := httptest.NewRequest(http.MethodGet, "/mpd/now-10s?latency=30", nil)
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusInternalServerError, w.Code)
+	require.Contains(t, w.Body.String(), "within the latency window, not yet ingested")
+}
+
+func TestMPDHandlerIntervalWithinLatencyWindow(t *testing.T) {
+	t.Parallel()
+
+	// Playback is nil; validation must fail before it is used.
+	h := &MPDHandler{}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc(MPDPath, WithError(h.ServeHTTP))
+
+	withinWindow := time.Now().Add(-10 * time.Second).UTC().Format(time.RFC3339)
+
+	testCases := []struct {
+		name string
+		path string
+	}{
+		{
+			name: "absolute end within the latency window",
+			path: "/mpd/now-1h--" + withinWindow + "?latency=30",
+		},
+		{
+			name: "absolute start within the latency window",
+			path: "/mpd/" + withinWindow + "--0?latency=30",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			req := httptest.NewRequest(http.MethodGet, tc.path, nil)
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, req)
+
+			require.Equal(t, http.StatusInternalServerError, w.Code)
+			require.Contains(
+				t,
+				w.Body.String(),
+				"within the latency window, not yet ingested",
+			)
+		})
+	}
+}

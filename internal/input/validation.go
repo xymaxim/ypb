@@ -44,13 +44,35 @@ func ValidateMoments(start, end MomentValue) error {
 	return nil
 }
 
-// ValidateNowLatency rejects the 'now' keyword when a non-zero latency is set.
-func ValidateNowLatency(v MomentValue, latency time.Duration) error {
+// ValidateLatencyWindow rejects moments within the latency window (not yet
+// ingested).
+func ValidateLatencyWindow(v MomentValue, latency time.Duration) error {
 	if latency <= 0 {
 		return nil
 	}
-	if k, ok := v.(MomentKeyword); ok && k == NowKeyword {
-		return errors.New("cannot locate 'now' with latency")
+
+	switch m := v.(type) {
+	case MomentKeyword:
+		if m == NowKeyword {
+			return latencyErr("'now'", latency)
+		}
+	case MomentExpression:
+		if m.Left == NowKeyword && m.Operator == OpMinus && m.Right < latency {
+			return latencyErr(fmt.Sprintf("'now - %s'", m.Right), latency)
+		}
+	case time.Time:
+		if m.Add(latency).After(time.Now()) {
+			return latencyErr(m.String(), latency)
+		}
 	}
+
 	return nil
+}
+
+func latencyErr(what string, latency time.Duration) error {
+	return fmt.Errorf(
+		"cannot locate %s with latency %s: within the latency window, not yet ingested",
+		what,
+		latency,
+	)
 }

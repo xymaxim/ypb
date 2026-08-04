@@ -70,8 +70,10 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 	if err != nil {
 		return err
 	}
-	if err := input.ValidateNowLatency(endParsed, latency); err != nil {
-		return fmt.Errorf("bad input interval: %w", err)
+	for _, mv := range []input.MomentValue{startParsed, endParsed} {
+		if err := input.ValidateLatencyWindow(mv, latency); err != nil {
+			return fmt.Errorf("bad input interval: %w", err)
+		}
 	}
 
 	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
@@ -121,7 +123,7 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 	if err != nil {
 		return err
 	}
-	if err := input.ValidateNowLatency(parsed, latency); err != nil {
+	if err := input.ValidateLatencyWindow(parsed, latency); err != nil {
 		return fmt.Errorf("bad input moment: %w", err)
 	}
 

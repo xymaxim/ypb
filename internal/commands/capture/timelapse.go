@@ -103,8 +103,13 @@ func (c *Timelapse) parseAndValidateInputs(refTime *time.Time) (*TimelapseConfig
 	if err := input.ValidateMoments(start, end); err != nil {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
-	if err := input.ValidateNowLatency(end, commands.ToLatencyDuration(c.Latency)); err != nil {
-		return nil, fmt.Errorf("bad input interval: %w", err)
+	for _, mv := range []input.MomentValue{start, end} {
+		if err := input.ValidateLatencyWindow(
+			mv,
+			commands.ToLatencyDuration(c.Latency),
+		); err != nil {
+			return nil, fmt.Errorf("bad input interval: %w", err)
+		}
 	}
 
 	duration, err := input.ParseIntervalPart(c.Every, nil)

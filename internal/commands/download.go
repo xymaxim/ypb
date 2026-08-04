@@ -49,8 +49,13 @@ func (c *Download) Run() error {
 	if err := input.ValidateMoments(start, end); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
-	if err := input.ValidateNowLatency(end, ToLatencyDuration(c.Latency)); err != nil {
-		return fmt.Errorf("bad input interval: %w", err)
+	for _, mv := range []input.MomentValue{start, end} {
+		if err := input.ValidateLatencyWindow(
+			mv,
+			ToLatencyDuration(c.Latency),
+		); err != nil {
+			return fmt.Errorf("bad input interval: %w", err)
+		}
 	}
 
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
