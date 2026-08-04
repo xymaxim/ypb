@@ -58,6 +58,17 @@ alt="Captured frame (shifted): --moment '20:00:03+00 - 1d'" />
 <code>--moment '20:00:03+00 - 1d'</code></figcaption>
 </figure>
 
+!!! tip
+    The `-l/--latency` option, added after this tutorial was written,
+    can apply this correction automatically instead of offsetting each
+    moment by hand:
+
+        ypb capture frame --moment '20:00:00+00 - 1d' -l 3 0ujj4HexRpk
+
+    See [Correcting for streaming
+    latency](../reference/cli.md#correcting-for-streaming-latency) for
+    details.
+
 Now the timestamp matches our request. We’ll apply this 3-second offset
 to all subsequent commands.
 
