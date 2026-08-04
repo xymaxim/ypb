@@ -37,18 +37,26 @@ interval
         parameter is properly URL-encoded: use `--` as the interval separator
         instead of `/` and avoid unencoded whitespace.
 
+latency
+:   Correcting for streaming latency by locating the interval later by this many
+    seconds (whole or fractional). See [Correcting for streaming
+    latency](cli.md#correcting-for-streaming-latency).
+
 #### Usage examples
 
-Rewind a 30-minute excerpt from one day ago (static):
 
-    $ curl localhost:9000/mpd/now-1d--30m
+Rewind a 30-minute excerpt starting at 12:00 (static):
 
+    $ curl localhost:9000/mpd/12:00--30m
 
-Playback starting from ten minutes ago, continuing live (dynamic):
+Playback starting from 12:00, continuing live (dynamic):
 
-    curl localhost:9000/mpd/now-10m
+    curl localhost:9000/mpd/12:00
 
+Same, corrected for 10 seconds of streaming latency:
 
+    curl localhost:9000/mpd/12:00?latency=10
+    
 #### Response
 
 By default, returns the raw MPEG-DASH manifest as `application/dash+xml`. To
