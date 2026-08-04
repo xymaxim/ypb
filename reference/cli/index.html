@@ -887,6 +887,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#correcting-for-streaming-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Correcting for streaming latency
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#specifying-the-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1410,6 +1421,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#correcting-for-streaming-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Correcting for streaming latency
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#specifying-the-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1510,6 +1532,7 @@
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">      --now=TIME         Pin now to a specific time ($YPB_NOW)</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">      --of=&quot;png&quot;         Output image format</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">  -m, --moment=STRING    Moment to capture</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="go">  -l, --latency=0        Streaming latency (in seconds)</span>
 </span></code></pre></div>
 <h4 id="timelapse">timelapse<a class="headerlink" href="#timelapse" title="Permanent link">&para;</a></h4>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>./ypb<span class="w"> </span>capture<span class="w"> </span>timelapse<span class="w"> </span>--help
@@ -1530,6 +1553,7 @@
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">      --of=&quot;png&quot;           Output image format</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">  -e, --every=DURATION     Capture frame every duration</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="go">  -i, --interval=STRING    Time or segment interval</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="go">  -l, --latency=0          Streaming latency (in seconds)</span>
 </span></code></pre></div>
 <h3 id="download">download<a class="headerlink" href="#download" title="Permanent link">&para;</a></h3>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>./ypb<span class="w"> </span>download<span class="w"> </span>--help
@@ -1548,6 +1572,7 @@
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">  -p, --port=9000          Port to start playback on</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="go">      --now=TIME           Pin now to a specific time ($YPB_NOW)</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="go">  -i, --interval=STRING    Time or segment interval</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">  -l, --latency=0          Streaming latency (in seconds)</span>
 </span></code></pre></div>
 <h3 id="serve">serve<a class="headerlink" href="#serve" title="Permanent link">&para;</a></h3>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>./ypb<span class="w"> </span>serve<span class="w"> </span>--help
@@ -1746,18 +1771,32 @@ it instead of repeating an absolute date-time on both sides:</p>
 <li>a date only, e.g. <code>2026-01-02</code></li>
 <li>a time only, e.g. <code>10:20:30</code></li>
 </ul>
+<h2 id="correcting-for-streaming-latency">Correcting for streaming latency<a class="headerlink" href="#correcting-for-streaming-latency" title="Permanent link">&para;</a></h2>
+<p>YouTube live streams usually have some delay between an event being captured and
+it appearing in the stream. That delay can come from YouTube&rsquo;s <a href="https://support.google.com/youtube/answer/7444635?hl=en">latency
+mode</a>, as well as
+network conditions and other factors.</p>
+<p>The <code>-l/--latency</code> option
+corrects for this by locating requested moments later by the given number of
+seconds (whole or fractional):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a># Fetch from 12:00:10 to correct for 10s latency
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>ypb download --interval 12:00/30s --latency 10 ...
+</span></code></pre></div>
+<p>With <code>ypb serve</code>, use the <code>latency</code> (or <code>l</code>) query parameter:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl http://localhost:9000/mpd/12:00?latency=10
+</span></code></pre></div>
 <h2 id="specifying-the-output-filename">Specifying the output filename<a class="headerlink" href="#specifying-the-output-filename" title="Permanent link">&para;</a></h2>
 <p>By default, downloaded files are saved in the current working directory with
 names composed of the adjusted title, YouTube video ID, start time, and
 duration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="m">2026</span>-01-02T10:20:30+00/30s<span class="w"> </span>abcdefgh123<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="m">2026</span>-01-02T10:20:30+00/30s<span class="w"> </span>abcdefgh123<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
 </span></code></pre></div>
 <p>To customize output names, use the yt-dlp&rsquo;s <code>-o/--output</code>
 <a href="https://github.com/ytdl-org/youtube-dl/#OUTPUT-TEMPLATE">option</a> by specifying
 a full filename:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>...<span class="w"> </span>--<span class="w"> </span>-o<span class="w"> </span>output/path.mp4<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls<span class="w"> </span>output/*
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>output/path.mp4
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>...<span class="w"> </span>--<span class="w"> </span>-o<span class="w"> </span>output/path.mp4<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls<span class="w"> </span>output/*
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>output/path.mp4
 </span></code></pre></div>
 <p>Note that since <code>yt-dlp</code> downloads the MPEG-DASH manifest via the general
 extractor rather than the YouTube extractor, YouTube-specific template

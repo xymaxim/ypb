@@ -1197,6 +1197,17 @@ alt="Captured frame (shifted): --moment '20:00:03+00 - 1d'" />
 <code>--moment '20:00:03+00 - 1d'</code></figcaption>
 </figure>
 
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code>-l/--latency</code> option, added after this tutorial was written,
+can apply this correction automatically instead of offsetting each
+moment by hand:</p>
+<div class="language-text highlight"><pre><span></span><code>ypb capture frame --moment &#39;20:00:00+00 - 1d&#39; -l 3 0ujj4HexRpk
+</code></pre></div>
+<p>See <a href="../../reference/cli/#correcting-for-streaming-latency">Correcting for streaming
+latency</a> for
+details.</p>
+</div>
 <p>Now the timestamp matches our request. We’ll apply this 3-second offset
 to all subsequent commands.</p>
 <h2 id="step-2-capture-all-night">Step 2. Capture all night<a class="headerlink" href="#step-2-capture-all-night" title="Permanent link">&para;</a></h2>

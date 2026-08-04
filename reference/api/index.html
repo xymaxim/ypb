@@ -1290,13 +1290,20 @@ parameter is properly URL-encoded: use <code>--</code> as the interval separator
 instead of <code>/</code> and avoid unencoded whitespace.</p>
 </div>
 </dd>
+<dt>latency, l</dt>
+<dd>Correcting for streaming latency by locating the interval later by this many
+seconds (whole or fractional). See <a href="../cli/#correcting-for-streaming-latency">Correcting for streaming
+latency</a>.</dd>
 </dl>
 <h4 id="usage-examples">Usage examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h4>
-<p>Rewind a 30-minute excerpt from one day ago (static):</p>
-<div class="language-text highlight"><pre><span></span><code>$ curl localhost:9000/mpd/now-1d--30m
+<p>Rewind a 30-minute excerpt starting at 12:00 (static):</p>
+<div class="language-text highlight"><pre><span></span><code>$ curl localhost:9000/mpd/12:00--30m
 </code></pre></div>
-<p>Playback starting from ten minutes ago, continuing live (dynamic):</p>
-<div class="language-text highlight"><pre><span></span><code>curl localhost:9000/mpd/now-10m
+<p>Playback starting from 12:00, continuing live (dynamic):</p>
+<div class="language-text highlight"><pre><span></span><code>curl localhost:9000/mpd/12:00
+</code></pre></div>
+<p>Same, corrected for 10 seconds of streaming latency:</p>
+<div class="language-text highlight"><pre><span></span><code>curl localhost:9000/mpd/12:00?latency=10
 </code></pre></div>
 <h4 id="response_1">Response<a class="headerlink" href="#response_1" title="Permanent link">&para;</a></h4>
 <p>By default, returns the raw MPEG-DASH manifest as <code>application/dash+xml</code>. To
