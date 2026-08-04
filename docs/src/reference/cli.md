@@ -56,12 +56,12 @@ Absolute moments can be further divided into direct and indirect types. Direct
 moments correspond to exact stream media segments, while indirect moments
 require locating a segment.
 
-* **Absolute moments**
-  - *Direct*: sequence numbers, the `now` keyword
-  - *Indirect*: date and times, Unix timestamps, time arithmetic expressions
+- **Absolute moments**
+    - *Direct*: sequence numbers, the `now` keyword
+    - *Indirect*: date and times, Unix timestamps, time arithmetic expressions
 
-* **Relative moments**
-  - Time durations
+- **Relative moments**
+    - Time durations
 
 ### Moment values
 
@@ -170,7 +170,7 @@ Note that option values containing whitespace must be quoted.
 
 # A 30-minute excerpt starting from one hour ago
 --interval 'now - 1h/30m' ...
-  ```
+```
 
 #### Sequence numbers
 
