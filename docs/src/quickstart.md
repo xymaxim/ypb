@@ -153,6 +153,40 @@ working directory:
 
     Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
 
+### Specify start and end
+
+The interval start and end moments supports flexible formats including date and
+times, durations, keywords, and even time arithmetic expressions.
+
+The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
+might be nighttime on the stream depending on your location. For example, let's
+see what's on the stream at noon:
+
+``` shell
+# If it is already noon there
+$ ypb download -i '12:00+13/1m' Mm_zVDDUeNA
+
+# Or noon yesterday
+$ ypb download -i '12:00+13 - 1d/1m' Mm_zVDDUeNA
+```
+
+> See [Specifying the rewind
+> interval](reference/cli.md#specifying-the-rewind-interval) for the reference
+> on interval part formats.
+
+If you check the downloaded file, you may notice it starts a bit later than
+requested, visible on the stream's timestamp overlay, off by around 20
+seconds. This is due to streaming latency, and the `-l/--latency` option
+corrects for it:
+
+```shell
+$ ypb download -i '12:00+13/1m' --latency 20 Mm_zVDDUeNA
+```
+
+
+> See [Correcting for streaming
+> latency](reference/cli.md#correcting-for-streaming-latency) for details.
+
 ### Specify formats
 
 By default, we let `yt-dlp` choose the audio and video formats automatically,
@@ -200,27 +234,6 @@ ID  EXT RESOLUTION FPS │   TBR PROTO │ VCODEC        VBR ACODEC      ABR ASR
 > See `yt-dlp`'s [Format
 > selection](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#format-selection)
 > for the option syntax and some examples.
-
-### Specify start and end
-
-The interval start and end moments supports flexible formats including date and
-times, durations, keywords, and even time arithmetic expressions.
-
-The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
-might be nighttime on the stream depending on your location. For example, let's
-see what's on the stream at noon:
-
-``` shell
-# If it is already noon there
-$ ypb download -i '12:00+13/1m' Mm_zVDDUeNA
-
-# Or noon yesterday
-$ ypb download -i '12:00+13 - 1d/1m' Mm_zVDDUeNA
-```
-
-> See [Specifying the rewind
-> interval](reference/cli.md#specifying-the-rewind-interval) for the reference
-> on interval part formats.
 
 ## Serve and play excerpts
 

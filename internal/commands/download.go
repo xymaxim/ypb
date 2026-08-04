@@ -20,7 +20,12 @@ type Download struct {
 	CommonFlags
 	Stream   string `arg:"" help:"YouTube video ID"         required:""`
 	Interval string `       help:"Time or segment interval" required:"" short:"i"`
+	LatencyFlag
 	YtdlpOptionsFlag
+}
+
+func (c *Download) Validate() error {
+	return ValidateLatency(c.Latency)
 }
 
 func (c *Download) Run() error {
@@ -44,6 +49,14 @@ func (c *Download) Run() error {
 	if err := input.ValidateMoments(start, end); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
+	for _, mv := range []input.MomentValue{start, end} {
+		if err := input.ValidateLatencyWindow(
+			mv,
+			ToLatencyDuration(c.Latency),
+		); err != nil {
+			return fmt.Errorf("bad input interval: %w", err)
+		}
+	}
 
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
 	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
@@ -58,6 +71,7 @@ func (c *Download) Run() error {
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
+	locateContext.Latency = ToLatencyDuration(c.Latency)
 
 	interval, outputContext, err := actions.LocateInterval(
 		app.Playback,

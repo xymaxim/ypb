@@ -25,6 +25,7 @@ type Timelapse struct {
 	Every    string `help:"Capture frame every duration" placeholder:"DURATION" required:"" short:"e"`
 	Stream   string `help:"YouTube video ID"                                    required:""           arg:""`
 	Interval string `help:"Time or segment interval"                            required:"" short:"i"`
+	commands.LatencyFlag
 	commands.YtdlpOptionsFlag
 }
 
@@ -34,6 +35,13 @@ type TimelapseConfig struct {
 	CaptureEvery  time.Duration
 	OutputFormat  string
 	OutputPattern string
+}
+
+func (c *Timelapse) Validate() error {
+	if err := commands.ValidateLatency(c.Latency); err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	return nil
 }
 
 func (c *Timelapse) Run() error {
@@ -95,6 +103,14 @@ func (c *Timelapse) parseAndValidateInputs(refTime *time.Time) (*TimelapseConfig
 	if err := input.ValidateMoments(start, end); err != nil {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
+	for _, mv := range []input.MomentValue{start, end} {
+		if err := input.ValidateLatencyWindow(
+			mv,
+			commands.ToLatencyDuration(c.Latency),
+		); err != nil {
+			return nil, fmt.Errorf("bad input interval: %w", err)
+		}
+	}
 
 	duration, err := input.ParseIntervalPart(c.Every, nil)
 	if err != nil {
@@ -125,6 +141,7 @@ func (c *Timelapse) locateInterval(
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}
+	locateContext.Latency = commands.ToLatencyDuration(c.Latency)
 
 	interval, _, err := actions.LocateInterval(
 		pb,

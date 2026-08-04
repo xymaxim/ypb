@@ -248,6 +248,28 @@ ypb download --interval 'now - 10m/now + 10m' --now 2026-01-02T10:20:30+00 ...
 * a date only, e.g. `2026-01-02`
 * a time only, e.g. `10:20:30`
 
+## Correcting for streaming latency
+
+YouTube live streams usually have some delay between an event being captured and
+it appearing in the stream. That delay can come from YouTube's [latency
+mode](https://support.google.com/youtube/answer/7444635?hl=en), as well as
+network conditions and other factors.
+
+The `-l/--latency` option
+corrects for this by locating requested moments later by the given number of
+seconds (whole or fractional):
+
+```
+# Fetch from 12:00:10 to correct for 10s latency
+ypb download --interval 12:00/30s --latency 10 ...
+```
+
+With `ypb serve`, use the `latency` (or `l`) query parameter:
+
+```
+curl http://localhost:9000/mpd/12:00?latency=10
+```
+
 ## Specifying the output filename
 
 By default, downloaded files are saved in the current working directory with
