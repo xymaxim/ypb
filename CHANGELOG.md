@@ -4,6 +4,19 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.8.5](https://github.com/xymaxim/ypb/releases/tag/v2026.8.5)
+
+### Added
+
+- Add `--latency` option and `latency` query parameter on the `/mpd` endpoint
+  for live-streaming latency correcting
+- Add `outputName` to `/mpd` JSON response
+
+### Changed
+
+- Migrate documentation from mdBook to Zensical
+- Rework input interval and moment validation
+
 ## [2026.7.27](https://github.com/xymaxim/ypb/releases/tag/v2026.7.27)
 
 ### Fixed
