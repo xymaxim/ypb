@@ -57,12 +57,14 @@ func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
+	nowTime := time.Now().UTC()
+
 	startParsed, endParsed, err := input.ParseInterval(param, nil)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
 	}
 
-	if err := input.ValidateMoments(startParsed, endParsed); err != nil {
+	if err := input.ValidateMoments(startParsed, endParsed, nowTime); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 
@@ -71,7 +73,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 		return err
 	}
 	for _, mv := range []input.MomentValue{startParsed, endParsed} {
-		if err := input.ValidateLatencyWindow(mv, latency); err != nil {
+		if err := input.ValidateMoment(mv, latency, nowTime); err != nil {
 			return fmt.Errorf("bad input interval: %w", err)
 		}
 	}
@@ -114,6 +116,8 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 }
 
 func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
+	nowTime := time.Now().UTC()
+
 	parsed, err := input.ParseIntervalPart(param, nil)
 	if err != nil {
 		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
@@ -123,7 +127,7 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 	if err != nil {
 		return err
 	}
-	if err := input.ValidateLatencyWindow(parsed, latency); err != nil {
+	if err := input.ValidateMoment(parsed, latency, nowTime); err != nil {
 		return fmt.Errorf("bad input moment: %w", err)
 	}
 

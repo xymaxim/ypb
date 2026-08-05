@@ -8,23 +8,22 @@ import (
 	"github.com/xymaxim/ypb/playback"
 )
 
-// ValidateMoments performs preliminary validation on parsed start and end
-// moment values to catch obvious errors.
-func ValidateMoments(start, end MomentValue) error {
-	now := time.Now()
-
+// ValidateMoments performs preliminary structural validation on parsed start
+// and end moment values: start/end ordering, sequence ordering, and duration
+// ends. now is the reference time the run treats as the current moment (the
+// startup time captured at command run); it is used to reject a duration end
+// that extends into the future. Per-value future and latency-window checks
+// are handled by ValidateMoment.
+func ValidateMoments(start, end MomentValue, now time.Time) error {
 	switch s := start.(type) {
 	case time.Time:
-		if s.After(now) {
-			return fmt.Errorf("start time is in the future: %v", s)
-		}
 		if e, ok := end.(time.Time); ok && s.After(e) {
 			return fmt.Errorf("start time is after end time: %v > %v", s, e)
 		}
 		if d, ok := end.(time.Duration); ok {
 			endTime := s.Add(d)
 			if endTime.After(now) {
-				return fmt.Errorf("end time is in the future: %v", endTime)
+				return futureErr(endTime.String())
 			}
 		}
 	case playback.SequenceNumber:
@@ -37,31 +36,54 @@ func ValidateMoments(start, end MomentValue) error {
 		}
 	}
 
-	if e, ok := end.(time.Time); ok && e.After(now) {
-		return fmt.Errorf("end time is in the future: %v", e)
-	}
-
 	return nil
 }
 
-// ValidateLatencyWindow rejects moments within the latency window (not yet
-// ingested).
-func ValidateLatencyWindow(v MomentValue, latency time.Duration) error {
-	if latency <= 0 {
-		return nil
-	}
-
+// ValidateMoment rejects moments that are statically determinable as invalid
+// before any network activity: targets in the future ('now + D' expressions
+// or absolute times later than now), and moments within the latency window
+// (not yet ingested). now is the reference time the run treats as the current
+// moment (the startup time captured at command run).
+func ValidateMoment(v MomentValue, latency time.Duration, now time.Time) error {
 	switch m := v.(type) {
 	case MomentKeyword:
-		if m == NowKeyword {
+		if latency > 0 && m == NowKeyword {
 			return latencyErr("'now'", latency)
 		}
 	case MomentExpression:
-		if m.Left == NowKeyword && m.Operator == OpMinus && m.Right < latency {
-			return latencyErr(fmt.Sprintf("'now - %s'", m.Right), latency)
+		if m.Left == NowKeyword {
+			if m.Operator == OpPlus && m.Right > 0 {
+				return futureErr(
+					fmt.Sprintf("'now %c %s'", m.Operator, m.Right),
+				)
+			}
+			if latency > 0 && m.Operator == OpMinus && m.Right < latency {
+				return latencyErr(fmt.Sprintf("'now - %s'", m.Right), latency)
+			}
+			return nil
+		}
+
+		t, ok := m.Left.(time.Time)
+		if !ok {
+			return nil
+		}
+		var target time.Time
+		if m.Operator == OpPlus {
+			target = t.Add(m.Right)
+		} else {
+			target = t.Add(-m.Right)
+		}
+		if target.After(now) {
+			return futureErr(target.String())
+		}
+		if latency > 0 && target.Add(latency).After(now) {
+			return latencyErr(target.String(), latency)
 		}
 	case time.Time:
-		if m.Add(latency).After(time.Now()) {
+		if m.After(now) {
+			return futureErr(m.String())
+		}
+		if latency > 0 && m.Add(latency).After(now) {
 			return latencyErr(m.String(), latency)
 		}
 	}
@@ -75,4 +97,8 @@ func latencyErr(what string, latency time.Duration) error {
 		what,
 		latency,
 	)
+}
+
+func futureErr(what string) error {
+	return fmt.Errorf("cannot locate %s: in the future", what)
 }

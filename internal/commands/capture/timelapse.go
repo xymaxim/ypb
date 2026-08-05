@@ -3,6 +3,7 @@ package capture
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -45,16 +46,19 @@ func (c *Timelapse) Validate() error {
 }
 
 func (c *Timelapse) Run() error {
-	pinnedTime, err := commands.ResolvePinnedTime(c.Now)
+	startupTime := time.Now().UTC()
+	pinnedTime, err := commands.ResolvePinnedTime(c.Now, startupTime)
 	if err != nil {
 		return err
 	}
 
-	var refTime *time.Time
-	if c.Now != "" {
-		refTime = &pinnedTime
-	}
-	config, err := c.parseAndValidateInputs(refTime)
+	slog.Info(
+		"reference times",
+		slog.Time("startup", startupTime),
+		slog.Time("pinned", pinnedTime),
+	)
+
+	config, err := c.parseAndValidateInputs(&pinnedTime, startupTime)
 	if err != nil {
 		return err
 	}
@@ -94,19 +98,23 @@ func (c *Timelapse) Run() error {
 	return nil
 }
 
-func (c *Timelapse) parseAndValidateInputs(refTime *time.Time) (*TimelapseConfig, error) {
+func (c *Timelapse) parseAndValidateInputs(
+	refTime *time.Time,
+	now time.Time,
+) (*TimelapseConfig, error) {
 	start, end, err := input.ParseInterval(c.Interval, refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input interval: %w", err)
 	}
 
-	if err := input.ValidateMoments(start, end); err != nil {
+	if err := input.ValidateMoments(start, end, now); err != nil {
 		return nil, fmt.Errorf("bad input interval: %w", err)
 	}
 	for _, mv := range []input.MomentValue{start, end} {
-		if err := input.ValidateLatencyWindow(
+		if err := input.ValidateMoment(
 			mv,
 			commands.ToLatencyDuration(c.Latency),
+			now,
 		); err != nil {
 			return nil, fmt.Errorf("bad input interval: %w", err)
 		}

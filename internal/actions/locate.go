@@ -76,11 +76,9 @@ type LocateOutputContext struct {
 // the base for relative time calculations. PinnedTime represents the time of
 // the 'now' keyword: in strict mode (downloads and capture), it is set to the
 // app start-up time; in non-strict mode (serve), it is nil and 'now' falls back
-// to the end of the most recent segment.
-//
-// Latency is the streaming latency correction applied only to locating: a
-// moment is searched Latency later, while its target and actual times stay
-// unchanged.
+// to the end of the most recent segment. Latency is the streaming latency
+// correction applied only to locating: a moment is searched Latency later,
+// while its target and actual times stay unchanged.
 type LocateContext struct {
 	Head         segment.Metadata
 	Reference    segment.Metadata

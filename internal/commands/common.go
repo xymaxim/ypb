@@ -23,12 +23,13 @@ type YtdlpOptionsFlag struct {
 	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""` //nolint:lll
 }
 
-func ResolvePinnedTime(nowFlag string) (time.Time, error) {
+// ResolvePinnedTime resolves the --now flag value.
+func ResolvePinnedTime(nowFlag string, startup time.Time) (time.Time, error) {
 	if nowFlag == "" {
-		return time.Now().UTC(), nil
+		return startup, nil
 	}
 
-	v, err := input.ParseIntervalPart(nowFlag, nil)
+	v, err := input.ParseIntervalPart(nowFlag, &startup)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("parsing --now value: %w", err)
 	}
@@ -38,7 +39,7 @@ func ResolvePinnedTime(nowFlag string) (time.Time, error) {
 		return t, nil
 	case input.MomentKeyword:
 		if t == input.NowKeyword {
-			return time.Now().UTC(), nil
+			return startup, nil
 		}
 		return time.Time{}, fmt.Errorf("unsupported keyword '%s' for --now", t)
 	default:
@@ -46,14 +47,6 @@ func ResolvePinnedTime(nowFlag string) (time.Time, error) {
 			"--now value must be a time, not a duration or expression",
 		)
 	}
-}
-
-func checkYtdlp() error {
-	_, err := osexec.LookPath(apppkg.YtdlpBinaryPath)
-	if err != nil {
-		return fmt.Errorf("unable to find yt-dlp: %w", err)
-	}
-	return nil
 }
 
 func NormalizeYtdlpOptions(opts []string) []string {
@@ -83,4 +76,12 @@ func FormatDifference(diff time.Duration, showPlus bool) string {
 		sign = "+"
 	}
 	return sign + actions.FormatDuration(diff)
+}
+
+func checkYtdlp() error {
+	_, err := osexec.LookPath(apppkg.YtdlpBinaryPath)
+	if err != nil {
+		return fmt.Errorf("unable to find yt-dlp: %w", err)
+	}
+	return nil
 }

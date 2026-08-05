@@ -29,30 +29,34 @@ func (c *Download) Validate() error {
 }
 
 func (c *Download) Run() error {
-	pinnedTime, err := ResolvePinnedTime(c.Now)
+	startupTime := time.Now().UTC()
+	pinnedTime, err := ResolvePinnedTime(c.Now, startupTime)
 	if err != nil {
 		return err
 	}
+
+	slog.Info(
+		"reference times",
+		slog.Time("startup", startupTime),
+		slog.Time("pinned", pinnedTime),
+	)
 
 	if err := checkYtdlp(); err != nil {
 		return err
 	}
 
-	var refTime *time.Time
-	if c.Now != "" {
-		refTime = &pinnedTime
-	}
-	start, end, err := input.ParseInterval(c.Interval, refTime)
+	start, end, err := input.ParseInterval(c.Interval, &pinnedTime)
 	if err != nil {
 		return fmt.Errorf("parsing input interval: %w", err)
 	}
-	if err := input.ValidateMoments(start, end); err != nil {
+	if err := input.ValidateMoments(start, end, startupTime); err != nil {
 		return fmt.Errorf("bad input interval: %w", err)
 	}
 	for _, mv := range []input.MomentValue{start, end} {
-		if err := input.ValidateLatencyWindow(
+		if err := input.ValidateMoment(
 			mv,
 			ToLatencyDuration(c.Latency),
+			startupTime,
 		); err != nil {
 			return fmt.Errorf("bad input interval: %w", err)
 		}

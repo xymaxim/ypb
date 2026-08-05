@@ -452,6 +452,32 @@ func TestParseInterval(t *testing.T) {
 	}
 }
 
+func TestParseInterval_TimeOnlyWithRefTime(t *testing.T) {
+	t.Parallel()
+
+	refTime := time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC)
+	start, end, err := input.ParseInterval("10:20/10:30", &refTime)
+	if err != nil {
+		t.Fatalf("should not fail, got %v", err)
+	}
+	tt, ok := start.(time.Time)
+	if !ok {
+		t.Fatalf("expected start to be time.Time, got %T", start)
+	}
+	want := time.Date(2026, 1, 2, 10, 20, 0, 0, tt.Location())
+	if !tt.Equal(want) {
+		t.Fatalf("expected start %v, got %v", want, tt)
+	}
+	ee, ok := end.(time.Time)
+	if !ok {
+		t.Fatalf("expected end to be time.Time, got %T", end)
+	}
+	wantEnd := time.Date(2026, 1, 2, 10, 30, 0, 0, ee.Location())
+	if !ee.Equal(wantEnd) {
+		t.Fatalf("expected end %v, got %v", wantEnd, ee)
+	}
+}
+
 func TestParseInterval_NowAtStartWithRefTime(t *testing.T) {
 	t.Parallel()
 

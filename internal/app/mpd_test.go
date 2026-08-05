@@ -81,6 +81,23 @@ func TestMPDHandlerNowMinusDurationWithLatency(t *testing.T) {
 	require.Contains(t, w.Body.String(), "within the latency window, not yet ingested")
 }
 
+func TestMPDHandlerNowPlus(t *testing.T) {
+	t.Parallel()
+
+	// Playback is nil; validation must fail before it is used.
+	h := &MPDHandler{}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc(MPDPath, WithError(h.ServeHTTP))
+
+	req := httptest.NewRequest(http.MethodGet, "/mpd/now+1m", nil)
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusInternalServerError, w.Code)
+	require.Contains(t, w.Body.String(), "cannot locate 'now + 1m0s': in the future")
+}
+
 func TestMPDHandlerIntervalWithinLatencyWindow(t *testing.T) {
 	t.Parallel()
 

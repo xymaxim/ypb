@@ -2,6 +2,7 @@ package capture
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -34,16 +35,19 @@ func (c *Frame) Validate() error {
 }
 
 func (c *Frame) Run() error {
-	pinnedTime, err := commands.ResolvePinnedTime(c.Now)
+	startupTime := time.Now().UTC()
+	pinnedTime, err := commands.ResolvePinnedTime(c.Now, startupTime)
 	if err != nil {
 		return err
 	}
 
-	var refTime *time.Time
-	if c.Now != "" {
-		refTime = &pinnedTime
-	}
-	config, err := c.parseAndValidateInputs(refTime)
+	slog.Info(
+		"reference times",
+		slog.Time("startup", startupTime),
+		slog.Time("pinned", pinnedTime),
+	)
+
+	config, err := c.parseAndValidateInputs(&pinnedTime, startupTime)
 	if err != nil {
 		return err
 	}
@@ -95,14 +99,18 @@ func (c *Frame) Run() error {
 	return nil
 }
 
-func (c *Frame) parseAndValidateInputs(refTime *time.Time) (*FrameConfig, error) {
+func (c *Frame) parseAndValidateInputs(
+	refTime *time.Time,
+	now time.Time,
+) (*FrameConfig, error) {
 	momentValue, err := input.ParseIntervalPart(c.Moment, refTime)
 	if err != nil {
 		return nil, fmt.Errorf("parsing input moment: %w", err)
 	}
-	if err := input.ValidateLatencyWindow(
+	if err := input.ValidateMoment(
 		momentValue,
 		commands.ToLatencyDuration(c.Latency),
+		now,
 	); err != nil {
 		return nil, fmt.Errorf("bad input moment: %w", err)
 	}
