@@ -9,7 +9,7 @@ site_dir = "docs/site"
 extra_css = ["stylesheets/extra.css"]
 
 nav = [
-  "index.md",
+  { "Welcome" = "index.md" },
   { "Getting started" = [
     "quickstart.md",
     { "Installation" = [
