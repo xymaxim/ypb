@@ -8,12 +8,8 @@ import (
 	"github.com/xymaxim/ypb/playback"
 )
 
-// ValidateMoments performs preliminary structural validation on parsed start
-// and end moment values: start/end ordering, sequence ordering, and duration
-// ends. now is the reference time the run treats as the current moment (the
-// startup time captured at command run); it is used to reject a duration end
-// that extends into the future. Per-value future and latency-window checks
-// are handled by ValidateMoment.
+// ValidateMoments checks start/end ordering and rejects duration ends in the
+// future.
 func ValidateMoments(start, end MomentValue, now time.Time) error {
 	switch s := start.(type) {
 	case time.Time:
@@ -39,11 +35,7 @@ func ValidateMoments(start, end MomentValue, now time.Time) error {
 	return nil
 }
 
-// ValidateMoment rejects moments that are statically determinable as invalid
-// before any network activity: targets in the future ('now + D' expressions
-// or absolute times later than now), and moments within the latency window
-// (not yet ingested). now is the reference time the run treats as the current
-// moment (the startup time captured at command run).
+// ValidateMoment rejects moments that are in the future or in the latency window.
 func ValidateMoment(v MomentValue, latency time.Duration, now time.Time) error {
 	switch m := v.(type) {
 	case MomentKeyword:
