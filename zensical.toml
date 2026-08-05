@@ -18,6 +18,7 @@ nav = [
       { "Container (Compose)" = "guides/install/container.md" },
     ]},
   ]},
+  { "Overview" = "overview.md"} ,
   { "Tutorials" = [
     "tutorials/timelapse.md",
   ]},
