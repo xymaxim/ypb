@@ -1,4 +1,4 @@
-package app
+package app_test
 
 import (
 	"net/http"
@@ -7,16 +7,17 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 
 func TestPlayHandlerUnknownPathNotFound(t *testing.T) {
 	t.Parallel()
 
-	h := &PlayHandler{}
+	h := &app.PlayHandler{}
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", WithError(h.ServeHTTP))
+	mux.Handle("/{$}", app.WithError(h.ServeHTTP))
 
 	req := httptest.NewRequest(http.MethodGet, "/anything", nil)
 	w := httptest.NewRecorder()
@@ -29,9 +30,9 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 	t.Parallel()
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", WithError((&PlayHandler{}).ServeHTTP))
-	mux.HandleFunc(InfoPath, WithError(
-		(&InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
+	mux.Handle("/{$}", app.WithError((&app.PlayHandler{}).ServeHTTP))
+	mux.HandleFunc(app.InfoPath, app.WithError(
+		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
 	)
 
 	req := httptest.NewRequest(http.MethodGet, "/info", nil)
