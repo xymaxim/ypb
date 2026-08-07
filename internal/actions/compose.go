@@ -65,6 +65,7 @@ func ComposeDynamic(
 		},
 		AvailabilityStartTime:      time.Now(),
 		TimeShiftBufferDepth:       1 * time.Hour,
+		SuggestedPresentationDelay: 10 * time.Second,
 	}, pb.Info())
 	if err != nil {
 		return nil, fmt.Errorf("composing mpd: %w", err)
