@@ -42,7 +42,7 @@ func (c *Serve) Run() error {
 		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
 	)
 
-	app.Server.Handler = mux
+	app.Server.Handler = apppkg.WithCORS(mux)
 
 	fmt.Printf(
 		"(<<) Playback started and listening on %s...\n",
