@@ -44,6 +44,8 @@ type ProgramInformation struct {
 }
 
 type Period struct {
+	ID             string          `xml:"id,attr,omitempty"`
+	Start          string          `xml:"start,attr,omitempty"`
 	AdaptationSets []AdaptationSet `xml:"AdaptationSet"`
 }
 
@@ -94,7 +96,7 @@ func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
 			Title:  videoInfo.Title,
 			Source: urlutil.BuildVideoLiveURL(videoInfo.ID),
 		},
-		Periods: []Period{{}},
+		Periods: []Period{{ID: "0", Start: "PT0S"}},
 	}
 }
 

@@ -5,7 +5,7 @@
      <Source>https://www.youtube.com/live/abcdefgh123</Source>
    </ProgramInformation>
    <BaseURL>http://localhost:9000</BaseURL>
-   <Period>
+   <Period id="0" start="PT0S">
      <AdaptationSet id="0" mimeType="audio/mp4">
        <Representation id="140" bandwidth="128000" codecs="mp4a.40.2" audioSamplingRate="44100">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
