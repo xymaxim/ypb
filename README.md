@@ -3,7 +3,7 @@
 [![Test](https://github.com/xymaxim/ypb/actions/workflows/test.yml/badge.svg)](https://github.com/xymaxim/ypb/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/xymaxim/ypb)](https://github.com/xymaxim/ypb/releases/latest)
 
-[Project page](https://github.com/xymaxim/ypb) &nbsp; [Documentation](https://xymaxim.github.io/ypb) &nbsp; [Changelog](https://xymaxim.github.io/ypb/changelog.html)
+[Project page](https://github.com/xymaxim/ypb) &nbsp; [Documentation](https://xymaxim.github.io/ypb) &nbsp; [Changelog](https://xymaxim.github.io/ypb/changelog/)
 
 *Rewind to past moments in live streams and play or download excerpts*
 
@@ -26,43 +26,39 @@ player, or download them as local files.
 sequenceDiagram
     autonumber
     participant D as Download
-    participant S as Serve
-    participant Y as YouTube
     participant E as yt-dlp<br/>(extractor)
-    S->>Y: Fetch info (via yt-dlp)
-    Y-->>S: Video info
-    D->>S: Request MPD
-    S->>S: Generate MPD
-    S-->>D: MPD (proxied base URLs)
+    participant P as Proxy
+    participant Y as YouTube
+    D->>D: Generate MPD<br/>(proxied based URLs)
     D->>E: Pass MPD
     loop Download
-        E->>S: Request segment (proxied URL)
-        S->>Y: Request segment
-        Y-->>S: Stream segment
-        S-->>E: Stream segment
+        E->>P: Request segment (proxied URL)
+        P->>Y: Request segment
+        Y-->>P: Stream segment
+        P-->>E: Stream segment
     end
     E->>E: Write to file
 ```
 
-Ypb runs in two modes: serve and download.
+*Download mode passes a composed MPEG-DASH manifest to yt-dlp's general extractor*
 
-Serve mode runs a local HTTP proxy server that handles [API
-requests](https://xymaxim.github.io/ypb/reference/api.html) to locate moments in
-the stream, generate MPEG-DASH manifests (MPDs), and serve media segments with
-HTTP error retry handling. It relies on yt-dlp for fetching video information
-and solving JavaScript challenges.
+Ypb runs in three modes: serve, download, and play.
 
-Download mode saves excerpts to local files with
-a single command, using the same proxy internally to compose manifests before
-passing them to yt-dlp's general extractor.
+**Serve** mode runs a local HTTP proxy server that generates MPEG-DASH manifests
+(MPDs) and serves media segments, usable with any MPEG-DASH compatible player
+or downloader. **Download** mode composes a manifest and passes it to yt-dlp's
+general extractor to save an excerpt as a local file. **Play** mode opens a
+minimal web page with the dash.js player, letting you preview excerpts by
+rewinding directly in the browser.
+
+See [Overview](https://xymaxim.github.io/ypb/overview/) for more on each mode.
 
 ## Installation
 
 Ypb works on Linux, macOS, and Windows.
 
-Read the
-[Installation](https://xymaxim.github.io/ypb/guides/install/install.html) guide
-for different ways to install and run `ypb`.
+Read the [Installation](https://xymaxim.github.io/ypb/guides/install/install/)
+guide for different ways to install and run `ypb`.
 
 ## Showcase
 
