@@ -42,6 +42,7 @@ type format struct {
 	Width             *int              `json:"width"`
 	Height            *int              `json:"height"`
 	FrameRate         *int              `json:"fps"`
+	Tbr               float64           `json:"tbr"`
 	HTTPHeaders       map[string]string `json:"http_headers"`
 }
 
@@ -76,6 +77,7 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 			BaseURL:  f.URL,
 			Itag:     f.FormatID,
 			MimeType: mimeType,
+			Tbr:      f.Tbr,
 		}
 		if f.VideoCodec == "none" {
 			common.Codecs = f.AudioCodec

@@ -57,6 +57,7 @@ type AdaptationSet struct {
 
 type Representation struct {
 	ID                string          `xml:"id,attr"`
+	Bandwidth         int             `xml:"bandwidth,attr"`
 	Codecs            string          `xml:"codecs,attr"`
 	AudioSamplingRate *int            `xml:"audioSamplingRate,attr,omitempty"`
 	Width             *int            `xml:"width,attr,omitempty"`
@@ -119,6 +120,7 @@ func addAudioRepresentations(period *Period, streams []info.AudioStream, templat
 		set := period.getOrCreateAdaptationSet(stream.MimeType, stream.Codecs)
 		set.Representations = append(set.Representations, Representation{
 			ID:                stream.Itag,
+			Bandwidth:         int(stream.Tbr * 1000),
 			Codecs:            stream.Codecs,
 			AudioSamplingRate: &stream.AudioSamplingRate,
 			SegmentTemplate:   template,
@@ -131,6 +133,7 @@ func addVideoRepresentations(period *Period, streams []info.VideoStream, templat
 		set := period.getOrCreateAdaptationSet(stream.MimeType, stream.Codecs)
 		set.Representations = append(set.Representations, Representation{
 			ID:              stream.Itag,
+			Bandwidth:       int(stream.Tbr * 1000),
 			Codecs:          stream.Codecs,
 			Width:           &stream.Width,
 			Height:          &stream.Height,

@@ -37,6 +37,7 @@ type CommonStream struct {
 	Codecs   string
 	Itag     string
 	MimeType string
+	Tbr      float64
 }
 
 type AudioStream struct {
