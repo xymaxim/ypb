@@ -70,6 +70,7 @@ type Representation struct {
 }
 
 type SegmentTemplate struct {
+	Initialization         string           `xml:"initialization,attr"`
 	Media                  string           `xml:"media,attr"`
 	StartNumber            int              `xml:"startNumber,attr"`
 	Timescale              string           `xml:"timescale,attr"`
@@ -197,6 +198,10 @@ func codecFamily(codecs string) string {
 func baseSegmentTemplate(opts CommonOptions) SegmentTemplate {
 	timescale := time.Second.Milliseconds()
 	return SegmentTemplate{
+		Initialization: fmt.Sprintf(
+			"segments/itag/$RepresentationID$/sq/%d",
+			opts.StartNumber,
+		),
 		Media:                  segmentMediaURL,
 		StartNumber:            opts.StartNumber,
 		Timescale:              strconv.FormatInt(timescale, 10),
