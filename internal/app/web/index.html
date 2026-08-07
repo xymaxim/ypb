@@ -41,7 +41,6 @@
     margin-block-end: 0;
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/dashjs@5.2.0/dist/modern/umd/dash.all.min.js"></script>
 </head>
 <body>
 <header>
@@ -50,11 +49,14 @@
 </header>
 <video id="player" controls muted playsinline></video>
 <script type="module">
+  import { MediaPlayer } from 'https://cdn.dashjs.org/v5.2.0/modern/esm/dash.all.min.js';
+
   const interval = new URLSearchParams(location.search).get('i') || 'now';
   const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
   const video = document.getElementById('player');
   const status = document.getElementById('status');
   const liveLink = document.getElementById('live');
+  const channelLink = document.getElementById('channel').firstElementChild;
 
   const showError = (message) => {
     status.textContent = message;
@@ -63,12 +65,12 @@
     status.textContent = '';
   };
 
-  const player = dashjs.MediaPlayer().create();
-  player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+  const player = MediaPlayer().create();
+  player.on(MediaPlayer.events.ERROR, (e) => {
     showError(`Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`);
   });
-  player.on(dashjs.MediaPlayer.events.PLAYBACK_PLAYING, clearError);
-  player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, clearError);
+  player.on(MediaPlayer.events.PLAYBACK_PLAYING, clearError);
+  player.on(MediaPlayer.events.STREAM_INITIALIZED, clearError);
 
   player.initialize(video, mpdURL, true);
 
