@@ -31,13 +31,19 @@
     color: inherit;
     text-decoration: none;
   }
-  video {
+  #player-container {
+    position: relative;
     width: 100%;
     max-width: 720px;
     aspect-ratio: 16 / 9;
     margin-top: 1em;
     background: black;
     border-radius: 12px;
+    overflow: hidden;
+  }
+  #player-container video {
+    width: 100%;
+    height: 100%;
   }
   #status {
       display: block;
@@ -49,6 +55,14 @@
     margin-block-end: 0;
   }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Dash-Industry-Forum/dash.js@v5.2.0/contrib/controlbar/controlbar.css">
+<style>
+  .cb-rate-group,
+  .cb-live-indicator {
+    display: none;
+  }
+</style>
 </head>
 <body>
 <header>
@@ -56,9 +70,14 @@
   <div id="channel"><a href="#"></a></div>
   <span id="status"></span>
 </header>
-<video id="player" controls muted playsinline></video>
+<div id="player-container">
+  <video id="player" muted playsinline></video>
+</div>
 <script type="module">
-  import { MediaPlayer } from 'https://cdn.dashjs.org/v5.2.0/modern/esm/dash.all.min.js';
+  import { MediaPlayer, Protection } from 'https://cdn.dashjs.org/v5.2.0/modern/esm/dash.all.min.js';
+  import { ControlBar } from 'https://cdn.jsdelivr.net/gh/Dash-Industry-Forum/dash.js@v5.2.0/contrib/controlbar/ControlBar.js';
+
+  window.dashjs = { MediaPlayer, Protection };
 
   const interval = new URLSearchParams(location.search).get('i') || 'now';
   const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
@@ -82,6 +101,10 @@
   player.on(MediaPlayer.events.STREAM_INITIALIZED, clearError);
 
   player.initialize(video, mpdURL, true);
+
+  const controlbar = new ControlBar(player, video);
+  controlbar.init(document.getElementById('player-container'));
+  controlbar.enable();
 
   try {
     const res = await fetch('/info');
