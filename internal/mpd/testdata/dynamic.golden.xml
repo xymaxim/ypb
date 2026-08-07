@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
- <MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="dynamic" availabilityStartTime="2026-01-02T03:04:05Z" timeShiftBufferDepth="PT2H0M0S">
+ <MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="dynamic" availabilityStartTime="2026-01-02T03:04:05Z" timeShiftBufferDepth="PT30S">
    <ProgramInformation>
      <Title>Sample stream</Title>
      <Source>https://www.youtube.com/live/abcdefgh123</Source>

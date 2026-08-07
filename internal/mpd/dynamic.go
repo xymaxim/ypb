@@ -14,8 +14,9 @@ const (
 
 type DynamicOptions struct {
 	CommonOptions
-	AvailabilityStartTime time.Time
-	TimeShiftBufferDepth  time.Duration
+	AvailabilityStartTime      time.Time
+	TimeShiftBufferDepth       time.Duration
+	SuggestedPresentationDelay time.Duration
 }
 
 // ComposeDynamic builds a dynamic MPD manifest.
@@ -26,6 +27,9 @@ func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (strin
 	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)
 	if opts.TimeShiftBufferDepth > 0 {
 		m.TimeShiftBufferDepth = formatDuration(opts.TimeShiftBufferDepth)
+	}
+	if opts.SuggestedPresentationDelay > 0 {
+		m.SuggestedPresentationDelay = formatDuration(opts.SuggestedPresentationDelay)
 	}
 	m.Periods[0].AdaptationSets = buildAdaptationSets(
 		buildDynamicSegmentTemplate(opts),

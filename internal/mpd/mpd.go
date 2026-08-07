@@ -24,16 +24,17 @@ type CommonOptions struct {
 }
 
 type MPD struct {
-	XMLName                   xml.Name            `xml:"MPD"`
-	Xmlns                     string              `xml:"xmlns,attr"`
-	Profiles                  string              `xml:"profiles,attr"`
-	Type                      string              `xml:"type,attr"`
-	AvailabilityStartTime     string              `xml:"availabilityStartTime,attr,omitempty"`
-	MediaPresentationDuration string              `xml:"mediaPresentationDuration,attr,omitempty"`
-	TimeShiftBufferDepth      string              `xml:"timeShiftBufferDepth,attr,omitempty"`
-	ProgramInformation        *ProgramInformation `xml:"ProgramInformation"`
-	BaseURL                   string              `xml:"BaseURL"`
-	Periods                   []Period            `xml:"Period"`
+	XMLName                    xml.Name            `xml:"MPD"`
+	Xmlns                      string              `xml:"xmlns,attr"`
+	Profiles                   string              `xml:"profiles,attr"`
+	Type                       string              `xml:"type,attr"`
+	AvailabilityStartTime      string              `xml:"availabilityStartTime,attr,omitempty"`
+	MediaPresentationDuration  string              `xml:"mediaPresentationDuration,attr,omitempty"`
+	TimeShiftBufferDepth       string              `xml:"timeShiftBufferDepth,attr,omitempty"`
+	SuggestedPresentationDelay string              `xml:"suggestedPresentationDelay,attr,omitempty"`
+	ProgramInformation         *ProgramInformation `xml:"ProgramInformation"`
+	BaseURL                    string              `xml:"BaseURL"`
+	Periods                    []Period            `xml:"Period"`
 }
 
 type ProgramInformation struct {

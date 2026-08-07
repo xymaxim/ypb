@@ -63,7 +63,8 @@ func ComposeDynamic(
 			SegmentDuration: pb.Info().SegmentDuration,
 			PTS:             pts,
 		},
-		AvailabilityStartTime: time.Now(),
+		AvailabilityStartTime:      time.Now(),
+		TimeShiftBufferDepth:       1 * time.Hour,
 	}, pb.Info())
 	if err != nil {
 		return nil, fmt.Errorf("composing mpd: %w", err)
