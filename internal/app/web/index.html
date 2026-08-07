@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ypb player</title>
+<style>
+  html, body {
+    margin: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  header {
+    width: 100%;
+    max-width: 720px;
+  }
+  h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  video {
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: 12px;
+  }
+  #status {
+      display: block;
+      margin-block-end: 1em;
+      color: tomato;
+  }
+  #status:empty {
+    display: none;
+    margin-block-end: 0;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/dashjs@5.2.0/dist/modern/umd/dash.all.min.js"></script>
+</head>
+<body>
+<header>
+  <h3><a id="live" href="#">Live stream</a></h3>
+  <span id="status"></span>
+</header>
+<video id="player" controls muted playsinline></video>
+<script type="module">
+  const interval = new URLSearchParams(location.search).get('i') || 'now';
+  const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
+  const video = document.getElementById('player');
+  const status = document.getElementById('status');
+  const liveLink = document.getElementById('live');
+
+  const showError = (message) => {
+    status.textContent = message;
+  };
+  const clearError = () => {
+    status.textContent = '';
+  };
+
+  const player = dashjs.MediaPlayer().create();
+  player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+    showError(`Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`);
+  });
+  player.on(dashjs.MediaPlayer.events.PLAYBACK_PLAYING, clearError);
+  player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, clearError);
+
+  player.initialize(video, mpdURL, true);
+
+  try {
+    const res = await fetch('/info');
+    if (res.ok) {
+      const info = await res.json();
+      document.title = info.title;
+      liveLink.textContent = info.title;
+      liveLink.href = `https://www.youtube.com/live/${info.id}`;
+    }
+  } catch {
+  }
+</script>
+</body>
+</html>

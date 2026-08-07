@@ -16,6 +16,7 @@ type CLI struct {
 	Capture  CaptureCommands   `cmd:"" help:"Capture single frame or time-lapse sequence"`
 	Download commands.Download `cmd:"" help:"Download stream excerpts"`
 	Serve    commands.Serve    `cmd:"" help:"Start playback server"`
+	Play     commands.Play     `cmd:"" help:"Start web player"`
 	Version  commands.Version  `cmd:"" help:"Show version info and exit"`
 }
 
