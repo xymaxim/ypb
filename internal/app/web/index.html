@@ -44,7 +44,8 @@
 </head>
 <body>
 <header>
-  <h3><a id="live" href="#">Live stream</a></h3>
+  <h3><a id="live" href="#"></a></h3>
+  <div id="channel"><a href="#"></a></div>
   <span id="status"></span>
 </header>
 <video id="player" controls muted playsinline></video>
@@ -81,6 +82,10 @@
       document.title = info.title;
       liveLink.textContent = info.title;
       liveLink.href = `https://www.youtube.com/live/${info.id}`;
+      if (info.channelId && info.channelTitle) {
+        channelLink.textContent = info.channelTitle;
+        channelLink.href = `https://www.youtube.com/channel/${info.channelId}`;
+      }
     }
   } catch {
   }
