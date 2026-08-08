@@ -17,7 +17,7 @@ func TestPlayHandlerUnknownPathNotFound(t *testing.T) {
 	h := &app.PlayHandler{}
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", app.WithError(h.ServeHTTP))
+	mux.Handle("/", app.WithError(h.ServeHTTP))
 
 	req := httptest.NewRequest(http.MethodGet, "/anything", nil)
 	w := httptest.NewRecorder()
@@ -30,7 +30,7 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 	t.Parallel()
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", app.WithError((&app.PlayHandler{}).ServeHTTP))
+	mux.Handle("/", app.WithError((&app.PlayHandler{}).ServeHTTP))
 	mux.HandleFunc(app.InfoPath, app.WithError(
 		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
 	)

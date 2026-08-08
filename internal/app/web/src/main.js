@@ -1,0 +1,33 @@
+import { createPlayer, MediaPlayer } from './player.js';
+
+const interval = new URLSearchParams(location.search).get('i') || 'now';
+const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
+
+const video = document.getElementById('player');
+const container = document.getElementById('player-container');
+const statusEl = document.getElementById('status');
+const videoLink = document.getElementById('live');
+const channelLink = document.querySelector('#channel a');
+
+const player = createPlayer(video, mpdURL);
+
+player.on(MediaPlayer.events.ERROR, (e) => {
+  statusEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
+});
+player.on(MediaPlayer.events.PLAYBACK_PLAYING, () => { statusEl.textContent = ''; });
+player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { statusEl.textContent = ''; });
+
+try {
+  const res = await fetch('/info');
+  if (res.ok) {
+    const info = await res.json();
+    document.title = info.title;
+    videoLink.textContent = info.title;
+    videoLink.href = `https://www.youtube.com/live/${info.id}`;
+    if (info.channelId && info.channelTitle) {
+      channelLink.textContent = info.channelTitle;
+      channelLink.href = `https://www.youtube.com/channel/${info.channelId}`;
+    }
+  }
+} catch {
+}

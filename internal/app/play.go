@@ -3,23 +3,20 @@ package app
 import (
 	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
 )
 
-//go:embed web/index.html
+//go:embed web
 var webFS embed.FS
 
 type PlayHandler struct{}
 
 func (h *PlayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
-	page, err := webFS.ReadFile("web/index.html")
+	content, err := fs.Sub(webFS, "web")
 	if err != nil {
-		return fmt.Errorf("reading player page: %w", err)
+		return fmt.Errorf("creating web filesystem: %w", err)
 	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if _, err := w.Write(page); err != nil {
-		return fmt.Errorf("writing player page: %w", err)
-	}
+	http.FileServer(http.FS(content)).ServeHTTP(w, r)
 	return nil
 }
