@@ -1,4 +1,5 @@
 import { createPlayer, MediaPlayer } from './player.js';
+import { attachPlayheadDisplay } from './ui/playhead.js';
 import { attachQualitySelector, attachTrackSelector } from './ui/selectors.js';
 
 const interval = new URLSearchParams(location.search).get('i') || 'now';
@@ -12,20 +13,10 @@ const statusEl = document.getElementById('status');
 const videoLink = document.getElementById('live');
 const channelLink = document.querySelector('#channel a');
 
+const playheadEl = document.getElementById('playhead');
+
 const qualitiesEl = document.getElementById('qualities');
 const tracksEl = document.getElementById('tracks');
-
-const player = createPlayer(video, mpdURL);
-window.player = player;
-
-attachQualitySelector(player, qualitiesEl);
-attachTrackSelector(player, tracksEl);
-
-player.on(MediaPlayer.events.ERROR, (e) => {
-  statusEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
-});
-player.on(MediaPlayer.events.PLAYBACK_PLAYING, () => { statusEl.textContent = ''; });
-player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { statusEl.textContent = ''; });
 
 try {
   const res = await fetch('/info');
@@ -40,4 +31,33 @@ try {
     }
   }
 } catch {
+}
+
+let manifestSource;
+let startActual = NaN;
+try {
+  const res = await fetch(mpdURL, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error(`manifest request failed: ${res.status}`);
+  const data = await res.json();
+  startActual = new Date(data.metadata.startActualTime).getTime() / 1000;
+  manifestSource = URL.createObjectURL(
+    new Blob([data.mpd], { type: 'application/dash+xml' })
+  );
+} catch (err) {
+  statusEl.textContent = `Playback error: ${err.message || 'unknown'}`;
+}
+
+if (manifestSource) {
+  const player = createPlayer(video, manifestSource);
+  window.player = player;
+
+  attachPlayheadDisplay(player, playheadEl, startActual);
+  attachQualitySelector(player, qualitiesEl);
+  attachTrackSelector(player, tracksEl);
+
+  player.on(MediaPlayer.events.ERROR, (e) => {
+    statusEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
+  });
+  player.on(MediaPlayer.events.PLAYBACK_PLAYING, () => { statusEl.textContent = ''; });
+  player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { statusEl.textContent = ''; });
 }
