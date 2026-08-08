@@ -9,6 +9,7 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 }
+
 header {
   width: 100%;
   max-width: 720px;
@@ -24,6 +25,7 @@ h3 a {
   color: inherit;
   text-decoration: none;
 }
+
 #player-container {
   position: relative;
   width: 100%;
@@ -38,6 +40,7 @@ h3 a {
   width: 100%;
   height: 100%;
 }
+
 #status {
   display: block;
   margin-block-end: 1em;
@@ -46,4 +49,20 @@ h3 a {
 #status:empty {
   display: none;
   margin-block-end: 0;
+}
+
+.selector {
+  width: 100%;
+  max-width: 720px;
+  margin-top: 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+.selector-item {
+  cursor: pointer;
+}
+.selector-item.active {
+  font-weight: bold;
 }

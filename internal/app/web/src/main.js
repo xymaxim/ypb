@@ -1,15 +1,25 @@
 import { createPlayer, MediaPlayer } from './player.js';
+import { attachQualitySelector, attachTrackSelector } from './ui/selectors.js';
 
 const interval = new URLSearchParams(location.search).get('i') || 'now';
 const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
 
 const video = document.getElementById('player');
 const container = document.getElementById('player-container');
+
 const statusEl = document.getElementById('status');
+
 const videoLink = document.getElementById('live');
 const channelLink = document.querySelector('#channel a');
 
+const qualitiesEl = document.getElementById('qualities');
+const tracksEl = document.getElementById('tracks');
+
 const player = createPlayer(video, mpdURL);
+window.player = player;
+
+attachQualitySelector(player, qualitiesEl);
+attachTrackSelector(player, tracksEl);
 
 player.on(MediaPlayer.events.ERROR, (e) => {
   statusEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
