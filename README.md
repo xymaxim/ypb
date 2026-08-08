@@ -17,6 +17,7 @@ player, or download them as local files.
 - Standalone CLI and proxy streaming server for playback
 - Rewind precisely to past moments far beyond the web player’s limits
 - Play excerpts immediately without downloading
+- Play past moments in a web player in the browser
 - Works with any MPEG-DASH compatible player or downloader
 - Uses [yt-dlp](https://github.com/yt-dlp/yt-dlp/) to reliably fetch info and download media
 
@@ -98,6 +99,21 @@ Or download them with `yt-dlp`:
 
 ```shell
 yt-dlp http://localhost:9000/mpd/10m--now
+```
+
+### Play in the browser
+
+Start the web player and open the printed address:
+
+```shell
+ypb play Mm_zVDDUeNA
+```
+
+Open `http://localhost:9000` and edit the `i` parameter in the address bar to
+rewind, for example to play the last 30 minutes:
+
+```text
+http://localhost:9000/?i=30m--now
 ```
 
 ## License
