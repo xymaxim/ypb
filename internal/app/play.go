@@ -30,3 +30,8 @@ func (h *PlayHandler) ServePage(w http.ResponseWriter, r *http.Request) error {
 	_, err = w.Write(data)
 	return err
 }
+
+func (h *PlayHandler) ServeRoot(w http.ResponseWriter, r *http.Request) error {
+	http.Redirect(w, r, "/now", http.StatusMovedPermanently)
+	return nil
+}

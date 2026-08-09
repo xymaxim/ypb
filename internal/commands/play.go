@@ -28,6 +28,7 @@ func (c *Play) Run() error {
 	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	mux := http.NewServeMux()
+	mux.Handle("/{$}", apppkg.WithError((&apppkg.PlayHandler{}).ServeRoot))
 	mux.Handle("/", apppkg.WithError((&apppkg.PlayHandler{}).ServeHTTP))
 	mux.Handle("/{interval}", apppkg.WithError((&apppkg.PlayHandler{}).ServePage))
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
