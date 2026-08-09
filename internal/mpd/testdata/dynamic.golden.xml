@@ -11,7 +11,7 @@
        <Representation id="140" bandwidth="128000" codecs="mp4a.40.2" audioSamplingRate="44100">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
@@ -20,14 +20,14 @@
        <Representation id="160" bandwidth="100000" codecs="avc1.42c00b" width="256" height="144" frameRate="15">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
        <Representation id="137" bandwidth="1500000" codecs="avc1.640028" width="1920" height="1080" frameRate="30">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
@@ -36,14 +36,14 @@
        <Representation id="394" bandwidth="80000" codecs="av01.0.00M.08" width="256" height="144" frameRate="30">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
        <Representation id="399" bandwidth="500000" codecs="av01.0.08M.08" width="1920" height="1080" frameRate="30">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
@@ -52,7 +52,7 @@
        <Representation id="248" bandwidth="1000000" codecs="vp9" width="1920" height="1080" frameRate="30">
          <SegmentTemplate media="segments/itag/$RepresentationID$/sq/$Number$" startNumber="123" timescale="1000" presentationTimeOffset="0">
            <SegmentTimeline>
-             <S t="0" d="5000" r="1000"/>
+             <S t="0" d="5000" r="9999"/>
            </SegmentTimeline>
          </SegmentTemplate>
        </Representation>
