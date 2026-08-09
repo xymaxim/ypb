@@ -2,6 +2,7 @@ package mpd
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/info"
@@ -25,6 +26,7 @@ func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (strin
 	m.Type = mpdTypeDynamic
 	m.Profiles = mpdProfilesLive
 	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)
+	m.MinimumUpdatePeriod = formatDuration(99 * time.Hour)
 	if opts.TimeShiftBufferDepth > 0 {
 		m.TimeShiftBufferDepth = formatDuration(opts.TimeShiftBufferDepth)
 	}
@@ -32,14 +34,27 @@ func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (strin
 		m.SuggestedPresentationDelay = formatDuration(opts.SuggestedPresentationDelay)
 	}
 	m.Periods[0].AdaptationSets = buildAdaptationSets(
-		buildDynamicSegmentTemplate(opts),
+		buildDynamicSegmentTemplate(opts, opts.AudioPTS),
+		buildDynamicSegmentTemplate(opts, opts.VideoPTS),
 		videoInfo,
 	)
-	return marshal(m)
+	output, err := marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return strings.ReplaceAll(output, "></S>", "/>"), nil
 }
 
-func buildDynamicSegmentTemplate(opts DynamicOptions) SegmentTemplate {
-	t := baseSegmentTemplate(opts.CommonOptions)
-	t.Duration = strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10)
+func buildDynamicSegmentTemplate(opts DynamicOptions, pts int64) SegmentTemplate {
+	t := baseSegmentTemplate(opts.CommonOptions, pts)
+	t.SegmentTimeline = &SegmentTimeline{
+		Timeline: []*S{
+			{
+				T: t.PresentationTimeOffset,
+				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),
+				R: "1000",
+			},
+		},
+	}
 	return t
 }

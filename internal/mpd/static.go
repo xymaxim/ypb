@@ -25,16 +25,17 @@ func ComposeStatic(opts StaticOptions, videoInfo info.VideoInformation) (string,
 	m.Profiles = mpdProfilesStatic
 	m.MediaPresentationDuration = formatDuration(opts.MediaDuration)
 	m.Periods[0].AdaptationSets = buildAdaptationSets(
-		buildStaticSegmentTemplate(opts),
+		buildStaticSegmentTemplate(opts, opts.AudioPTS),
+		buildStaticSegmentTemplate(opts, opts.VideoPTS),
 		videoInfo,
 	)
 	return marshal(m)
 }
 
-func buildStaticSegmentTemplate(opts StaticOptions) SegmentTemplate {
-	t := baseSegmentTemplate(opts.CommonOptions)
+func buildStaticSegmentTemplate(opts StaticOptions, pts int64) SegmentTemplate {
+	t := baseSegmentTemplate(opts.CommonOptions, pts)
 	t.SegmentTimeline = &SegmentTimeline{
-		Timeline: []S{
+		Timeline: []*S{
 			{
 				T: t.PresentationTimeOffset,
 				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),

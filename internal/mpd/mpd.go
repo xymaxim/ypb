@@ -12,15 +12,17 @@ import (
 )
 
 const (
-	mpdNamespace    = "urn:mpeg:DASH:schema:MPD:2011"
-	segmentMediaURL = "segments/itag/$RepresentationID$/sq/$Number$"
+	mpdNamespace            = "urn:mpeg:dash:schema:mpd:2011"
+	segmentMediaURL         = "segments/itag/$RepresentationID$/sq/$Number$"
+	ManifestTimescale int64 = 1000
 )
 
 type CommonOptions struct {
 	BaseURL         string
 	StartNumber     int
 	SegmentDuration time.Duration
-	PTS             float64
+	AudioPTS        int64
+	VideoPTS        int64
 }
 
 type MPD struct {
@@ -30,6 +32,7 @@ type MPD struct {
 	Type                       string              `xml:"type,attr"`
 	AvailabilityStartTime      string              `xml:"availabilityStartTime,attr,omitempty"`
 	MediaPresentationDuration  string              `xml:"mediaPresentationDuration,attr,omitempty"`
+	MinimumUpdatePeriod        string              `xml:"minimumUpdatePeriod,attr,omitempty"`
 	TimeShiftBufferDepth       string              `xml:"timeShiftBufferDepth,attr,omitempty"`
 	SuggestedPresentationDelay string              `xml:"suggestedPresentationDelay,attr,omitempty"`
 	ProgramInformation         *ProgramInformation `xml:"ProgramInformation"`
@@ -70,7 +73,6 @@ type Representation struct {
 }
 
 type SegmentTemplate struct {
-	Initialization         string           `xml:"initialization,attr"`
 	Media                  string           `xml:"media,attr"`
 	StartNumber            int              `xml:"startNumber,attr"`
 	Timescale              string           `xml:"timescale,attr"`
@@ -80,7 +82,7 @@ type SegmentTemplate struct {
 }
 
 type SegmentTimeline struct {
-	Timeline []S `xml:"S"`
+	Timeline []*S `xml:"S"`
 }
 
 type S struct {
@@ -104,13 +106,14 @@ func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
 // buildAdaptationSets groups audio/video streams into adaptation sets by
 // codec family and labels each with its representative codecs attribute.
 func buildAdaptationSets(
-	template SegmentTemplate,
+	audioTemplate SegmentTemplate,
+	videoTemplate SegmentTemplate,
 	videoInfo info.VideoInformation,
 ) []AdaptationSet {
 	period := Period{}
 
-	addAudioRepresentations(&period, videoInfo.AudioStreams, template)
-	addVideoRepresentations(&period, videoInfo.VideoStreams, template)
+	addAudioRepresentations(&period, videoInfo.AudioStreams, audioTemplate)
+	addVideoRepresentations(&period, videoInfo.VideoStreams, videoTemplate)
 
 	for i := range period.AdaptationSets {
 		period.AdaptationSets[i].setRepresentativeCodecs()
@@ -195,17 +198,12 @@ func codecFamily(codecs string) string {
 	return codecs
 }
 
-func baseSegmentTemplate(opts CommonOptions) SegmentTemplate {
-	timescale := time.Second.Milliseconds()
+func baseSegmentTemplate(opts CommonOptions, pts int64) SegmentTemplate {
 	return SegmentTemplate{
-		Initialization: fmt.Sprintf(
-			"segments/itag/$RepresentationID$/sq/%d",
-			opts.StartNumber,
-		),
 		Media:                  segmentMediaURL,
 		StartNumber:            opts.StartNumber,
-		Timescale:              strconv.FormatInt(timescale, 10),
-		PresentationTimeOffset: fmt.Sprintf("%.0f", opts.PTS*float64(timescale)),
+		Timescale:              strconv.FormatInt(ManifestTimescale, 10),
+		PresentationTimeOffset: strconv.FormatInt(pts, 10),
 	}
 }
 

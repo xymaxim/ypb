@@ -77,6 +77,7 @@ func SampleCommonOptions() mpd.CommonOptions {
 		BaseURL:         "http://localhost:9000",
 		StartNumber:     123,
 		SegmentDuration: 5 * time.Second,
-		PTS:             0,
+		AudioPTS:        0,
+		VideoPTS:        0,
 	}
 }
