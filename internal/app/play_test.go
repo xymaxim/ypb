@@ -11,19 +11,23 @@ import (
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 
-func TestPlayHandlerUnknownPathNotFound(t *testing.T) {
+func TestPlayIntervalPathServesPage(t *testing.T) {
 	t.Parallel()
 
 	h := &app.PlayHandler{}
 
 	mux := http.NewServeMux()
 	mux.Handle("/", app.WithError(h.ServeHTTP))
+	mux.Handle("/{interval}", app.WithError(h.ServePage))
 
-	req := httptest.NewRequest(http.MethodGet, "/anything", nil)
-	w := httptest.NewRecorder()
-	mux.ServeHTTP(w, req)
+	for _, path := range []string{"/03:00+30s", "/30m--now", "/anything"} {
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		w := httptest.NewRecorder()
+		mux.ServeHTTP(w, req)
 
-	require.Equal(t, http.StatusNotFound, w.Code)
+		require.Equal(t, http.StatusOK, w.Code, "path %s", path)
+		require.Contains(t, w.Header().Get("Content-Type"), "text/html", "path %s", path)
+	}
 }
 
 func TestPlayRootDoesNotShadowAPI(t *testing.T) {
@@ -31,6 +35,7 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", app.WithError((&app.PlayHandler{}).ServeHTTP))
+	mux.Handle("/{interval}", app.WithError((&app.PlayHandler{}).ServePage))
 	mux.HandleFunc(app.InfoPath, app.WithError(
 		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
 	)
@@ -43,6 +48,13 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 	require.Contains(t, w.Header().Get("Content-Type"), "application/json")
 
 	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	w = httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	require.Contains(t, w.Header().Get("Content-Type"), "text/html")
+
+	req = httptest.NewRequest(http.MethodGet, "/03:00", nil)
 	w = httptest.NewRecorder()
 	mux.ServeHTTP(w, req)
 

@@ -2,7 +2,7 @@ import { createPlayer, MediaPlayer } from './player.js';
 import { attachPlayheadDisplay } from './ui/playhead.js';
 import { attachQualitySelector, attachTrackSelector } from './ui/selectors.js';
 
-const interval = new URLSearchParams(location.search).get('i') || 'now';
+const interval = location.pathname.replace(/^\/+/, '') || 'now';
 const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
 
 const video = document.getElementById('player');

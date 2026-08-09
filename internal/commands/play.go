@@ -29,6 +29,7 @@ func (c *Play) Run() error {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", apppkg.WithError((&apppkg.PlayHandler{}).ServeHTTP))
+	mux.Handle("/{interval}", apppkg.WithError((&apppkg.PlayHandler{}).ServePage))
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
 		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
 	)
