@@ -26,7 +26,6 @@ func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (strin
 	m.Type = mpdTypeDynamic
 	m.Profiles = mpdProfilesLive
 	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)
-	m.MinimumUpdatePeriod = formatDuration(99 * time.Hour)
 	if opts.TimeShiftBufferDepth > 0 {
 		m.TimeShiftBufferDepth = formatDuration(opts.TimeShiftBufferDepth)
 	}
