@@ -51,7 +51,7 @@ func buildDynamicSegmentTemplate(opts DynamicOptions, pts int64) SegmentTemplate
 			{
 				T: t.PresentationTimeOffset,
 				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),
-				R: "1000",
+				R: "9999",
 			},
 		},
 	}
