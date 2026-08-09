@@ -41,9 +41,10 @@ type MPD struct {
 }
 
 type ProgramInformation struct {
-	XMLName xml.Name `xml:"ProgramInformation"`
-	Title   string   `xml:"Title"`
-	Source  string   `xml:"Source"`
+	XMLName            xml.Name `xml:"ProgramInformation"`
+	Title              string   `xml:"Title"`
+	Source             string   `xml:"Source"`
+	MoreInformationURL string   `xml:"MoreInformationURL"`
 }
 
 type Period struct {
@@ -96,8 +97,9 @@ func newMPD(baseURL string, videoInfo info.VideoInformation) MPD {
 		Xmlns:   mpdNamespace,
 		BaseURL: baseURL,
 		ProgramInformation: &ProgramInformation{
-			Title:  videoInfo.Title,
-			Source: urlutil.BuildVideoLiveURL(videoInfo.ID),
+			Title:              videoInfo.Title,
+			Source:             urlutil.BuildVideoLiveURL(videoInfo.ID),
+			MoreInformationURL: "https://github.com/xymaxim/ypb",
 		},
 		Periods: []Period{{ID: "0", Start: "PT0S"}},
 	}

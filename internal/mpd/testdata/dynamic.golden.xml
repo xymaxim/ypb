@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
- <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="dynamic" availabilityStartTime="2026-01-02T03:04:05Z" minimumUpdatePeriod="PT1H0M0S" timeShiftBufferDepth="PT30S">
+ <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:isoff-live:2011" type="dynamic" availabilityStartTime="2026-01-02T03:04:05Z" timeShiftBufferDepth="PT30S">
    <ProgramInformation>
      <Title>Sample stream</Title>
      <Source>https://www.youtube.com/live/abcdefgh123</Source>
+     <MoreInformationURL>https://github.com/xymaxim/ypb</MoreInformationURL>
    </ProgramInformation>
    <BaseURL>http://localhost:9000</BaseURL>
    <Period id="0" start="PT0S">
