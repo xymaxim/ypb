@@ -89,12 +89,24 @@ func probeAudioVideoPTS(
 		return 0, 0, errors.New("no video streams available")
 	}
 
-	audioPTS, err := probeSegmentPTS(pb, info.AudioStreams[0].Itag, sequenceNumber, runner, mpd.ManifestTimescale)
+	audioPTS, err := probeSegmentPTS(
+		pb,
+		info.AudioStreams[0].Itag,
+		sequenceNumber,
+		runner,
+		mpd.ManifestTimescale,
+	)
 	if err != nil {
 		return 0, 0, fmt.Errorf("probing audio pts: %w", err)
 	}
 
-	videoPTS, err := probeSegmentPTS(pb, info.VideoStreams[0].Itag, sequenceNumber, runner, mpd.ManifestTimescale)
+	videoPTS, err := probeSegmentPTS(
+		pb,
+		info.VideoStreams[0].Itag,
+		sequenceNumber,
+		runner,
+		mpd.ManifestTimescale,
+	)
 	if err != nil {
 		return 0, 0, fmt.Errorf("probing video pts: %w", err)
 	}
@@ -125,7 +137,11 @@ func probeSegmentPTS(
 		"-of", "csv=p=0",
 	)
 	if err != nil {
-		return 0, fmt.Errorf("ffprobe: probing segment: %w (stderr: %s)", err, result.Stderr)
+		return 0, fmt.Errorf(
+			"ffprobe: probing segment: %w (stderr: %s)",
+			err,
+			result.Stderr,
+		)
 	}
 
 	var pts, tbNum, tbDen int64
@@ -138,11 +154,19 @@ func probeSegmentPTS(
 			parts := strings.SplitN(tb, "/", 2)
 			tbNum, err = strconv.ParseInt(parts[0], 10, 64)
 			if err != nil {
-				return 0, fmt.Errorf("parsing time_base numerator %q: %w", line, err)
+				return 0, fmt.Errorf(
+					"parsing time_base numerator %q: %w",
+					line,
+					err,
+				)
 			}
 			tbDen, err = strconv.ParseInt(parts[1], 10, 64)
 			if err != nil {
-				return 0, fmt.Errorf("parsing time_base denominator %q: %w", line, err)
+				return 0, fmt.Errorf(
+					"parsing time_base denominator %q: %w",
+					line,
+					err,
+				)
 			}
 			haveTimeBase = true
 			continue
