@@ -416,6 +416,56 @@ func TestParseInterval(t *testing.T) {
 			wantEnd:   456,
 		},
 		{
+			name:    "two times with two hyphens",
+			input:   "10:20--10:30",
+			wantErr: false,
+			wantStart: func() time.Time {
+				now := time.Now()
+				return time.Date(
+					now.Year(),
+					now.Month(),
+					now.Day(),
+					10,
+					20,
+					0,
+					0,
+					time.Local, //nolint:gosmopolitan
+				)
+			}(),
+			wantEnd: func() time.Time {
+				now := time.Now()
+				return time.Date(
+					now.Year(),
+					now.Month(),
+					now.Day(),
+					10,
+					30,
+					0,
+					0,
+					time.Local, //nolint:gosmopolitan
+				)
+			}(),
+		},
+		{
+			name:    "time and duration with two hyphens",
+			input:   "10:20--10m",
+			wantErr: false,
+			wantStart: func() time.Time {
+				now := time.Now()
+				return time.Date(
+					now.Year(),
+					now.Month(),
+					now.Day(),
+					10,
+					20,
+					0,
+					0,
+					time.Local, //nolint:gosmopolitan
+				)
+			}(),
+			wantEnd: 10 * time.Minute,
+		},
+		{
 			name:    "now at start",
 			input:   "now/456",
 			wantErr: true,

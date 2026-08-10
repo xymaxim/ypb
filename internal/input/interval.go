@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/oleiade/gomme"
 )
@@ -129,7 +130,7 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 	return func(input string) ParserResult {
 		digits := func(n uint) gomme.Parser[string, int] {
 			return gomme.Map(
-				gomme.Take[string](n),
+				gomme.TakeWhileMN[string](n, n, unicode.IsDigit),
 				strconv.Atoi,
 			)
 		}
