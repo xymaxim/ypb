@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"time"
@@ -17,7 +18,23 @@ import (
 func NewClient(pb Playbacker) *retryablehttp.Client {
 	client := retryablehttp.NewClient()
 
-	client.HTTPClient.Timeout = time.Minute
+	transport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   15 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		TLSHandshakeTimeout:   20 * time.Second,
+		ResponseHeaderTimeout: 20 * time.Second,
+		IdleConnTimeout:       90 * time.Second,
+	}
+
+	client.HTTPClient = &http.Client{
+		Transport: transport,
+		Timeout:   45 * time.Second,
+	}
+	client.RetryMax = 4
+	client.RetryWaitMin = 2 * time.Second
+	client.RetryWaitMax = 15 * time.Second
 
 	client.Backoff = func(
 		minimum, maximum time.Duration,
