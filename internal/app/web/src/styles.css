@@ -50,11 +50,36 @@ h3 a {
   display: none;
 }
 
-#playhead {
+#play-bar {
+  display: none;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   width: 100%;
   max-width: 720px;
+  margin-top: 0.25em;
+}
+#play-bar.visible {
+  display: grid;
+}
+#playhead {
+  grid-column: 2;
   text-align: center;
-  margin-top: 0.5em;
+}
+#buttons {
+  grid-column: 3;
+  display: flex;
+  gap: 0.5em;
+  justify-content: flex-end;
+}
+.button {
+  cursor: pointer;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  background: navajowhite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #selectors {
