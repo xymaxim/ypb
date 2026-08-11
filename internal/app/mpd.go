@@ -74,12 +74,12 @@ func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if !strings.Contains(param, "/") && !strings.Contains(param, "--") {
-		return h.respondDynamicMPD(w, r, param)
+		return h.serveDynamicMPD(w, r, param)
 	}
-	return h.respondStaticMPD(w, r, param)
+	return h.serveStaticMPD(w, r, param)
 }
 
-func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
+func (h *MPDHandler) serveStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
 	nowTime := time.Now().UTC()
 
 	startParsed, endParsed, err := input.ParseInterval(param, nil)
@@ -130,7 +130,7 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 	ea := rewindInterval.End.ActualTime.UTC()
 	et := rewindInterval.End.TargetTime.UTC()
 
-	return h.serveMPD(w, r, mpd, intervalInfo{
+	return h.write(w, r, mpd, intervalInfo{
 		StartActualTime: rewindInterval.Start.ActualTime.UTC(),
 		StartTargetTime: rewindInterval.Start.TargetTime.UTC(),
 		EndActualTime:   &ea,
@@ -138,58 +138,46 @@ func (h *MPDHandler) respondStaticMPD(w http.ResponseWriter, r *http.Request, pa
 	}, outputContext)
 }
 
-func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
+func (h *MPDHandler) serveDynamicMPD(w http.ResponseWriter, r *http.Request, param string) error {
 	nowTime := time.Now().UTC()
 
-	parsed, err := input.ParseIntervalPart(param, nil)
-	if err != nil {
-		return fmt.Errorf("parsing interval parameter %q: %w", param, err)
-	}
-
-	latency, err := parseLatencyParam(r)
+	parsed, latency, err := parseDynamicRequest(param, r, nowTime)
 	if err != nil {
 		return err
 	}
-	if err := input.ValidateMoment(parsed, latency, nowTime); err != nil {
-		return fmt.Errorf("bad input moment: %w", err)
-	}
 
-	key, err := dynamicCacheKey(parsed, latency)
-	if err != nil {
-		return fmt.Errorf("building dynamic cache key: %w", err)
-	}
+	baseURL := urlutil.FormatServerAddress(h.ServerAddr)
 
-	if entry, ok := h.dynamicCache.get(key); ok {
-		out, err := actions.ComposeDynamic(
-			h.Playback,
-			entry.probe,
-			urlutil.FormatServerAddress(h.ServerAddr),
-			entry.AvailabilityStartTime,
-			nowTime,
-		)
+	if !isRelativeMoment(parsed) {
+		key, err := dynamicCacheKey(parsed, latency)
 		if err != nil {
-			return fmt.Errorf("composing dynamic mpd: %w", err)
+			return fmt.Errorf("building dynamic cache key: %w", err)
 		}
-		return h.serveMPD(w, r, out, intervalInfo{
-			StartActualTime: entry.StartActualTime,
-			StartTargetTime: entry.StartTargetTime,
-		}, nil)
+		served, err := h.serveCachedDynamic(w, r, key, baseURL, nowTime)
+		if served || err != nil {
+			return err
+		}
 	}
 
-	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
+	rewindMoment, locateCtx, err := h.locateDynamicMoment(parsed, latency)
 	if err != nil {
-		return fmt.Errorf("building locate context: %w", err)
-	}
-	locateCtx.Latency = latency
-
-	rewindMoment, err := actions.LocateMoment(h.Playback, parsed, locateCtx)
-	if err != nil {
-		return fmt.Errorf("locating moment: %w", err)
+		return err
 	}
 
 	probe, err := actions.ProbeDynamicMoment(h.Playback, rewindMoment, h.FFprobeRunner)
 	if err != nil {
 		return fmt.Errorf("probing dynamic moment: %w", err)
+	}
+
+	key, location, err := resolveDynamicTarget(
+		parsed,
+		rewindMoment,
+		locateCtx,
+		latency,
+		baseURL,
+	)
+	if err != nil {
+		return fmt.Errorf("building dynamic cache key: %w", err)
 	}
 
 	h.dynamicCache.set(key, dynamicCacheEntry{
@@ -199,23 +187,116 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 		probe:                 probe,
 	})
 
-	out, err := actions.ComposeDynamic(
-		h.Playback,
-		probe,
-		urlutil.FormatServerAddress(h.ServerAddr),
-		nowTime,
-		nowTime,
-	)
+	out, err := actions.ComposeDynamic(h.Playback, probe, baseURL, nowTime, nowTime, location)
 	if err != nil {
 		return fmt.Errorf("composing dynamic mpd: %w", err)
 	}
-	return h.serveMPD(w, r, out, intervalInfo{
+	return h.write(w, r, out, intervalInfo{
 		StartActualTime: rewindMoment.ActualTime.UTC(),
 		StartTargetTime: rewindMoment.TargetTime.UTC(),
 	}, nil)
 }
 
-func (h *MPDHandler) serveMPD(
+func parseDynamicRequest(
+	param string,
+	r *http.Request,
+	nowTime time.Time,
+) (input.MomentValue, time.Duration, error) {
+	parsed, err := input.ParseIntervalPart(param, nil)
+	if err != nil {
+		return nil, 0, fmt.Errorf("parsing interval parameter %q: %w", param, err)
+	}
+
+	latency, err := parseLatencyParam(r)
+	if err != nil {
+		return nil, 0, err
+	}
+	if err := input.ValidateMoment(parsed, latency, nowTime); err != nil {
+		return nil, 0, fmt.Errorf("bad input moment: %w", err)
+	}
+
+	return parsed, latency, nil
+}
+
+// serveCachedDynamic serves a cached dynamic MPD if present.
+func (h *MPDHandler) serveCachedDynamic(
+	w http.ResponseWriter,
+	r *http.Request,
+	key, baseURL string,
+	nowTime time.Time,
+) (bool, error) {
+	entry, ok := h.dynamicCache.get(key)
+	if !ok {
+		return false, nil
+	}
+	out, err := actions.ComposeDynamic(h.Playback, entry.probe, baseURL, entry.AvailabilityStartTime, nowTime, "")
+	if err != nil {
+		return true, fmt.Errorf("composing dynamic mpd: %w", err)
+	}
+	err = h.write(w, r, out, intervalInfo{
+		StartActualTime: entry.StartActualTime,
+		StartTargetTime: entry.StartTargetTime,
+	}, nil)
+	return true, err
+}
+
+func (h *MPDHandler) locateDynamicMoment(
+	parsed input.MomentValue,
+	latency time.Duration,
+) (*playback.RewindMoment, *actions.LocateContext, error) {
+	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("building locate context: %w", err)
+	}
+	locateCtx.Latency = latency
+
+	rewindMoment, err := actions.LocateMoment(h.Playback, parsed, locateCtx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("locating moment: %w", err)
+	}
+
+	return rewindMoment, locateCtx, nil
+}
+
+// resolveDynamicTarget returns the cache key and MPD@Location tag value.
+func resolveDynamicTarget(
+	parsed input.MomentValue,
+	rewindMoment *playback.RewindMoment,
+	locateCtx *actions.LocateContext,
+	latency time.Duration,
+	baseURL string,
+) (key, location string, err error) {
+	if !isRelativeMoment(parsed) {
+		key, err := dynamicCacheKey(parsed, latency)
+		return key, "", err
+	}
+
+	switch v := parsed.(type) {
+	case input.MomentKeyword:
+		sq := rewindMoment.Metadata.SequenceNumber
+		key, err := dynamicCacheKey(playback.SequenceNumber(sq), 0)
+		return key, baseURL + "/mpd/" + strconv.Itoa(sq), err
+	case input.MomentExpression:
+		resolved := locateCtx.Head.Time().Add(-v.Right).UTC().Truncate(time.Second)
+		key, err := dynamicCacheKey(resolved, 0)
+		return key, baseURL + "/mpd/" + resolved.Format(time.RFC3339), err
+	default:
+		return "", "", fmt.Errorf("unsupported relative moment value type %T", parsed)
+	}
+}
+
+func isRelativeMoment(v input.MomentValue) bool {
+	switch m := v.(type) {
+	case input.MomentKeyword:
+		return m == input.NowKeyword
+	case input.MomentExpression:
+		return m.Left == input.NowKeyword && m.Operator == input.OpMinus
+	default:
+		return false
+	}
+}
+
+func (h *MPDHandler) write(
 	w http.ResponseWriter,
 	r *http.Request,
 	mpd []byte,
@@ -278,8 +359,6 @@ func parseLatencyParam(r *http.Request) (time.Duration, error) {
 	return time.Duration(latency * float64(time.Second)), nil
 }
 
-// dynamicCacheKey derives a cache key for a dynamic MPD request from the parsed
-// moment value and the latency.
 func dynamicCacheKey(v input.MomentValue, latency time.Duration) (string, error) {
 	latencyKey := strconv.FormatInt(int64(latency), 10)
 
@@ -292,17 +371,7 @@ func dynamicCacheKey(v input.MomentValue, latency time.Duration) (string, error)
 		), nil
 	case playback.SequenceNumber:
 		return fmt.Sprintf("sq:%d|%s", mv, latencyKey), nil
-	case input.MomentKeyword:
-		return fmt.Sprintf("k:%s|%s", mv, latencyKey), nil
 	case input.MomentExpression:
-		if mv.Left == input.NowKeyword {
-			return fmt.Sprintf(
-				"e:%c%s|%s",
-				mv.Operator,
-				strconv.FormatInt(int64(mv.Right), 10),
-				latencyKey,
-			), nil
-		}
 		left, ok := mv.Left.(time.Time)
 		if !ok {
 			return "", fmt.Errorf(

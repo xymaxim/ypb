@@ -38,6 +38,7 @@ type MPD struct {
 	PublishTime                string              `xml:"publishTime,attr,omitempty"`
 	ProgramInformation         *ProgramInformation `xml:"ProgramInformation"`
 	BaseURL                    string              `xml:"BaseURL"`
+	Location                   string              `xml:"Location,omitempty"`
 	Periods                    []Period            `xml:"Period"`
 }
 

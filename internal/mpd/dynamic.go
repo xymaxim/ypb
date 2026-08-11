@@ -15,6 +15,7 @@ const (
 
 type DynamicOptions struct {
 	CommonOptions
+	Location                   string
 	AvailabilityStartTime      time.Time
 	TimeShiftBufferDepth       time.Duration
 	SuggestedPresentationDelay time.Duration
@@ -26,6 +27,7 @@ type DynamicOptions struct {
 // ComposeDynamic builds a dynamic MPD manifest.
 func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (string, error) {
 	m := newMPD(opts.BaseURL, videoInfo)
+	m.Location = opts.Location
 	m.Type = mpdTypeDynamic
 	m.Profiles = mpdProfilesLive
 	m.AvailabilityStartTime = opts.AvailabilityStartTime.UTC().Format(time.RFC3339)

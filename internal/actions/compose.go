@@ -84,12 +84,15 @@ func ProbeDynamicMoment(
 // AvailabilityStartTime is the time of the first request (cached), so segment
 // availability stays stable across updates; publish time, time shift buffer
 // depth and segment repeat count are derived from now and the anchor time.
+// Location, when non-empty, points at the resolved target so subsequent player
+// update requests hit the cache.
 func ComposeDynamic(
 	pb playback.Playbacker,
 	probe DynamicMomentProbe,
 	baseURL string,
 	availabilityStartTime time.Time,
 	now time.Time,
+	location string,
 ) ([]byte, error) {
 	segmentDuration := pb.Info().SegmentDuration
 	r := computeSegmentRepeatCount(now, probe.AnchorTime, segmentDuration)
@@ -102,6 +105,7 @@ func ComposeDynamic(
 			AudioPTS:        probe.AudioPTS,
 			VideoPTS:        probe.VideoPTS,
 		},
+		Location:                   location,
 		AvailabilityStartTime:      availabilityStartTime.UTC(),
 		TimeShiftBufferDepth:       now.Sub(probe.AnchorTime) + segmentDuration,
 		SuggestedPresentationDelay: suggestedPresentationDelay,

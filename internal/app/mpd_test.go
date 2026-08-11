@@ -192,22 +192,6 @@ func TestDynamicCacheKeyVariants(t *testing.T) {
 			want:    "sq:123|0",
 		},
 		{
-			name:    "now keyword",
-			value:   input.NowKeyword,
-			latency: 0,
-			want:    "k:now|0",
-		},
-		{
-			name: "expression with now left",
-			value: input.MomentExpression{
-				Operator: input.OpMinus,
-				Left:     input.NowKeyword,
-				Right:    30 * time.Second,
-			},
-			latency: 0,
-			want:    "e:-30000000000|0",
-		},
-		{
 			name: "expression with time left",
 			value: input.MomentExpression{
 				Operator: input.OpMinus,
