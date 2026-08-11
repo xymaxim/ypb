@@ -75,7 +75,7 @@ export function attachTrackSelector(player, el) {
 
   const render = () => {
     tracks = player.getTracksFor('video');
-    if (tracks.length < 2) return;
+    if (!tracks.length) return;
     const current = player.getCurrentTrackFor('video');
     const activeIndex = tracks.findIndex((t) => t.id === current?.id);
     renderList(el, 'Track', tracks.map(trackLabel), activeIndex, (index) => {
