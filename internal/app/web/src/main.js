@@ -47,7 +47,11 @@ loadingEl.classList.remove('hidden');
 
 try {
   const res = await fetch(mpdURL, { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`manifest request failed: ${res.status}`);
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.text()).trim().replace(/^\d+\s*/, ''); } catch { /* ignore */ }
+    throw new Error(detail ? `manifest request failed: ${res.status}: ${detail}` : `manifest request failed: ${res.status}`);
+  }
   const data = await res.json();
   startActualTime = new Date(data.metadata.startActualTime).getTime() / 1000;
   manifestReady = true;
