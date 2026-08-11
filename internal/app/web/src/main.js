@@ -9,7 +9,7 @@ const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).hr
 const video = document.getElementById('player');
 const container = document.getElementById('player-container');
 
-const statusEl = document.getElementById('status');
+const errorEl = document.getElementById('error');
 const loadingEl = document.getElementById('loading');
 
 const videoLink = document.getElementById('live');
@@ -52,7 +52,7 @@ try {
   startActualTime = new Date(data.metadata.startActualTime).getTime() / 1000;
   manifestReady = true;
 } catch (err) {
-  statusEl.textContent = `Playback error: ${err.message || 'unknown'}`;
+  errorEl.textContent = `Playback error: ${err.message || 'unknown'}`;
   loadingEl.classList.add('hidden');
 }
 
@@ -67,13 +67,13 @@ if (manifestReady) {
   attachTakeScreenshot(player, video, screenshotBtn, videoId, startActualTime);
 
   player.on(MediaPlayer.events.ERROR, (e) => {
-    statusEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
     loadingEl.classList.add('hidden');
+    errorEl.textContent = `Playback error: ${e.error?.message || e.error || e.message || 'unknown'}`;
   });
   player.on(MediaPlayer.events.PLAYBACK_PLAYING, () => {
-    statusEl.textContent = '';
     loadingEl.classList.add('hidden');
+    errorEl.textContent = '';
     playBarEl.classList.add('visible');
   });
-  player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { statusEl.textContent = ''; });
+  player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { errorEl.textContent = ''; });
 }

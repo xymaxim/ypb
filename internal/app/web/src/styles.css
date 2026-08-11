@@ -54,12 +54,12 @@ h3 a {
   display: none;
 }
 
-#status {
+#error {
   display: block;
   margin-block-end: 0;
   color: red;
 }
-#status:empty {
+#error:empty {
   display: none;
 }
 
