@@ -3,6 +3,18 @@ import { MediaPlayer } from 'https://cdn.dashjs.org/v5.2.0/modern/esm/dash.all.m
 export function createPlayer(video, mpdURL) {
     const player = MediaPlayer().create();
 
+    player.updateSettings({
+        streaming: {
+            delay: {
+                useSuggestedPresentationDelay: false,
+                liveDelay: 604800,
+            },
+            liveCatchup: {
+                enabled: false
+            }
+        }
+    });
+
     // Force dash.js to skip initialization network requests. Since our media
     // segments are self-contained, injecting a dummy data URI instructs the
     // player to immediately begin fetching actual media segments.
