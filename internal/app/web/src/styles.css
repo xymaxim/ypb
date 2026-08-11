@@ -97,6 +97,10 @@ h3 a {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+.button:active {
+  top: 1px;
 }
 
 #selectors {
