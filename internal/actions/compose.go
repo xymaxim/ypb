@@ -14,6 +14,11 @@ import (
 	"github.com/xymaxim/ypb/playback"
 )
 
+const (
+	minimumUpdatePeriod        = 30 * time.Second
+	suggestedPresentationDelay = 10 * time.Second
+)
+
 func ComposeStatic(
 	pb playback.Playbacker,
 	interval *playback.RewindInterval,
@@ -45,35 +50,77 @@ func ComposeStatic(
 	return []byte(out), nil
 }
 
-func ComposeDynamic(
+// DynamicMomentProbe holds the cacheable results of probing a dynamic moment:
+// the segment location and per-itag PTS values. Everything else needed to
+// compose a dynamic MPD is either in-memory (pb.Info) or request-scoped.
+type DynamicMomentProbe struct {
+	StartNumber int
+	AnchorTime  time.Time
+	AudioPTS    int64
+	VideoPTS    int64
+}
+
+func ProbeDynamicMoment(
 	pb playback.Playbacker,
 	moment *playback.RewindMoment,
-	baseURL string,
 	runner exec.Runner,
-) ([]byte, error) {
+) (DynamicMomentProbe, error) {
 	startNumber := moment.Metadata.SequenceNumber
 
 	audioPTS, videoPTS, err := probeAudioVideoPTS(pb, startNumber, runner)
 	if err != nil {
-		return nil, err
+		return DynamicMomentProbe{}, err
 	}
+
+	return DynamicMomentProbe{
+		StartNumber: startNumber,
+		AnchorTime:  moment.Metadata.Time(),
+		AudioPTS:    audioPTS,
+		VideoPTS:    videoPTS,
+	}, nil
+}
+
+// ComposeDynamic composes a dynamic MPD from previously cached data.
+// AvailabilityStartTime is the time of the first request (cached), so segment
+// availability stays stable across updates; publish time, time shift buffer
+// depth and segment repeat count are derived from now and the anchor time.
+func ComposeDynamic(
+	pb playback.Playbacker,
+	probe DynamicMomentProbe,
+	baseURL string,
+	availabilityStartTime time.Time,
+	now time.Time,
+) ([]byte, error) {
+	segmentDuration := pb.Info().SegmentDuration
+	r := computeSegmentRepeatCount(now, probe.AnchorTime, segmentDuration)
 
 	out, err := mpd.ComposeDynamic(mpd.DynamicOptions{
 		CommonOptions: mpd.CommonOptions{
 			BaseURL:         baseURL,
-			StartNumber:     startNumber,
-			SegmentDuration: pb.Info().SegmentDuration,
-			AudioPTS:        audioPTS,
-			VideoPTS:        videoPTS,
+			StartNumber:     probe.StartNumber,
+			SegmentDuration: segmentDuration,
+			AudioPTS:        probe.AudioPTS,
+			VideoPTS:        probe.VideoPTS,
 		},
-		AvailabilityStartTime:      time.Now().UTC(),
-		TimeShiftBufferDepth:       1 * time.Hour,
-		SuggestedPresentationDelay: 10 * time.Second,
+		AvailabilityStartTime:      availabilityStartTime.UTC(),
+		TimeShiftBufferDepth:       now.Sub(probe.AnchorTime) + segmentDuration,
+		SuggestedPresentationDelay: suggestedPresentationDelay,
+		MinimumUpdatePeriod:        minimumUpdatePeriod,
+		PublishTime:                now.UTC(),
+		SegmentRepeatCount:         r,
 	}, pb.Info())
 	if err != nil {
 		return nil, fmt.Errorf("composing mpd: %w", err)
 	}
 	return []byte(out), nil
+}
+
+// computeSegmentRepeatCount returns how many segments the timeline should
+// include after the anchored moment.
+func computeSegmentRepeatCount(now, anchor time.Time, segmentDuration time.Duration) int {
+	const marginSegments = 2 // padding margin for request latency
+	padded := now.Sub(anchor) + minimumUpdatePeriod
+	return int(padded/segmentDuration) + marginSegments
 }
 
 func probeAudioVideoPTS(

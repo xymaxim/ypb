@@ -18,6 +18,9 @@ type DynamicOptions struct {
 	AvailabilityStartTime      time.Time
 	TimeShiftBufferDepth       time.Duration
 	SuggestedPresentationDelay time.Duration
+	MinimumUpdatePeriod        time.Duration
+	PublishTime                time.Time
+	SegmentRepeatCount         int
 }
 
 // ComposeDynamic builds a dynamic MPD manifest.
@@ -31,6 +34,12 @@ func ComposeDynamic(opts DynamicOptions, videoInfo info.VideoInformation) (strin
 	}
 	if opts.SuggestedPresentationDelay > 0 {
 		m.SuggestedPresentationDelay = formatDuration(opts.SuggestedPresentationDelay)
+	}
+	if opts.MinimumUpdatePeriod > 0 {
+		m.MinimumUpdatePeriod = formatDuration(opts.MinimumUpdatePeriod)
+	}
+	if !opts.PublishTime.IsZero() {
+		m.PublishTime = opts.PublishTime.UTC().Format(time.RFC3339)
 	}
 	m.Periods[0].AdaptationSets = buildAdaptationSets(
 		buildDynamicSegmentTemplate(opts, opts.AudioPTS),
@@ -51,7 +60,7 @@ func buildDynamicSegmentTemplate(opts DynamicOptions, pts int64) SegmentTemplate
 			{
 				T: t.PresentationTimeOffset,
 				D: strconv.FormatInt(opts.SegmentDuration.Milliseconds(), 10),
-				R: "9999",
+				R: strconv.Itoa(opts.SegmentRepeatCount),
 			},
 		},
 	}

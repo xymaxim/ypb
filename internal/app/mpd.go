@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -42,7 +43,29 @@ type MPDHandler struct {
 	Playback      playback.Playbacker
 	ServerAddr    string
 	FFprobeRunner exec.Runner
+	dynamicCache  dynamicCache
 }
+
+// dynamicCache caches results for dynamic MPD requests, keyed by
+// normalized target time, to avoid repeated locate and probe operations.
+type dynamicCache struct {
+	mu    sync.Mutex
+	items map[string]dynamicCacheEntry
+}
+
+// dynamicCacheEntry holds the cached data from a dynamic MPD request.
+type dynamicCacheEntry struct {
+	AvailabilityStartTime time.Time
+	StartActualTime       time.Time
+	StartTargetTime       time.Time
+	LastAccess            time.Time
+	probe                 actions.DynamicMomentProbe
+}
+
+const (
+	dynamicCacheMaxEntries  = 1000
+	dynamicCacheIdleTimeout = 24 * time.Hour
+)
 
 func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	param, err := url.PathUnescape(r.PathValue("interval"))
@@ -131,6 +154,28 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 		return fmt.Errorf("bad input moment: %w", err)
 	}
 
+	key, err := dynamicCacheKey(parsed, latency)
+	if err != nil {
+		return fmt.Errorf("building dynamic cache key: %w", err)
+	}
+
+	if entry, ok := h.dynamicCache.get(key); ok {
+		out, err := actions.ComposeDynamic(
+			h.Playback,
+			entry.probe,
+			urlutil.FormatServerAddress(h.ServerAddr),
+			entry.AvailabilityStartTime,
+			nowTime,
+		)
+		if err != nil {
+			return fmt.Errorf("composing dynamic mpd: %w", err)
+		}
+		return h.serveMPD(w, r, out, intervalInfo{
+			StartActualTime: entry.StartActualTime,
+			StartTargetTime: entry.StartTargetTime,
+		}, nil)
+	}
+
 	locateCtx, err := actions.NewLocateContext(h.Playback, nil, nil)
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
@@ -142,11 +187,24 @@ func (h *MPDHandler) respondDynamicMPD(w http.ResponseWriter, r *http.Request, p
 		return fmt.Errorf("locating moment: %w", err)
 	}
 
+	probe, err := actions.ProbeDynamicMoment(h.Playback, rewindMoment, h.FFprobeRunner)
+	if err != nil {
+		return fmt.Errorf("probing dynamic moment: %w", err)
+	}
+
+	h.dynamicCache.set(key, dynamicCacheEntry{
+		AvailabilityStartTime: nowTime,
+		StartActualTime:       rewindMoment.ActualTime.UTC(),
+		StartTargetTime:       rewindMoment.TargetTime.UTC(),
+		probe:                 probe,
+	})
+
 	out, err := actions.ComposeDynamic(
 		h.Playback,
-		rewindMoment,
+		probe,
 		urlutil.FormatServerAddress(h.ServerAddr),
-		h.FFprobeRunner,
+		nowTime,
+		nowTime,
 	)
 	if err != nil {
 		return fmt.Errorf("composing dynamic mpd: %w", err)
@@ -175,6 +233,8 @@ func (h *MPDHandler) serveMPD(
 	if outputContext != nil {
 		metadata.OutputName = actions.BuildOutputStem(outputContext)
 	}
+
+	w.Header().Set("Cache-Control", "no-store")
 
 	if strings.Contains(r.Header.Get("Accept"), "application/json") {
 		w.Header().Set("Content-Type", "application/json")
@@ -216,4 +276,88 @@ func parseLatencyParam(r *http.Request) (time.Duration, error) {
 	}
 
 	return time.Duration(latency * float64(time.Second)), nil
+}
+
+// dynamicCacheKey derives a cache key for a dynamic MPD request from the parsed
+// moment value and the latency.
+func dynamicCacheKey(v input.MomentValue, latency time.Duration) (string, error) {
+	latencyKey := strconv.FormatInt(int64(latency), 10)
+
+	switch mv := v.(type) {
+	case time.Time:
+		return fmt.Sprintf(
+			"t:%d|%s",
+			mv.UTC().Truncate(time.Second).Unix(),
+			latencyKey,
+		), nil
+	case playback.SequenceNumber:
+		return fmt.Sprintf("sq:%d|%s", mv, latencyKey), nil
+	case input.MomentKeyword:
+		return fmt.Sprintf("k:%s|%s", mv, latencyKey), nil
+	case input.MomentExpression:
+		if mv.Left == input.NowKeyword {
+			return fmt.Sprintf(
+				"e:%c%s|%s",
+				mv.Operator,
+				strconv.FormatInt(int64(mv.Right), 10),
+				latencyKey,
+			), nil
+		}
+		left, ok := mv.Left.(time.Time)
+		if !ok {
+			return "", fmt.Errorf(
+				"unsupported moment expression left operand type %T",
+				mv.Left,
+			)
+		}
+		var target time.Time
+		switch mv.Operator {
+		case input.OpPlus:
+			target = left.Add(mv.Right)
+		case input.OpMinus:
+			target = left.Add(-mv.Right)
+		default:
+			return "", fmt.Errorf("unsupported operator %q", mv.Operator)
+		}
+		return fmt.Sprintf(
+			"t:%d|%s",
+			target.UTC().Truncate(time.Second).Unix(),
+			latencyKey,
+		), nil
+	default:
+		return "", fmt.Errorf("unsupported moment value type %T", v)
+	}
+}
+
+func (c *dynamicCache) get(key string) (dynamicCacheEntry, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	entry, ok := c.items[key]
+	if !ok {
+		return dynamicCacheEntry{}, false
+	}
+	if time.Since(entry.LastAccess) > dynamicCacheIdleTimeout {
+		delete(c.items, key)
+		return dynamicCacheEntry{}, false
+	}
+
+	entry.LastAccess = time.Now()
+	c.items[key] = entry
+	return entry, true
+}
+
+func (c *dynamicCache) set(key string, entry dynamicCacheEntry) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if len(c.items) >= dynamicCacheMaxEntries {
+		c.items = make(map[string]dynamicCacheEntry)
+	}
+	if c.items == nil {
+		c.items = make(map[string]dynamicCacheEntry)
+	}
+
+	entry.LastAccess = time.Now()
+	c.items[key] = entry
 }

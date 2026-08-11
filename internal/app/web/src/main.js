@@ -38,23 +38,21 @@ try {
 } catch {
 }
 
-let manifestSource;
 let startActualTime = NaN;
+let manifestReady = false;
 
 try {
   const res = await fetch(mpdURL, { headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`manifest request failed: ${res.status}`);
   const data = await res.json();
   startActualTime = new Date(data.metadata.startActualTime).getTime() / 1000;
-  manifestSource = URL.createObjectURL(
-    new Blob([data.mpd], { type: 'application/dash+xml' })
-  );
+  manifestReady = true;
 } catch (err) {
   statusEl.textContent = `Playback error: ${err.message || 'unknown'}`;
 }
 
-if (manifestSource) {
-  const player = createPlayer(video, manifestSource);
+if (manifestReady) {
+  const player = createPlayer(video, mpdURL);
   window.player = player;
 
   attachPlayheadDisplay(player, playheadEl, startActualTime);

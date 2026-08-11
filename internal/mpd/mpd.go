@@ -35,6 +35,7 @@ type MPD struct {
 	MinimumUpdatePeriod        string              `xml:"minimumUpdatePeriod,attr,omitempty"`
 	TimeShiftBufferDepth       string              `xml:"timeShiftBufferDepth,attr,omitempty"`
 	SuggestedPresentationDelay string              `xml:"suggestedPresentationDelay,attr,omitempty"`
+	PublishTime                string              `xml:"publishTime,attr,omitempty"`
 	ProgramInformation         *ProgramInformation `xml:"ProgramInformation"`
 	BaseURL                    string              `xml:"BaseURL"`
 	Periods                    []Period            `xml:"Period"`

@@ -10,9 +10,13 @@ import (
 
 func TestComposeDynamic(t *testing.T) {
 	opts := mpd.DynamicOptions{
-		CommonOptions:         testutil.SampleCommonOptions(),
-		AvailabilityStartTime: time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC),
-		TimeShiftBufferDepth:  30 * time.Second,
+		CommonOptions:              testutil.SampleCommonOptions(),
+		AvailabilityStartTime:      time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC),
+		TimeShiftBufferDepth:       30 * time.Second,
+		SuggestedPresentationDelay: 10 * time.Second,
+		MinimumUpdatePeriod:        30 * time.Second,
+		PublishTime:                time.Date(2026, 1, 2, 3, 4, 6, 0, time.UTC),
+		SegmentRepeatCount:         4,
 	}
 
 	out, err := mpd.ComposeDynamic(opts, testutil.SampleVideoInfo())
