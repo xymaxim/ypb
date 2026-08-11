@@ -117,4 +117,5 @@ h3 a {
 .selector-item.active {
     font-weight: bold;
     color: black;
+    pointer-events: none;
 }
