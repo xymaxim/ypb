@@ -2,6 +2,7 @@ import { createPlayer, MediaPlayer } from './player.js';
 import { attachPlayheadDisplay } from './ui/playhead.js';
 import { attachQualitySelector, attachTrackSelector } from './ui/selectors.js';
 import { attachTakeScreenshot } from './ui/screenshot.js';
+import { attachCopyTimestamp } from './ui/timestamp.js';
 
 const interval = location.pathname.replace(/^\/+/, '') || 'now';
 const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
@@ -18,6 +19,7 @@ const channelLink = document.querySelector('#channel a');
 const playheadEl = document.getElementById('playhead');
 const playBarEl = document.getElementById('play-bar');
 const screenshotBtn = document.getElementById('screenshot');
+const copyTimestampBtn = document.getElementById('copy-timestamp');
 
 const qualitiesEl = document.getElementById('qualities');
 const tracksEl = document.getElementById('tracks');
@@ -69,6 +71,7 @@ if (manifestReady) {
   attachQualitySelector(player, qualitiesEl);
   attachTrackSelector(player, tracksEl);
   attachTakeScreenshot(player, video, screenshotBtn, videoId, startActualTime);
+  attachCopyTimestamp(player, copyTimestampBtn, startActualTime);
 
   player.on(MediaPlayer.events.ERROR, (e) => {
     loadingEl.classList.add('hidden');
