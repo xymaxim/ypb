@@ -16,7 +16,7 @@ type CLI struct {
 	Capture  CaptureCommands   `cmd:"" help:"Capture single frame or time-lapse sequence"`
 	Download commands.Download `cmd:"" help:"Download stream excerpts"`
 	Serve    commands.Serve    `cmd:"" help:"Start playback server"`
-	Play     commands.Play     `cmd:"" help:"Start web player"`
+	Play     commands.Serve    `cmd:"" help:"Start web player (alias of 'serve --ui')"`
 	Version  commands.Version  `cmd:"" help:"Show version info and exit"`
 }
 
@@ -30,16 +30,20 @@ type VersionFlag string
 func main() {
 	var cli CLI
 
-	kongCtx := kong.Parse(&cli,
+	ctx := kong.Parse(&cli,
 		kong.Name("ypb"),
 		kong.Description("A playback for YouTube live streams"),
 		kong.UsageOnError(),
 	)
 
+	if ctx.Selected().Name == "play" {
+		cli.Play.UI = true
+	}
+
 	setupLogging(cli.Verbose)
 
-	err := kongCtx.Run()
-	kongCtx.FatalIfErrorf(err)
+	err := ctx.Run()
+	ctx.FatalIfErrorf(err)
 }
 
 func setupLogging(verbose int) {

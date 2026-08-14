@@ -10,7 +10,8 @@ import (
 
 type Serve struct {
 	CommonFlags
-	Stream string `arg:"" help:"YouTube video ID" required:""`
+	UI     bool   `help:"Also serve the web player"`
+	Stream string `help:"YouTube video ID"          arg:"" required:""`
 	YtdlpOptionsFlag
 }
 
@@ -28,6 +29,11 @@ func (c *Serve) Run() error {
 	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	mux := http.NewServeMux()
+	if c.UI {
+		mux.Handle("/{$}", apppkg.WithError((&apppkg.PlayHandler{}).ServeRoot))
+		mux.Handle("/", apppkg.WithError((&apppkg.PlayHandler{}).ServeHTTP))
+		mux.Handle("/{interval}", apppkg.WithError((&apppkg.PlayHandler{}).ServePage))
+	}
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
 		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
 	)
@@ -48,6 +54,13 @@ func (c *Serve) Run() error {
 		"(<<) Playback started and listening on %s...\n",
 		urlutil.FormatServerAddress(app.Server.Addr),
 	)
+
+	if c.UI {
+		fmt.Printf(
+			":::: Open %s/now in your browser to play\n",
+			urlutil.FormatServerAddress(app.Server.Addr),
+		)
+	}
 
 	return app.Server.ListenAndServe()
 }
