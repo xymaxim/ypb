@@ -192,9 +192,9 @@ func TestParseIntervalPart(t *testing.T) {
 			),
 		},
 		{
-			name:      "compact date and time with hours and minutes",
-			input:     "20260102T1020",
-			wantErr:   false,
+			name:    "compact date and time with hours and minutes",
+			input:   "20260102T1020",
+			wantErr: false,
 			//nolint:gosmopolitan
 			wantValue: time.Date(2026, 1, 2, 10, 20, 0, 0, time.Local),
 		},

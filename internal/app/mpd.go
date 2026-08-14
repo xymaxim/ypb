@@ -229,7 +229,14 @@ func (h *MPDHandler) serveCachedDynamic(
 	if !ok {
 		return false, nil
 	}
-	out, err := actions.ComposeDynamic(h.Playback, entry.probe, baseURL, entry.AvailabilityStartTime, nowTime, "")
+	out, err := actions.ComposeDynamic(
+		h.Playback,
+		entry.probe,
+		baseURL,
+		entry.AvailabilityStartTime,
+		nowTime,
+		"",
+	)
 	if err != nil {
 		return true, fmt.Errorf("composing dynamic mpd: %w", err)
 	}
