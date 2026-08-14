@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -30,6 +31,26 @@ type App struct {
 	FFprobeRunner exec.Runner
 	YtdlpRunner   exec.Runner
 	Server        *http.Server
+}
+
+type statusWriter struct {
+	http.ResponseWriter
+	wroteHeader bool
+}
+
+func (sw *statusWriter) WriteHeader(code int) {
+	if sw.wroteHeader {
+		return
+	}
+	sw.wroteHeader = true
+	sw.ResponseWriter.WriteHeader(code)
+}
+
+func (sw *statusWriter) Write(b []byte) (int, error) {
+	if !sw.wroteHeader {
+		sw.WriteHeader(http.StatusOK)
+	}
+	return sw.ResponseWriter.Write(b)
 }
 
 func InitApp(id string, port int, ytdlpOptions []string) (*App, error) {
@@ -77,8 +98,13 @@ func WithCORS(next http.Handler) http.Handler {
 
 func WithError(fn func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := fn(w, r)
+		sw := &statusWriter{ResponseWriter: w}
+		err := fn(sw, r)
 		if err != nil {
+			if sw.wroteHeader {
+				slog.Debug("handler failed after writing response", "error", err)
+				return
+			}
 			msg := fmt.Sprintf("%d %s", http.StatusInternalServerError, err.Error())
 			http.Error(w, msg, http.StatusInternalServerError)
 		}
