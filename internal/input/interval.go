@@ -100,6 +100,14 @@ func ParseIntervalPart(
 	if result.Err != nil {
 		return nil, result.Err
 	}
+	if result.Remaining != "" {
+		return nil, fmt.Errorf(
+			"parsing %q: unexpected input %q remaining after %q",
+			input,
+			result.Remaining,
+			input[:len(input)-len(result.Remaining)],
+		)
+	}
 	return result.Output, nil
 }
 
