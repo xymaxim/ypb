@@ -258,44 +258,6 @@ func (h *MPDHandler) locateDynamicMoment(
 	return rewindMoment, locateCtx, nil
 }
 
-// resolveDynamicTarget returns the cache key and MPD@Location tag value.
-func resolveDynamicTarget(
-	parsed input.MomentValue,
-	rewindMoment *playback.RewindMoment,
-	locateCtx *actions.LocateContext,
-	latency time.Duration,
-	baseURL string,
-) (key, location string, err error) {
-	if !isRelativeMoment(parsed) {
-		key, err := dynamicCacheKey(parsed, latency)
-		return key, "", err
-	}
-
-	switch v := parsed.(type) {
-	case input.MomentKeyword:
-		sq := rewindMoment.Metadata.SequenceNumber
-		key, err := dynamicCacheKey(playback.SequenceNumber(sq), 0)
-		return key, baseURL + "/mpd/" + strconv.Itoa(sq), err
-	case input.MomentExpression:
-		resolved := locateCtx.Head.Time().Add(-v.Right).UTC().Truncate(time.Second)
-		key, err := dynamicCacheKey(resolved, 0)
-		return key, baseURL + "/mpd/" + resolved.Format(time.RFC3339), err
-	default:
-		return "", "", fmt.Errorf("unsupported relative moment value type %T", parsed)
-	}
-}
-
-func isRelativeMoment(v input.MomentValue) bool {
-	switch m := v.(type) {
-	case input.MomentKeyword:
-		return m == input.NowKeyword
-	case input.MomentExpression:
-		return m.Left == input.NowKeyword && m.Operator == input.OpMinus
-	default:
-		return false
-	}
-}
-
 func (h *MPDHandler) write(
 	w http.ResponseWriter,
 	r *http.Request,
@@ -333,30 +295,6 @@ func (h *MPDHandler) write(
 		return fmt.Errorf("writing mpd: %w", err)
 	}
 	return nil
-}
-
-func parseLatencyParam(r *http.Request) (time.Duration, error) {
-	raw := r.URL.Query().Get("latency")
-	if raw == "" {
-		raw = r.URL.Query().Get("l")
-	}
-	if raw == "" {
-		return 0, nil
-	}
-
-	latency, err := strconv.ParseFloat(raw, 64)
-	if err != nil {
-		return 0, fmt.Errorf("parsing latency parameter %q: %w", raw, err)
-	}
-
-	if latency < 0 {
-		return 0, fmt.Errorf(
-			"latency parameter %q must be a non-negative number of seconds",
-			raw,
-		)
-	}
-
-	return time.Duration(latency * float64(time.Second)), nil
 }
 
 func dynamicCacheKey(v input.MomentValue, latency time.Duration) (string, error) {
@@ -429,4 +367,65 @@ func (c *dynamicCache) set(key string, entry dynamicCacheEntry) {
 
 	entry.LastAccess = time.Now()
 	c.items[key] = entry
+}
+
+func resolveDynamicTarget(
+	parsed input.MomentValue,
+	rewindMoment *playback.RewindMoment,
+	locateCtx *actions.LocateContext,
+	latency time.Duration,
+	baseURL string,
+) (key, location string, err error) {
+	if !isRelativeMoment(parsed) {
+		key, err := dynamicCacheKey(parsed, latency)
+		return key, "", err
+	}
+
+	switch v := parsed.(type) {
+	case input.MomentKeyword:
+		sq := rewindMoment.Metadata.SequenceNumber
+		key, err := dynamicCacheKey(playback.SequenceNumber(sq), 0)
+		return key, baseURL + "/mpd/" + strconv.Itoa(sq), err
+	case input.MomentExpression:
+		resolved := locateCtx.Head.Time().Add(-v.Right).UTC().Truncate(time.Second)
+		key, err := dynamicCacheKey(resolved, 0)
+		return key, baseURL + "/mpd/" + resolved.Format(time.RFC3339), err
+	default:
+		return "", "", fmt.Errorf("unsupported relative moment value type %T", parsed)
+	}
+}
+
+func isRelativeMoment(v input.MomentValue) bool {
+	switch m := v.(type) {
+	case input.MomentKeyword:
+		return m == input.NowKeyword
+	case input.MomentExpression:
+		return m.Left == input.NowKeyword && m.Operator == input.OpMinus
+	default:
+		return false
+	}
+}
+
+func parseLatencyParam(r *http.Request) (time.Duration, error) {
+	raw := r.URL.Query().Get("latency")
+	if raw == "" {
+		raw = r.URL.Query().Get("l")
+	}
+	if raw == "" {
+		return 0, nil
+	}
+
+	latency, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return 0, fmt.Errorf("parsing latency parameter %q: %w", raw, err)
+	}
+
+	if latency < 0 {
+		return 0, fmt.Errorf(
+			"latency parameter %q cannot be negative",
+			raw,
+		)
+	}
+
+	return time.Duration(latency * float64(time.Second)), nil
 }
