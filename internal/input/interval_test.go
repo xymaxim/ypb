@@ -156,6 +156,72 @@ func TestParseIntervalPart(t *testing.T) {
 				time.FixedZone("+01:00", 3600),
 			),
 		},
+		{
+			name:    "compact date and time",
+			input:   "20260102T102030",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 0, time.Local),
+		},
+		{
+			name:      "compact zulu date and time",
+			input:     "20260102T102030Z",
+			wantErr:   false,
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
+		},
+		{
+			name:    "compact date and time with fractional seconds",
+			input:   "20260102T102030.123",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 30, 123*1e6, time.Local),
+		},
+		{
+			name:    "compact date and time with +hhmm offset",
+			input:   "20260102T102030+0100",
+			wantErr: false,
+			wantValue: time.Date(
+				2026,
+				1,
+				2,
+				10,
+				20,
+				30,
+				0,
+				time.FixedZone("+01:00", 3600),
+			),
+		},
+		{
+			name:      "compact date and time with hours and minutes",
+			input:     "20260102T1020",
+			wantErr:   false,
+			//nolint:gosmopolitan
+			wantValue: time.Date(2026, 1, 2, 10, 20, 0, 0, time.Local),
+		},
+		{
+			name:    "compact date only stays a sequence number",
+			input:   "20260102",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: 20260102,
+		},
+		{
+			name:    "compact time only stays a sequence number",
+			input:   "102030",
+			wantErr: false,
+			//nolint:gosmopolitan
+			wantValue: 102030,
+		},
+		{
+			name:    "unexpected characters after sequence number",
+			input:   "123abc",
+			wantErr: true,
+		},
+		{
+			name:    "unexpected characters after compact date",
+			input:   "20260102T102030x",
+			wantErr: true,
+		},
 
 		// Only time
 		{

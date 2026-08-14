@@ -136,28 +136,31 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 		}
 
 		// Date parsers
-		year := digits(4)
-		month := gomme.Preceded(
-			gomme.Char[string]('-'),
-			digits(2),
-		)
-		day := gomme.Preceded(
-			gomme.Char[string]('-'),
-			digits(2),
-		)
+		dateParser := func(withSep bool) gomme.Parser[string, MomentValue] {
+			sep := func(p gomme.Parser[string, int]) gomme.Parser[string, int] {
+				if withSep {
+					return gomme.Preceded(gomme.Char[string]('-'), p)
+				}
+				return p
+			}
 
-		dateOnly := gomme.Map(
-			gomme.Sequence(year, month, day),
-			func(parts []int) (MomentValue, error) {
-				yyyy, mm, dd := parts[0], time.Month(parts[1]), parts[2]
-				return time.Date(yyyy, mm, dd, 0, 0, 0, 0, time.UTC), nil
-			},
-		)
+			year := digits(4)
+			month := sep(digits(2))
+			day := sep(digits(2))
+
+			return gomme.Map(
+				gomme.Sequence(year, month, day),
+				func(parts []int) (MomentValue, error) {
+					yyyy, mm, dd := parts[0], time.Month(parts[1]), parts[2]
+					return time.Date(yyyy, mm, dd, 0, 0, 0, 0, time.UTC), nil
+				},
+			)
+		}
+
+		dateOnly := dateParser(true)
+		dateCompact := dateParser(false)
 
 		// Time parsers
-		hours := digits(2)
-		minutes := gomme.Preceded(gomme.Char[string](':'), digits(2))
-		seconds := gomme.Optional(gomme.Preceded(gomme.Char[string](':'), digits(2)))
 		fractional := gomme.Optional(
 			gomme.Map(
 				gomme.Preceded(gomme.Char[string]('.'), gomme.Digit1[string]()),
@@ -177,26 +180,42 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 			),
 		)
 
-		timeOnly := gomme.Map(
-			gomme.Sequence(hours, minutes, seconds, fractional),
-			func(parts []int) (MomentValue, error) {
-				hh, mm, ss, ns := parts[0], parts[1], parts[2], parts[3]
-				ref := time.Now()
-				if refTime != nil {
-					ref = *refTime
+		timeParser := func(withSep bool) gomme.Parser[string, MomentValue] {
+			sep := func(p gomme.Parser[string, int]) gomme.Parser[string, int] {
+				if withSep {
+					return gomme.Preceded(gomme.Char[string](':'), p)
 				}
-				return time.Date(
-					ref.Year(),
-					ref.Month(),
-					ref.Day(),
-					hh,
-					mm,
-					ss,
-					ns,
-					time.UTC,
-				), nil
-			},
-		)
+				return p
+			}
+
+			hours := digits(2)
+			minutes := sep(digits(2))
+			seconds := gomme.Optional(sep(digits(2)))
+
+			return gomme.Map(
+				gomme.Sequence(hours, minutes, seconds, fractional),
+				func(parts []int) (MomentValue, error) {
+					hh, mm, ss, ns := parts[0], parts[1], parts[2], parts[3]
+					ref := time.Now()
+					if refTime != nil {
+						ref = *refTime
+					}
+					return time.Date(
+						ref.Year(),
+						ref.Month(),
+						ref.Day(),
+						hh,
+						mm,
+						ss,
+						ns,
+						time.UTC,
+					), nil
+				},
+			)
+		}
+
+		timeOnly := timeParser(true)
+		timeCompact := timeParser(false)
 
 		// Offset parsers
 		offsetHour := gomme.Map(
@@ -209,8 +228,11 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 			},
 		)
 		offsetMinutes := gomme.Optional(
-			gomme.Preceded(
-				gomme.Char[string](':'),
+			gomme.Alternative(
+				gomme.Preceded(
+					gomme.Char[string](':'),
+					digits(2),
+				),
 				digits(2),
 			),
 		)
@@ -260,6 +282,21 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 			)
 		}
 
+		combineDateTime := func(
+			p gomme.PairContainer[MomentValue, MomentValue],
+		) (MomentValue, error) {
+			return time.Date(
+				p.Left.(time.Time).Year(),
+				p.Left.(time.Time).Month(),
+				p.Left.(time.Time).Day(),
+				p.Right.(time.Time).Hour(),
+				p.Right.(time.Time).Minute(),
+				p.Right.(time.Time).Second(),
+				p.Right.(time.Time).Nanosecond(),
+				time.UTC,
+			), nil
+		}
+
 		// All together
 		all := offsetted(
 			gomme.Alternative(
@@ -269,20 +306,15 @@ func parseDateAndTime(refTime *time.Time) func(string) ParserResult {
 						gomme.Char[string]('T'),
 						timeOnly,
 					),
-					func(
-						p gomme.PairContainer[MomentValue, MomentValue],
-					) (MomentValue, error) {
-						return time.Date(
-							p.Left.(time.Time).Year(),
-							p.Left.(time.Time).Month(),
-							p.Left.(time.Time).Day(),
-							p.Right.(time.Time).Hour(),
-							p.Right.(time.Time).Minute(),
-							p.Right.(time.Time).Second(),
-							p.Right.(time.Time).Nanosecond(),
-							time.UTC,
-						), nil
-					},
+					combineDateTime,
+				),
+				gomme.Map(
+					gomme.SeparatedPair(
+						dateCompact,
+						gomme.Char[string]('T'),
+						timeCompact,
+					),
+					combineDateTime,
 				),
 				dateOnly,
 				timeOnly,
