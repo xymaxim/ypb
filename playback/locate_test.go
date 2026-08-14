@@ -1,12 +1,10 @@
 package playback_test
 
 import (
-	"context"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"io"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"strconv"
 	"testing"
@@ -16,17 +14,40 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xymaxim/ypb/internal/testutil"
 	"github.com/xymaxim/ypb/playback"
 	"github.com/xymaxim/ypb/segment"
 )
 
-func makeGapCaseHandler(
-	t *testing.T,
-	data map[playback.SequenceNumber]segment.Metadata,
-) func(w http.ResponseWriter, r *http.Request) {
-	t.Helper()
-	return testutil.MakeSegmentMetadataHandler(t, data)
+type staticPlayback struct {
+	playback.Playbacker
+
+	metadata map[playback.SequenceNumber]segment.Metadata
+	itag     string
+}
+
+func newStaticPlayback(metadata map[playback.SequenceNumber]segment.Metadata) *staticPlayback {
+	return &staticPlayback{metadata: metadata, itag: "999"}
+}
+
+func (p *staticPlayback) FetchSegmentMetadata(
+	_ string,
+	sq playback.SequenceNumber,
+) (*segment.Metadata, error) {
+	m, ok := p.metadata[sq]
+	if !ok {
+		return nil, fmt.Errorf("no metadata for sq=%d", sq)
+	}
+	return &m, nil
+}
+
+func (p *staticPlayback) ProbeItag() string { return p.itag }
+
+func (p *staticPlayback) LocateMoment(
+	t time.Time,
+	reference segment.Metadata,
+	isEnd bool,
+) (*playback.RewindMoment, error) {
+	return playback.LocateMomentFor(p, t, reference, isEnd)
 }
 
 func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]segment.Metadata {
@@ -75,7 +96,7 @@ func readGapCaseMetadata(t *testing.T, path string) map[playback.SequenceNumber]
 }
 
 //nolint:tparallel
-func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
+func TestLocateMomentFor_Synthetic(t *testing.T) {
 	t.Parallel()
 
 	// Synthetic test data
@@ -92,28 +113,7 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 		},
 	}
 
-	// Setup
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			testutil.MakeSegmentMetadataHandler(
-				t,
-				metadataMapping,
-			),
-		),
-	)
-	defer ts.Close()
-
-	pb, err := playback.NewPlayback(
-		context.Background(),
-		testutil.TestVideoID,
-		&testutil.MockFetcher{
-			VideoID: testutil.TestVideoID,
-		},
-		testutil.NewClient(ts.URL),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
+	pb := newStaticPlayback(metadataMapping)
 
 	// Test cases
 	testCases := []struct {
@@ -178,7 +178,7 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 	reference := metadataMapping[1]
 	for _, tc := range testCases { //nolint:paralleltest
 		t.Run(tc.name, func(t *testing.T) {
-			moment, err := pb.LocateMoment(tc.target, reference, tc.isEnd)
+			moment, err := playback.LocateMomentFor(pb, tc.target, reference, tc.isEnd)
 			require.NoError(t, err)
 			if diff := cmp.Diff(tc.expected, moment); diff != "" {
 				t.Fatal("Mismatch (- expected, + actual")
@@ -188,25 +188,12 @@ func TestPlayback_LocateMoment_Synthetic(t *testing.T) {
 }
 
 //nolint:tparallel
-func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
+func TestLocateMomentFor_GapCase1(t *testing.T) {
 	t.Parallel()
 
-	// Read test data
 	gapCase := readGapCaseMetadata(t, "testdata/gap-case-1.csv")
+	pb := newStaticPlayback(gapCase)
 
-	// Setup
-	ts := httptest.NewServer(http.HandlerFunc(makeGapCaseHandler(t, gapCase)))
-	defer ts.Close()
-
-	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(
-		context.Background(),
-		testutil.TestVideoID,
-		fetcher,
-		testutil.NewClient(ts.URL),
-	)
-
-	// Test cases
 	testCases := []struct {
 		name            string
 		targetSeconds   float64
@@ -220,10 +207,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959630,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7959599,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7959599},
+				InGap:    false,
 			},
 		},
 		{
@@ -232,10 +217,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959630,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7959599,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7959599},
+				InGap:    false,
 			},
 		},
 		{
@@ -244,10 +227,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959600,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7959600,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7959600},
+				InGap:    false,
 			},
 		},
 		// For S3 cases, two segments are possibly formally valid,
@@ -258,10 +239,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959601,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7959601,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7959601},
+				InGap:    false,
 			},
 		},
 		{
@@ -270,10 +249,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 			referenceSeqNum: 7959600,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7959602,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7959602},
+				InGap:    false,
 			},
 		},
 	}
@@ -283,7 +260,8 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			targetTime := time.Unix(0, int64(tc.targetSeconds*1e9)).In(time.UTC)
 			referenceTime := gapCase[tc.referenceSeqNum].IngestionWalltime
-			actual, err := pb.LocateMoment(
+			actual, err := playback.LocateMomentFor(
+				pb,
 				targetTime,
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,
@@ -304,25 +282,12 @@ func TestPlayback_LocateMoment_GapCase1(t *testing.T) {
 }
 
 //nolint:tparallel
-func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
+func TestLocateMomentFor_GapCase2(t *testing.T) {
 	t.Parallel()
 
-	// Read test data
 	gapCase := readGapCaseMetadata(t, "testdata/gap-case-2.csv")
+	pb := newStaticPlayback(gapCase)
 
-	// Setup
-	ts := httptest.NewServer(http.HandlerFunc(makeGapCaseHandler(t, gapCase)))
-	defer ts.Close()
-
-	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(
-		context.Background(),
-		testutil.TestVideoID,
-		fetcher,
-		testutil.NewClient(ts.URL),
-	)
-
-	// Test cases
 	testCases := []struct {
 		name            string
 		targetSeconds   float64
@@ -336,10 +301,8 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7947333,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7947333},
+				InGap:    false,
 			},
 		},
 		{
@@ -348,10 +311,8 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7947333,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7947333},
+				InGap:    false,
 			},
 		},
 		{
@@ -360,10 +321,8 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7947335,
-				},
-				InGap: true,
+				Metadata: segment.Metadata{SequenceNumber: 7947335},
+				InGap:    true,
 			},
 		},
 		{
@@ -372,10 +331,8 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 			referenceSeqNum: 7947346,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7947334,
-				},
-				InGap: true,
+				Metadata: segment.Metadata{SequenceNumber: 7947334},
+				InGap:    true,
 			},
 		},
 	}
@@ -385,7 +342,8 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			targetTime := time.Unix(0, int64(tc.targetSeconds*1e9)).In(time.UTC)
 			referenceTime := gapCase[tc.referenceSeqNum].IngestionWalltime
-			actual, err := pb.LocateMoment(
+			actual, err := playback.LocateMomentFor(
+				pb,
 				targetTime,
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,
@@ -406,25 +364,12 @@ func TestPlayback_LocateMoment_GapCase2(t *testing.T) {
 }
 
 //nolint:tparallel
-func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
+func TestLocateMomentFor_GapCase3(t *testing.T) {
 	t.Parallel()
 
-	// Read test data
 	gapCase := readGapCaseMetadata(t, "testdata/gap-case-3.csv")
+	pb := newStaticPlayback(gapCase)
 
-	// Setup
-	ts := httptest.NewServer(http.HandlerFunc(makeGapCaseHandler(t, gapCase)))
-	defer ts.Close()
-
-	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
-	pb, _ := playback.NewPlayback(
-		context.Background(),
-		testutil.TestVideoID,
-		fetcher,
-		testutil.NewClient(ts.URL),
-	)
-
-	// Test cases
 	testCases := []struct {
 		name            string
 		targetSeconds   float64
@@ -438,10 +383,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958102,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7958102},
+				InGap:    false,
 			},
 		},
 		{
@@ -450,10 +393,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958103,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7958103},
+				InGap:    false,
 			},
 		},
 		{
@@ -462,10 +403,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958104,
-				},
-				InGap: true,
+				Metadata: segment.Metadata{SequenceNumber: 7958104},
+				InGap:    true,
 			},
 		},
 		{
@@ -474,10 +413,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           true,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958103,
-				},
-				InGap: true,
+				Metadata: segment.Metadata{SequenceNumber: 7958103},
+				InGap:    true,
 			},
 		},
 		{
@@ -486,10 +423,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958104,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7958104},
+				InGap:    false,
 			},
 		},
 		{
@@ -498,10 +433,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 			referenceSeqNum: 7958122,
 			isEnd:           false,
 			expected: &playback.RewindMoment{
-				Metadata: segment.Metadata{
-					SequenceNumber: 7958106,
-				},
-				InGap: false,
+				Metadata: segment.Metadata{SequenceNumber: 7958106},
+				InGap:    false,
 			},
 		},
 	}
@@ -511,7 +444,8 @@ func TestPlayback_LocateMoment_GapCase3(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			targetTime := time.Unix(0, int64(tc.targetSeconds*1e9)).In(time.UTC)
 			referenceTime := gapCase[tc.referenceSeqNum].IngestionWalltime
-			actual, err := pb.LocateMoment(
+			actual, err := playback.LocateMomentFor(
+				pb,
 				targetTime,
 				segment.Metadata{
 					SequenceNumber:    tc.referenceSeqNum,

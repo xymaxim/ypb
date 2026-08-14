@@ -159,6 +159,19 @@ func (pb *Playback) FetchSegmentMetadata(
 	return sm, nil
 }
 
+// LocateMoment finds the RewindMoment corresponding to a targetTime.
+//
+// The search starts from a reference point (typically the head segment or the
+// closest known segment to the target). If isEnd is true, the search moment is
+// treated as an interval end.
+func (pb *Playback) LocateMoment(
+	targetTime time.Time,
+	reference segment.Metadata,
+	isEnd bool,
+) (*RewindMoment, error) {
+	return LocateMomentFor(pb, targetTime, reference, isEnd)
+}
+
 func (pb *Playback) streamSegmentPartial(
 	itag string,
 	sq SequenceNumber,

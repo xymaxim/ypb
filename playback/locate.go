@@ -1,4 +1,4 @@
-// This file extends Playback with segment location functionality.
+// This file implements the segment location functionality.
 //
 // The search algorithm is based on the original ytpb's implementation
 // (https://github.com/xymaxim/ytpb/pull/3) and consists of three steps:
@@ -80,12 +80,11 @@ func (i *RewindInterval) Duration() time.Duration {
 	return i.End.ActualTime.Sub(i.Start.ActualTime)
 }
 
-// LocateMoment finds the RewindMoment corresponding to a targetTime.
-//
-// The search begins from a reference point (typically the head segment or the
-// closest known segment to the target). If isEnd is true, the search moment is
-// treated as an interval end.
-func (pb *Playback) LocateMoment(
+// LocateMomentFor finds the RewindMoment corresponding to targetTime, using pb
+// to fetch segment metadata. This is the algorithm shared by Playback and any
+// other Playbacker implementation (e.g., MockPlayback).
+func LocateMomentFor(
+	pb Playbacker,
 	targetTime time.Time,
 	reference segment.Metadata,
 	isEnd bool,
@@ -166,7 +165,7 @@ func (pb *Playback) LocateMoment(
 	// Step 2 and 3: Binary search within discovered domain and gap detection
 	var moment *RewindMoment
 	startSeqNum, endSeqNum := track[len(track)-2], track[len(track)-1]
-	moment, err = pb.searchInRange(targetTime, startSeqNum, endSeqNum, isEnd)
+	moment, err = searchInRange(pb, targetTime, startSeqNum, endSeqNum, isEnd)
 	if err != nil {
 		return nil, fmt.Errorf("searching in range: %w", err)
 	}
@@ -183,7 +182,8 @@ func (pb *Playback) LocateMoment(
 
 // searchInRange performs binary search within the specified domain and handles
 // gaps. This implements Step 2 and Step 3 of the search algorithm.
-func (pb *Playback) searchInRange(
+func searchInRange(
+	pb Playbacker,
 	targetTime time.Time,
 	startSeqNum, endSeqNum int,
 	isEnd bool,
@@ -258,6 +258,15 @@ func (pb *Playback) searchInRange(
 	return NewRewindMoment(targetTime, *candidate, isEnd, true), nil
 }
 
+// fetchSegmentMetadata fetches segment metadata and wraps errors consistently.
+func fetchSegmentMetadata(pb Playbacker, sq SequenceNumber) (*segment.Metadata, error) {
+	metadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
+	if err != nil {
+		return nil, NewSegmentMetadataFetchError(sq, err)
+	}
+	return metadata, nil
+}
+
 // calculateSegmentOffset calculates the sequence number offset of the segment
 // that contains time t relative to the provided reference. If isEnd is true, an
 // exact boundary time is treated as belonging to the previous segment.
@@ -281,13 +290,4 @@ func calculateSegmentOffset(t time.Time, reference *segment.Metadata, isEnd bool
 	}
 
 	return int(segmentOffset)
-}
-
-// fetchSegmentMetadata fetches segment metadata and wraps errors consistently.
-func fetchSegmentMetadata(pb *Playback, sq SequenceNumber) (*segment.Metadata, error) {
-	metadata, err := pb.FetchSegmentMetadata(pb.ProbeItag(), sq)
-	if err != nil {
-		return nil, NewSegmentMetadataFetchError(sq, err)
-	}
-	return metadata, nil
 }
