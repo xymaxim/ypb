@@ -116,6 +116,12 @@ rewind, for example to play the last 30 minutes:
 http://localhost:9000/?i=30m--now
 ```
 
+## Related images
+
+- `ghcr.io/xymaxim/ypb`: main image with yt-dlp and ffmpeg installed
+- `ghcr.io/xymaxim/ypb-compose`: compose file with ypb image plus PO token provider sidecar
+- `ghcr.io/xymaxim/ypb-mock`: generates fixture media for mock playback, without hitting YouTube. See [`containers/ypb-mock`](containers/ypb-mock) for usage.
+
 ## License
 
 GNU General Public License v3.0.
