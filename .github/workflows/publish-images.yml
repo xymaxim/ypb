@@ -1,4 +1,4 @@
-name: Build and Push Container Image
+name: Publish main images
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           tags: latest ${{ github.ref_name }}
           oci: true
           containerfiles: |
-            ./containers/Containerfile
+            ./containers/ypb/Containerfile
 
       - name: Build bin image
         id: build-bin-image
@@ -43,7 +43,7 @@ jobs:
           tags: bin-latest bin-${{ github.ref_name }}
           oci: true
           containerfiles: |
-            ./containers/Containerfile.bin
+            ./containers/ypb/Containerfile.bin
 
       - name: Push bin image
         uses: redhat-actions/push-to-registry@v2
@@ -78,7 +78,7 @@ jobs:
 
       - name: Push compose.yaml as OCI artifact
         run: |
-          cd containers
+          cd containers/ypb-compose
           oras push \
             --artifact-type application/vnd.docker.compose.project \
             --annotation org.opencontainers.image.title="Ypb Compose" \

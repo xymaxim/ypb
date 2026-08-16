@@ -3,7 +3,7 @@ FROM golang:1.25-alpine AS builder
 
 RUN apk update && apk add --no-cache make git
 
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -36,11 +36,11 @@ RUN apk update && apk add --no-cache ca-certificates ffmpeg deno
 COPY --from=ytdlp --chmod=755 /yt-dlp /usr/local/bin/yt-dlp
 COPY --from=ytdlp /yt-dlp-plugins /etc/yt-dlp/plugins/bgutil-ytdlp-pot-provider
 
-COPY --from=builder --chmod=755 /build/ypb /usr/local/bin
+COPY --from=builder --chmod=755 /app/build/ypb /usr/local/bin
 
-COPY containers/yt-dlp.container.conf /etc/yt-dlp/config
+COPY containers/ypb/yt-dlp.container.conf /etc/yt-dlp/config
 
-COPY --chmod=755 containers/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 containers/ypb/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /media
 
