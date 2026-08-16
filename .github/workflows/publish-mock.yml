@@ -29,7 +29,7 @@ jobs:
         id: build-image
         uses: redhat-actions/buildah-build@v3
         with:
-          image: ghcr.io/xymaxim/ypb-mock
+          image: xymaxim/ypb-mock
           tags: latest
           oci: true
           containerfiles: |
