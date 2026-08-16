@@ -116,11 +116,11 @@ rewind, for example to play the last 30 minutes:
 http://localhost:9000/?i=30m--now
 ```
 
-## Related images
+## Images & artifacts
 
-- `ghcr.io/xymaxim/ypb`: main image with yt-dlp and ffmpeg installed
-- `ghcr.io/xymaxim/ypb-compose`: compose file with ypb image plus PO token provider sidecar
-- `ghcr.io/xymaxim/ypb-mock`: generates fixture media for mock playback, without hitting YouTube. See [`containers/ypb-mock`](containers/ypb-mock) for usage.
+- [`ghcr.io/xymaxim/ypb`](https://github.com/xymaxim/ypb/pkgs/container/ypb): main container image with yt-dlp and ffmpeg installed
+- [`ghcr.io/xymaxim/ypb-compose`](https://github.com/xymaxim/ypb/pkgs/container/ypb-compose): compose file with ypb image plus PO token provider sidecar
+- [`ghcr.io/xymaxim/ypb-mock`](https://github.com/xymaxim/ypb/pkgs/container/ypb-mock): generates fixture media for mock playback, without hitting YouTube. See [`containers/ypb-mock`](containers/ypb-mock) for usage.
 
 ## License
 

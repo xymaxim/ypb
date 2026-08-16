@@ -2,7 +2,8 @@
 
 `cmd/mockplay`, `internal/mockserver`, and `ypb.NewMockStream` serve a fake live
 stream from locally generated media instead of hitting YouTube. The
-`ghcr.io/xymaxim/ypb-mock` image builds that fixture data using ffmpeg.
+[`ghcr.io/xymaxim/ypb-mock`](https://github.com/xymaxim/ypb/pkgs/container/ypb-mock)
+image builds that fixture data using ffmpeg.
 
 Run the following to generate a fixture:
 
