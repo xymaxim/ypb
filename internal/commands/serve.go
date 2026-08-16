@@ -30,23 +30,11 @@ func (c *Serve) Run() error {
 
 	mux := http.NewServeMux()
 	if c.UI {
-		mux.Handle("/{$}", apppkg.WithError((&apppkg.PlayHandler{}).ServeRoot))
-		mux.Handle("/", apppkg.WithError((&apppkg.PlayHandler{}).ServeHTTP))
-		mux.Handle("/{interval}", apppkg.WithError((&apppkg.PlayHandler{}).ServePage))
+		apppkg.RegisterPlayRoutes(mux)
 	}
-	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
-		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
-	)
-	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
-		(&apppkg.MPDHandler{
-			Playback:      app.Playback,
-			FFprobeRunner: app.FFprobeRunner,
-			ServerAddr:    app.Server.Addr,
-		}).ServeHTTP),
-	)
-	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
-		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
-	)
+	apppkg.RegisterInfoRoute(mux, app)
+	apppkg.RegisterSegmentRoute(mux, app)
+	apppkg.RegisterMPDRoute(mux, app)
 
 	app.Server.Handler = apppkg.WithCORS(mux)
 

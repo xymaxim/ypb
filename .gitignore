@@ -27,7 +27,7 @@ go.work.sum
 
 # env file
 .env
-!containers/.env
+!containers/ypb-compose/.env
 
 # Added by goreleaser init:
 dist/
@@ -37,3 +37,7 @@ docs/site/
 
 # Python tooling environment (uv)
 .venv/
+
+# Generated mock playback fixture 
+playback/testdata/fixture/info.json
+playback/testdata/fixture/segments/

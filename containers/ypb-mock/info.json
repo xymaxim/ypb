@@ -1,0 +1,40 @@
+{
+  "ID": "abcdefgh123",
+  "Title": "Sample stream",
+  "ChannelID": "UCxxxxxxxxxxxxxxxxxxxxxx",
+  "ChannelTitle": "Sample channel",
+  "ActualStartTime": "2026-01-02T10:20:00Z",
+  "SegmentDuration": 5000000000,
+  "AudioStreams": [
+    {
+      "BaseURL": "mock://140",
+      "Codecs": "mp4a.40.2",
+      "Itag": "140",
+      "MimeType": "audio/mp4",
+      "Tbr": 128.0,
+      "AudioSamplingRate": 44100
+    }
+  ],
+  "VideoStreams": [
+    {
+      "BaseURL": "mock://134",
+      "Codecs": "avc1.4d401e",
+      "Itag": "134",
+      "MimeType": "video/mp4",
+      "Tbr": 800.0,
+      "Width": 640,
+      "Height": 360,
+      "FrameRate": 30
+    },
+    {
+      "BaseURL": "mock://135",
+      "Codecs": "avc1.4d401f",
+      "Itag": "135",
+      "MimeType": "video/mp4",
+      "Tbr": 1500.0,
+      "Width": 854,
+      "Height": 480,
+      "FrameRate": 30
+    }
+  ]
+}

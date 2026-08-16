@@ -16,8 +16,6 @@ import (
 	"github.com/xymaxim/ypb/playback"
 )
 
-const mpdPath = "/mpd"
-
 type Download struct {
 	CommonFlags
 	Stream   string `arg:"" help:"YouTube video ID"         required:""`
@@ -93,13 +91,11 @@ func (c *Download) Run() error {
 	fmt.Println(" ", formatActualLine("end", interval.End))
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(mpdPath, apppkg.WithError(
+	apppkg.RegisterSegmentRoute(mux, app)
+	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
 		func(w http.ResponseWriter, r *http.Request) error {
 			return serveMPD(w, app, interval)
 		}),
-	)
-	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
-		(&apppkg.SegmentHandler{Playback: app.Playback}).ServeHTTP),
 	)
 
 	app.Server.Handler = mux
@@ -112,7 +108,7 @@ func (c *Download) Run() error {
 		}
 	}()
 
-	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(app.Server.Addr), mpdPath)
+	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(app.Server.Addr), apppkg.MPDPath)
 	if err != nil {
 		return fmt.Errorf("building URL: %w", err)
 	}

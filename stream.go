@@ -34,10 +34,8 @@ type StreamConfig struct {
 	OnPrint func([]byte)
 }
 
-// NewStream creates a new playback server.
+// NewStream creates a new playback server backed by a real YouTube stream.
 func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
-	ctx, cancel := context.WithCancel(ctx)
-
 	ytdlpRunner := exec.NewCommandRunner(apppkg.YtdlpBinaryPath)
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
@@ -55,25 +53,50 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 		return nil, fmt.Errorf("creating playback: %w", err)
 	}
 
+	return newStream(ctx, pb, port, ffprobeRunner)
+}
+
+// NewMockStream creates a playback server backed by fixture data instead of a
+// live YouTube stream. See containers/ypb-mock on how to generate fixture data.
+func NewMockStream(
+	ctx context.Context,
+	fixtureDir string,
+	port int,
+	actualStartTime time.Time,
+) (*Stream, error) {
+	pb, err := playback.NewMockPlayback(fixtureDir, actualStartTime)
+	if err != nil {
+		return nil, fmt.Errorf("creating mock playback: %w", err)
+	}
+
+	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
+
+	return newStream(ctx, pb, port, ffprobeRunner)
+}
+
+// newStream wires a Playbacker into a playback server.
+func newStream(
+	ctx context.Context,
+	pb playback.Playbacker,
+	port int,
+	ffprobeRunner exec.Runner,
+) (*Stream, error) {
+	ctx, cancel := context.WithCancel(ctx)
+
 	server := &http.Server{
-		Addr:              ":" + strconv.Itoa(port),
-		ReadHeaderTimeout: 20 * time.Second,
+		Addr: ":" + strconv.Itoa(port),
+	}
+
+	app := &apppkg.App{
+		Playback:      pb,
+		FFprobeRunner: ffprobeRunner,
+		Server:        server,
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
-		(&apppkg.InfoHandler{Info: pb.Info()}).ServeHTTP),
-	)
-	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
-		(&apppkg.MPDHandler{
-			Playback:      pb,
-			FFprobeRunner: ffprobeRunner,
-			ServerAddr:    server.Addr,
-		}).ServeHTTP),
-	)
-	mux.HandleFunc(apppkg.SegmentPath, apppkg.WithError(
-		(&apppkg.SegmentHandler{Playback: pb}).ServeHTTP),
-	)
+	apppkg.RegisterInfoRoute(mux, app)
+	apppkg.RegisterMPDRoute(mux, app)
+	apppkg.RegisterSegmentRoute(mux, app)
 	server.Handler = apppkg.WithCORS(mux)
 
 	stream := &Stream{

@@ -14,12 +14,6 @@ import (
 )
 
 const (
-	InfoPath    = "/info"
-	MPDPath     = "/mpd/{interval}"
-	SegmentPath = "/segments/itag/{itag}/sq/{sq}"
-)
-
-const (
 	FFmpegBinaryPath  = "ffmpeg"
 	FFprobeBinaryPath = "ffprobe"
 	YtdlpBinaryPath   = "yt-dlp"

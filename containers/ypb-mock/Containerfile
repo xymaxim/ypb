@@ -1,0 +1,15 @@
+FROM jrottenberg/ffmpeg:8.1-alpine320
+
+LABEL org.opencontainers.image.title="Ypb Mock"
+LABEL org.opencontainers.image.description="Fixture media for testing ypb playback without YouTube."
+LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
+LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
+
+RUN apk add --no-cache font-dejavu && fc-cache -f
+
+WORKDIR /output
+
+COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY info.json /usr/local/share/ypb-mock/info.json
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
