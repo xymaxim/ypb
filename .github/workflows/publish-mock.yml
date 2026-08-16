@@ -26,7 +26,7 @@ jobs:
 
       - name: Build image
         id: build-image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v3
         with:
           image: ghcr.io/xymaxim/ypb-mock
           tags: latest
@@ -36,7 +36,7 @@ jobs:
           context: ./containers/ypb-mock
 
       - name: Push image
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v3
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
