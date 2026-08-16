@@ -2,7 +2,6 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
-ypb
 *.exe
 *.exe~
 *.dll
@@ -31,6 +30,9 @@ go.work.sum
 
 # Added by goreleaser init:
 dist/
+
+# Built binaries
+build/
 
 # Built documentation site
 docs/site/

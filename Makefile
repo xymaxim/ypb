@@ -21,7 +21,7 @@ run:
 	@go run -ldflags "$(VERSION_LDFLAGS)" -buildvcs=true ./cmd/ypb $(ARGS)
 
 build:
-	CGO_ENABLED=0 go build -ldflags "$(VERSION_LDFLAGS)" -o ypb ./cmd/ypb
+	CGO_ENABLED=0 go build -ldflags "$(VERSION_LDFLAGS)" -o build/ypb ./cmd/ypb
 
 release:
 	goreleaser release --clean
