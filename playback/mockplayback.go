@@ -2,7 +2,9 @@ package playback
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -241,24 +243,27 @@ func (m *MockPlayback) segmentDurationTicks(itag string) uint64 {
 	return uint64(m.info.SegmentDuration) * m.timescales[itag] / uint64(time.Second)
 }
 
-func patchSegmentTfdt(raw []byte, offset uint64) ([]byte, error) {
-	f, err := mp4.DecodeFile(bytes.NewReader(raw))
-	if err != nil {
-		return nil, fmt.Errorf("decoding fragment: %w", err)
+func patchSegmentTfdt(raw []byte, targetTicks uint64) ([]byte, error) {
+	patched := make([]byte, len(raw))
+	copy(patched, raw)
+
+	offset := bytes.Index(patched, []byte("tfdt"))
+	if offset < 0 {
+		return nil, errors.New("tfdt box not found")
 	}
 
-	for _, seg := range f.Segments {
-		for _, frag := range seg.Fragments {
-			if frag.Moof == nil || frag.Moof.Traf == nil || frag.Moof.Traf.Tfdt == nil {
-				continue
-			}
-			frag.Moof.Traf.Tfdt.SetBaseMediaDecodeTime(offset)
-		}
+	// offset points at the 4-byte "tfdt" fourcc. The box's size field is
+	// the 4 bytes immediately before it. Version/flags is the 4 bytes
+	// immediately after.
+	versionByte := patched[offset+4]
+
+	if versionByte == 0 {
+		// 4-byte baseMediaDecodeTime, starts after fourcc(4) + version/flags(4)
+		binary.BigEndian.PutUint32(patched[offset+8:], uint32(targetTicks))
+	} else {
+		// 8-byte baseMediaDecodeTime
+		binary.BigEndian.PutUint64(patched[offset+8:], targetTicks)
 	}
 
-	var buf bytes.Buffer
-	if err := f.Encode(&buf); err != nil {
-		return nil, fmt.Errorf("encoding patched fragment: %w", err)
-	}
-	return buf.Bytes(), nil
+	return patched, nil
 }
