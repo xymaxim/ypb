@@ -16,7 +16,7 @@ for res in $VIDEO_RESOLUTIONS; do
          -vf "drawtext=:text='%{pts\:hms}':x=(w-text_w)/2:y=(h-text_h)/2:fontcolor=white:fontsize=h/6:box=1:boxcolor=black" \
          -c:v libx264 -pix_fmt yuv420p \
          -video_track_timescale 90000 \
-         -x264-params "keyint=150:min-keyint=150:scenecut=0" \
+         -x264-params "keyint=150:min-keyint=150:scenecut=0:bframes=0" \
          -y "source-${itag}.mp4"
 
   mkdir -p "segments/${itag}"
