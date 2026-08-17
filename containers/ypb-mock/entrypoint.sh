@@ -3,7 +3,7 @@ set -e
 
 VIDEO_RESOLUTIONS="134:640:360 135:854:480"
 
-cp /usr/local/share/ypb-mock/info.json /info.json
+cp /usr/local/share/ypb-mock/info.json info.json
 
 # Generate video segments
 for res in $VIDEO_RESOLUTIONS; do
