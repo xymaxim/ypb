@@ -8,17 +8,17 @@ image builds that fixture data using ffmpeg.
 Run the following to generate a fixture:
 
 ```sh
-mkdir -p internal/playback/testdata/fixture
+mkdir -p playback/testdata/fixture
 podman run --rm \
-  -v "$(pwd)/internal/playback/testdata/fixture:/work:Z" \
+  -v "$(pwd)/playback/testdata/fixture:/output:Z" \
   ghcr.io/xymaxim/ypb-mock:latest
 ```
 
 This produces an hour of content per itag in 5-second segments, plus
 `info.json`:
 
-    internal/playback/testdata/fixture/
+    playback/testdata/fixture/
       info.json
-      segments/itag/134/1.mp4 ... 720.mp4
-      segments/itag/135/1.mp4 ... 720.mp4
-      segments/itag/140/1.mp4 ... 720.mp4
+      segments/134/1.mp4 ... 720.mp4
+      segments/135/1.mp4 ... 720.mp4
+      segments/140/1.mp4 ... 720.mp4
