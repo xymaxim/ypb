@@ -16,8 +16,8 @@ player, or download them as local files.
 
 - Standalone CLI and proxy streaming server for playback
 - Rewind precisely to past moments far beyond the web player’s limits
-- Play excerpts immediately without downloading
-- Play past moments in a web player in the browser
+- Play excerpts without downloading via a built-in web player
+- Capture a single frame or a timelapse of frames
 - Works with any MPEG-DASH compatible player or downloader
 - Uses [yt-dlp](https://github.com/yt-dlp/yt-dlp/) to reliably fetch info and download media
 
@@ -40,19 +40,21 @@ sequenceDiagram
     end
     E->>E: Write to file
 ```
+*Dowloading stream excerpts with yt-dlp's general extractor*
 
-*Download mode passes a composed MPEG-DASH manifest to yt-dlp's general extractor*
+Ypb is built around MPEG-DASH to access past moments in YouTube live streams. A
+playback proxy wraps format base URLs so media can be streamed with error retry
+handling, and is used to generate manifests for the exact excerpts
+requested. Behind the scenes, [yt-dlp](https://github.com/yt-dlp/yt-dlp/)
+handles video metadata fetching and JavaScript challenges.
 
-Ypb runs in three modes: serve, download, and play.
+The generated manifests can be fed to a built-in dash.js player for rewinding
+and watching in the browser (the `play` command), or passed to any other
+MPEG-DASH compatible player or downloader. Ypb also composes static manifests to
+saving excerpts to local files using yt-dlp's general extractor (the `download`
+command).
 
-**Serve** mode runs a local HTTP proxy server that generates MPEG-DASH manifests
-(MPDs) and serves media segments, usable with any MPEG-DASH compatible player
-or downloader. **Download** mode composes a manifest and passes it to yt-dlp's
-general extractor to save an excerpt as a local file. **Play** mode opens a
-minimal web page with the dash.js player, letting you preview excerpts by
-rewinding directly in the browser.
-
-See [Overview](https://xymaxim.github.io/ypb/overview/) for more on each mode.
+See [Overview](https://xymaxim.github.io/ypb/overview/) for details.
 
 ## Installation
 
@@ -65,62 +67,62 @@ guide for different ways to install and run `ypb`.
 
 ### Download stream excerpts
 
-Download the latest 10 minutes from a live stream to a local file:
+Download the latest 30 seconds from a live stream:
 
 ```shell
-$ ypb download --interval 10m/now Mm_zVDDUeNA && ls
-Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T054630+00_10m.mp4
+$ ypb download --interval 30s/now Mm_zVDDUeNA && ls
+Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260102T102030+00_30s.mp4
 ``` 
 
-Or download a similar excerpt from one day ago:
+Or download a 30-second excerpt starting at a particular time:
 
 ```shell
-$ ypb download --interval 'now - 1d10m/now - 1d' Mm_zVDDUeNA && ls
-Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260207T054630+00_10m.mp4
+$ ypb download --interval '2026-01-02T10:00+00/30s' Mm_zVDDUeNA && ls
+Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260102T100000+00_30s.mp4
 ``` 
+
+### Play in the browser
+
+Start the web player:
+
+```shell
+ypb play Mm_zVDDUeNA
+```
+
+Open `http://localhost:9000` to play the live content, or edit the path
+parameter to rewind to a particular time:
+
+```text
+http://localhost:9000/2026-01-02T12:00
+```
 
 ### Serve stream excerpts
 
 Start the playback server to enable rewind requests:
 
 ```shell
-ypb serve --port 9000 Mm_zVDDUeNA
+ypb serve Mm_zVDDUeNA
 ```
 
-With the server running, you can preview rewind excerpts, for example, with
-`ffplay`:
+With the server running on the default port 9000, you can preview excerpts with
+your favorite player, or with `ffplay`:
 
 ```shell
 ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
   http://localhost:9000/mpd/10m--now
 ```
 
-Or download them with `yt-dlp`:
+Or download them with `yt-dlp` directly:
 
 ```shell
 yt-dlp http://localhost:9000/mpd/10m--now
 ```
 
-### Play in the browser
-
-Start the web player and open the printed address:
-
-```shell
-ypb play Mm_zVDDUeNA
-```
-
-Open `http://localhost:9000` and edit the `i` parameter in the address bar to
-rewind, for example to play the last 30 minutes:
-
-```text
-http://localhost:9000/?i=30m--now
-```
-
 ## Images & artifacts
 
-- [`ghcr.io/xymaxim/ypb`](https://github.com/xymaxim/ypb/pkgs/container/ypb): main container image with yt-dlp and ffmpeg installed
-- [`ghcr.io/xymaxim/ypb-compose`](https://github.com/xymaxim/ypb/pkgs/container/ypb-compose): compose file with ypb image plus PO token provider sidecar
-- [`ghcr.io/xymaxim/ypb-mock`](https://github.com/xymaxim/ypb/pkgs/container/ypb-mock): generates fixture media for mock playback, without hitting YouTube. See [`containers/ypb-mock`](containers/ypb-mock) for usage.
+- [ghcr.io/xymaxim/ypb](https://github.com/xymaxim/ypb/pkgs/container/ypb): main container image with yt-dlp and ffmpeg installed
+- [ghcr.io/xymaxim/ypb-compose](https://github.com/xymaxim/ypb/pkgs/container/ypb-compose): compose file with ypb image plus PO token provider sidecar
+- [ghcr.io/xymaxim/ypb-mock](https://github.com/xymaxim/ypb/pkgs/container/ypb-mock): generates fixture media for mock playback, without hitting YouTube. See [`containers/ypb-mock`](containers/ypb-mock) for usage.
 
 ## License
 
