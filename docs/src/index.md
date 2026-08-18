@@ -15,8 +15,9 @@ player, or download them as local files.
 * [**Installation guide**](guides/install/install.md) --- How to install and run
   ypb
 
-**Tutorials**
+**Guides and tutorials**
 
+- [**Play a stream in the browser**](guides/play-stream.md) --- Play a stream with a built-in web player
 - [**Create a time-lapse video**](tutorials/timelapse.md) --- Capture frames and assemble them into a video
 
 **Reference**

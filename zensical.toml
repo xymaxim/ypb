@@ -23,6 +23,7 @@ nav = [
     "tutorials/timelapse.md",
   ]},
   { "How-to guides" = [
+    "guides/play-stream.md",
     "guides/download-segments.md",
   ]},
   { "Reference" = [
