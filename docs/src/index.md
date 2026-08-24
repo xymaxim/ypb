@@ -7,20 +7,68 @@ MPEG-DASH access to past moments in live streams, allowing you to rewind beyond
 the web player's limits, play selected excerpts instantly in any compatible
 player, or download them as local files.
 
-<h2>Further reading</h2>
+## Start here
 
-**Before you begin**
+<div class="grid cards" markdown>
 
-* [**Quickstart**](quickstart.md) --- Showcase of main usage scenarios
-* [**Installation guide**](guides/install/install.md) --- How to install and run
-  ypb
+- **Getting started**
 
-**Guides and tutorials**
+    ---
 
-- [**Play a stream in the browser**](guides/play-stream.md) --- Play a stream with a built-in web player
-- [**Create a time-lapse video**](tutorials/timelapse.md) --- Capture frames and assemble them into a video
+    A tour of the main usage in five minutes.
 
-**Reference**
+    :lucide-arrow-right: [Quickstart](quickstart.md)
 
-* [**Command Line Interface**](reference/cli.md) --- Overview of the command
-  line interface
+- **Installation guide**
+
+    ---
+
+    How to install and run ypb.
+
+    :lucide-arrow-right: [Install](guides/install/install.md)
+
+</div>
+
+## Guides and tutorials
+
+<div class="grid cards" markdown>
+
+- **Play a stream in the browser**
+
+    ---
+
+    Play a stream with a built-in web player.
+
+    :lucide-arrow-right: [Read the player guide](guides/play-stream.md)
+
+- **Create a time-lapse video**
+
+    ---
+
+    Capture and assemble frames into a video.
+
+    :lucide-arrow-right: [Read the time-lapse tutorial](tutorials/timelapse.md)
+
+</div>
+
+## Reference
+
+<div class="grid cards" markdown>
+
+- **Command Line Interface**
+
+    ---
+
+    Overview of the command line interface.
+
+    :lucide-arrow-right: [Read the reference](reference/cli.md)
+
+- **API**
+
+    ---
+
+    Overview of the API endpoints.
+
+    :lucide-arrow-right: [Read the reference](reference/api.md)
+
+</div>
