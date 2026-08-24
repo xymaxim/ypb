@@ -1,5 +1,8 @@
 # API
 
+The following endpoints are served by the playback server started with
+the [`serve`](cli.md#serve) command.
+
 ## Endpoints
 
 ### /
