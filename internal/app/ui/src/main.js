@@ -3,9 +3,14 @@ import { attachPlayheadDisplay } from './ui/playhead.js';
 import { attachQualitySelector, attachTrackSelector } from './ui/selectors.js';
 import { attachTakeScreenshot } from './ui/screenshot.js';
 import { attachCopyTimestamp } from './ui/timestamp.js';
+import { attachCopyDownload } from './ui/download.js';
 
 const interval = location.pathname.replace(/^\/+/, '') || 'now';
-const mpdURL = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href).href;
+const mpd = new URL(`/mpd/${encodeURIComponent(interval)}`, location.href);
+const params = new URLSearchParams(location.search);
+const latency = params.get('latency') ?? params.get('l');
+if (latency !== null) mpd.searchParams.set('latency', latency);
+const mpdURL = mpd.href;
 
 const video = document.getElementById('player');
 const container = document.getElementById('player-container');
@@ -20,6 +25,7 @@ const playheadEl = document.getElementById('playhead');
 const playBarEl = document.getElementById('play-bar');
 const screenshotBtn = document.getElementById('screenshot');
 const copyTimestampBtn = document.getElementById('copy-timestamp');
+const copyDownloadBtn = document.getElementById('copy-download');
 
 const qualitiesEl = document.getElementById('qualities');
 const tracksEl = document.getElementById('tracks');
@@ -42,6 +48,8 @@ try {
 }
 
 let startActualTime = NaN;
+let startTargetTime = NaN;
+let endTargetTime = NaN;
 let manifestReady = false;
 
 loadingEl.textContent = 'Rewinding...';
@@ -56,6 +64,10 @@ try {
   }
   const data = await res.json();
   startActualTime = new Date(data.metadata.startActualTime).getTime() / 1000;
+  startTargetTime = new Date(data.metadata.startTargetTime).getTime() / 1000;
+  if (data.metadata.endTargetTime) {
+    endTargetTime = new Date(data.metadata.endTargetTime).getTime() / 1000;
+  }
   manifestReady = true;
 } catch (err) {
   errorEl.textContent = `Playback error: ${err.message || 'unknown'}`;
@@ -72,6 +84,7 @@ if (manifestReady) {
   attachTrackSelector(player, tracksEl);
   attachTakeScreenshot(player, video, screenshotBtn, videoId, startActualTime);
   attachCopyTimestamp(player, copyTimestampBtn, startActualTime);
+  attachCopyDownload(copyDownloadBtn, videoId, startTargetTime, endTargetTime);
 
   player.on(MediaPlayer.events.ERROR, (e) => {
     loadingEl.classList.add('hidden');
@@ -82,5 +95,8 @@ if (manifestReady) {
     errorEl.textContent = '';
     playBarEl.classList.add('visible');
   });
-  player.on(MediaPlayer.events.STREAM_INITIALIZED, () => { errorEl.textContent = ''; });
+  player.on(MediaPlayer.events.STREAM_INITIALIZED, () => {
+    errorEl.textContent = '';
+    copyDownloadBtn.classList.toggle('hidden', player.isDynamic());
+  });
 }

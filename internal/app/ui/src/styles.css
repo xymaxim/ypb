@@ -102,6 +102,9 @@ h3 a {
 .button:active {
   top: 1px;
 }
+.button.hidden {
+  display: none;
+}
 
 #selectors {
   width: 100%;

@@ -2,7 +2,7 @@ import { parseTzOffset } from '../timezone.js';
 
 const pad = (n, len = 2) => String(n).padStart(len, '0');
 
-function formatTimestamp(utcSeconds, offsetMs, offsetLabel) {
+export function formatTimestamp(utcSeconds, offsetMs, offsetLabel) {
   const date = new Date(utcSeconds * 1000 + offsetMs);
 
   const y = date.getUTCFullYear();
