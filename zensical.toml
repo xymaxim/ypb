@@ -44,6 +44,11 @@ nav = [
 font.text = "Atkinson Hyperlegible Next"
 font.code = "Atkinson Hyperlegible Mono"
 
+features = [
+  "navigation.path",
+  "navigation.top",
+]
+
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]
 [project.markdown_extensions.attr_list]
