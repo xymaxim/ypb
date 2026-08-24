@@ -108,10 +108,9 @@ func (c *Download) Run() error {
 		}
 	}()
 
-	mpdURL, err := url.JoinPath(urlutil.FormatServerAddress(app.Server.Addr), apppkg.MPDPath)
-	if err != nil {
-		return fmt.Errorf("building URL: %w", err)
-	}
+	mpdURL := urlutil.FormatServerAddress(app.Server.Addr) +
+		"/mpd/" +
+		url.PathEscape(c.Interval)
 
 	args := append(
 		[]string{
