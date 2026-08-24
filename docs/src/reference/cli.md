@@ -1,7 +1,7 @@
 # Command Line Interface
 
 ```console exec="1" source="console"
-$ ./ypb --help
+$ ./build/ypb --help
 ```
 
 ## Commands 
@@ -9,31 +9,37 @@ $ ./ypb --help
 ### capture
 
 ```console exec="1" source="console"
-$ ./ypb capture --help
+$ ./build/ypb capture --help
 ```
 
 #### frame
 
 ```console exec="1" source="console"
-$ ./ypb capture frame --help
+$ ./build/ypb capture frame --help
 ```
 
 #### timelapse
 
 ```console exec="1" source="console"
-$ ./ypb capture timelapse --help
+$ ./build/ypb capture timelapse --help
 ```
 
 ### download 
 
 ```console exec="1" source="console"
-$ ./ypb download --help
+$ ./build/ypb download --help
 ```
 
 ### serve
 
 ```console exec="1" source="console"
-$ ./ypb serve --help
+$ ./build/ypb serve --help
+```
+
+### play
+
+```console exec="1" source="console"
+$ ./build/ypb play --help
 ```
 
 ## Specifying the rewind interval
