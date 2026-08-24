@@ -32,7 +32,7 @@ http://localhost:9000/2026-01-02T12:00
 ```
 
 > See [Specifying the rewind
-> interval](../reference/cli.md#specifying-the-rewind-interval) for the accepted
+> time](../reference/cli.md#specifying-the-rewind-time) for the accepted
 > formats.
 
 ## Set the output timezone
@@ -51,7 +51,7 @@ conditions, etc. The `latency` (or `l`) query parameter corrects for this by
 locating requested moments later by the given number of seconds:
 
 ```text
-http://localhost:9000/12:00?latency=10
+http://localhost:9000/12:00?l=10
 ```
 
 > See [Correcting for streaming latency](../reference/cli/#correcting-for-streaming-latency) for details.

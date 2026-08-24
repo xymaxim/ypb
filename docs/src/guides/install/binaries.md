@@ -31,15 +31,15 @@ release](https://github.com/xymaxim/ypb/releases/latest) page:
 
 <div class="grid cards three-cols" markdown>
 
--   :fontawesome-brands-linux:{ .lg .middle } __Linux__
+-   :material-linux:{ .lg } **Linux**
 
     [amd64][ypb-{{ git.short_tag }}-linux-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-linux-arm64.zip]
 
--   :fontawesome-brands-apple:{ .lg .middle } __macOS__
+-   :material-apple:{ .lg } **macOS**
 
     [amd64][ypb-{{ git.short_tag }}-darwin-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-darwin-arm64.zip]
 
--   :fontawesome-brands-windows:{ .lg .middle } __Windows__
+-   :material-microsoft-windows:{ .lg } **Windows**
 
     [amd64][ypb-{{ git.short_tag }}-windows-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-windows-arm64.zip]
 
