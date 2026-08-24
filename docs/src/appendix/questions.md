@@ -2,13 +2,24 @@
 
 Here are the answers to the most asked/anticipated questions.
 
+## Why does the actual time differ from the target time?
+
+The target time is the moment you requested, while the actual time is snapped to
+the nearest matching segment boundary, start or end. The difference between the
+two can be up to one full segment in length, with the segment duration depending
+on the [YoutTube streaming
+latency](https://support.google.com/youtube/answer/7444635?sjid=3264258360401641547-EU)
+settings: 1 second (ultra-low latency), 2 seconds (low latency), or 5 seconds
+for normal latency.
+
 ## Why is the output duration longer than requested?
 
-Right now, downloaded media segments are merged as-is, without precise trimming
-of the boundary segments to match the requested interval. The maximum positive
-difference equals the duration of two segments, the start and end ones, and
-depends on the type of live-streaming latency: up to 2 seconds (ultra-low
-latency), 4 seconds (low), or 10 seconds (normal).
+Segments are merged as-is, without trimming the boundary segments to match the
+requested interval. As a result, both boundaries can extend beyond the requested
+interval (see [Why does the actual time differ from the target
+time?](#why-does-the-actual-time-differ-from-the-target-time)). This means the
+excerpt can be up to two full segments longer than requested: 2 seconds
+(ultra-low latency), 4 seconds (low), or 10 seconds (normal).
 
 ## Why is the output duration shorter than requested?
 
