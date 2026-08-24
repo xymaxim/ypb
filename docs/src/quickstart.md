@@ -28,15 +28,15 @@ and architecture:
 
 <div class="grid cards three-cols" markdown>
 
--   :material-linux:{ .lg } __Linux__
+-   :material-linux:{ .lg } **Linux**
 
     [amd64][ypb-{{ git.short_tag }}-linux-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-linux-arm64.zip]
 
--   :material-apple:{ .lg } __macOS__
+-   :material-apple:{ .lg } **macOS**
 
     [amd64][ypb-{{ git.short_tag }}-darwin-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-darwin-arm64.zip]
     
--   :material-microsoft-windows:{ .lg } __Windows__
+-   :material-microsoft-windows:{ .lg } **Windows**
 
     [amd64][ypb-{{ git.short_tag }}-windows-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-windows-arm64.zip]
 
@@ -66,22 +66,22 @@ Verify the version with the following command:
     ```
 
 !!! important "Update to nightly"
-    Make sure to update `yt-dlp` to the nightly build:
+    YouTube changes frequently, so the nightly `yt-dlp` build is recommended:
 
         yt-dlp --update-to nightly
-
-<div class="grid" markdown>
-
-See the full [Pre-built binaries](guides/install/binaries.md) installation guide for more details.
-{ .card }
-
-</div>
 
 !!! warning
     You may see warnings about a missing JavaScript runtime, HTTP 403 errors
     (about every 30 seconds), or a "Sign in to confirm you're not a bot" error
     when cookies are missing. See [Setup](guides/install/binaries.md#setup) for
     how to avoid these.
+
+<div class="grid" markdown>
+
+:lucide-forward: See the full [Pre-built binaries](guides/install/binaries.md) installation guide for more details.
+{ .card }
+
+</div>
 
 ### Try in a container
 
@@ -109,9 +109,10 @@ Verify the version:
     [cookies](guides/install/container.md#set-up-cookies-recommended). Without
     them, you may see a "Sign in to confirm you're not a bot" error.
 
+
 <div class="grid" markdown>
 
-See the full [Container](guides/install/container.md) installation guide for more details.
+:lucide-forward: See the full [Container](guides/install/container.md) installation guide for more details.
 { .card }
 
 </div>
@@ -172,8 +173,8 @@ see what's on the stream at noon:
     - Relative to now (30 minutes ago): `now-30m`
 
     !!! info ""
-        See [Specifying the rewind
-        interval](reference/cli.md#specifying-the-rewind-interval) for the full
+        :octicons-redo-16: See [Specifying the rewind
+        time](reference/cli.md#specifying-the-rewind-time) for the full
         reference on interval part formats.
 
 ### Preview an excerpt
@@ -216,7 +217,7 @@ ypb download -i 2026-08-18T12:00:00+13/10m Mm_zVDDUeNA
     See the full guide for other player features, including setting the output
     timezone, correcting for streaming latency, and more.
     
-    :octicons-arrow-right-24: [Read the player guide](guides/play-stream.md)
+    :lucide-arrow-right: [Read the player guide](guides/play-stream.md)
 
 </div>
 
@@ -260,9 +261,14 @@ working directory:
 
     Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.mp4
 
-> :octicons-arrow-right-24: See [Specifying the rewind
-> interval](reference/cli.md#specifying-the-rewind-interval) for the accepted
-> start and end formats.
+<div class="grid" markdown>
+
+:lucide-forward: See [Specifying the rewind
+time](reference/cli.md#specifying-the-rewind-time) for the accepted
+start and end formats.
+{ .card }
+
+</div>
 
 ### Choose audio and video formats
 
@@ -307,7 +313,7 @@ $ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 
     Full reference for commands, interval syntax, output naming, and more.
     
-    :octicons-arrow-right-24: [Read the reference](reference/cli.md)
+    :lucide-arrow-right: [Read the reference](reference/cli.md)
 
 - **Cookbook**
 
@@ -315,6 +321,6 @@ $ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 
     Practical recipes for common tasks, from listing formats to playing saved manifests.
     
-    :octicons-arrow-right-24: [Browse recipes](appendix/cookbook.md)
+    :lucide-arrow-right: [Browse recipes](appendix/cookbook.md)
 
 </div>

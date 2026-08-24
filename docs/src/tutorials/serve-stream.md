@@ -9,7 +9,7 @@ We'll use the [Northern Royal Albatross nesting
 cam](https://www.youtube.com/live/Mm_zVDDUeNA) as our example.
 
 !!! info ""
-    Want some background first? Read [Core
+    :lucide-glasses: &nbsp; Want some background first? Read [Core
     concept](../overview.md#core-concept) in Overview.
 
 ## Prerequisites
