@@ -21,6 +21,7 @@ nav = [
   { "Overview" = "overview.md"} ,
   { "Tutorials" = [
     "tutorials/timelapse.md",
+    "tutorials/serve-stream.md",
   ]},
   { "How-to guides" = [
     "guides/play-stream.md",
