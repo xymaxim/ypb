@@ -14,3 +14,25 @@
 .md-typeset details {
   font-size: .75rem;
 }
+
+.grid.cards.three-cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.md-typeset .admonition.important,
+.md-typeset details.important {
+  --md-admonition-icon--important: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-message-square-warning" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v2"/><path d="M12 13h.01"/></svg>');
+  background-color: #ff91001a;
+}
+
+.md-typeset .important > .admonition-title:before,
+.md-typeset .important > summary:before {
+  background-color: #ff9100;
+  -webkit-mask-image: var(--md-admonition-icon--important);
+  mask-image: var(--md-admonition-icon--important);
+}
+
+.md-typeset .important > .admonition-title:after,
+.md-typeset .important > summary:after {
+  color: #ff9100;
+}
