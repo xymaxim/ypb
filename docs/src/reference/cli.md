@@ -42,15 +42,24 @@ $ ./build/ypb serve --help
 $ ./build/ypb play --help
 ```
 
-## Specifying the rewind interval
+## Specifying the rewind time
 
-The rewind interval is specified using the`-i/--interval` option. An
-interval consists of start and end parts by either `/` or `--`:
+The rewind time is the moment or interval in a live stream you want to
+rewind to.
 
-```shell
-$ ypb download -i <start>/<end>
-$ ypb download -i <start>--<end>
-```
+How you specify it depends on the command:
+
+- `download` and `capture timelapse` take a rewind interval, given with the
+  `-i/--interval` option. An interval consists of a start and an end part,
+  separated by `/` or `--`:
+
+        --interval <start>/<end>
+        --interval <start>--<end>
+
+- `capture frame` takes a rewind moment, given with the `-m/--moment` option.
+
+- `play` and `serve` take the rewind interval or moment from the URL — see
+  [API](api.md).
 
 ### Absolute and relative moments
 

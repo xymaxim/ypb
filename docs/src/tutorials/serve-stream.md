@@ -50,7 +50,7 @@ the `download` command. Two things change in a URL: use `--` instead of `/`,
 and avoid whitespace (or percent-encode it).
 
 > See [Specifying the rewind
-> interval](../reference/cli.md#specifying-the-rewind-interval) for all the
+> time](../reference/cli.md#specifying-the-rewind-time) for all the
 > interval formats.
 
 !!! note "Static and dynamic manifests"
