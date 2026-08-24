@@ -1,11 +1,11 @@
-# Get started with ypb
+# Quickstart
 
 This tutorial shows how to install `ypb` and demonstrates its main usage
 scenarios.
 
-You will explore two running modes: download and serve. We will download a live
-stream excerpt, explaining the main command options. Next, we will see how to
-play past moments without downloading.
+First, we will watch a live stream in the browser and rewind to past moments
+without downloading. Next, we will download a selected stream excerpt to a local
+file.
 
 ## Installation
 
@@ -24,37 +24,68 @@ Use the links from the [latest
 release](https://github.com/xymaxim/ypb/releases/latest) below for your platform
 and architecture:
 
-|       | Linux                 | macOS                  | Windows                 |
-|-------|-----------------------|------------------------|-------------------------|
-| AMD64 | [ypb-linux-amd64.zip] | [ypb-darwin-amd64.zip] | [ypb-windows-amd64.zip] |
-| ARM64 | [ypb-linux-arm64.zip] | [ypb-darwin-arm64.zip] | [ypb-windows-arm64.zip] |
+*Latest release {{git.short_tag}}*
 
-[ypb-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-amd64.zip
-[ypb-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-arm64.zip
-[ypb-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-amd64.zip
-[ypb-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-arm64.zip
-[ypb-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-amd64.zip
-[ypb-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-arm64.zip
+<div class="grid cards three-cols" markdown>
+
+-   :material-linux:{ .lg } __Linux__
+
+    [amd64][ypb-{{ git.short_tag }}-linux-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-linux-arm64.zip]
+
+-   :material-apple:{ .lg } __macOS__
+
+    [amd64][ypb-{{ git.short_tag }}-darwin-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-darwin-arm64.zip]
+    
+-   :material-microsoft-windows:{ .lg } __Windows__
+
+    [amd64][ypb-{{ git.short_tag }}-windows-amd64.zip] · [arm64][ypb-{{ git.short_tag }}-windows-arm64.zip]
+
+</div>
+
+[ypb-{{ git.short_tag }}-linux-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-amd64.zip
+[ypb-{{ git.short_tag }}-linux-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-linux-arm64.zip
+[ypb-{{ git.short_tag }}-darwin-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-amd64.zip
+[ypb-{{ git.short_tag }}-darwin-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-darwin-arm64.zip
+[ypb-{{ git.short_tag }}-windows-amd64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-amd64.zip
+[ypb-{{ git.short_tag }}-windows-arm64.zip]: https://github.com/xymaxim/ypb/releases/download/{{ git.short_tag }}/ypb-{{ git.short_tag }}-windows-arm64.zip
 
 Download and unzip a file to your working directory.
 
 Verify the version with the following command:
 
-**Linux/macOS**
+=== "Linux/macOS"
 
+    ```shell
     chmod +x ypb && ./ypb version
-    
-**Windows**
+    ```
 
-(Type `ypb.exe` instead of `ypb`; no installation needed.)
+=== "Windows"
 
+    ```shell
     .\ypb.exe version
+    ```
 
-> See [Pre-built binaries](guides/install/binaries.md) for more details.
+!!! important "Update to nightly"
+    Make sure to update `yt-dlp` to the nightly build:
+
+        yt-dlp --update-to nightly
+
+<div class="grid" markdown>
+
+See the full [Pre-built binaries](guides/install/binaries.md) installation guide for more details.
+{ .card }
+
+</div>
+
+!!! warning
+    You may see warnings about a missing JavaScript runtime, HTTP 403 errors
+    (about every 30 seconds), or a "Sign in to confirm you're not a bot" error
+    when cookies are missing. See [Setup](guides/install/binaries.md#setup) for
+    how to avoid these.
 
 ### Try in a container
 
-Running in a container allows you to try `ypb` in an isolated environment with all required dependencies pre-installed.
+Running in a container allows you to try ypb in an isolated environment with all required dependencies pre-installed.
 
 **Prerequisites:** [Podman](https://podman.io/getting-started/installation) or [Docker](https://docs.docker.com/get-docker/), with Compose
 
@@ -72,222 +103,218 @@ Verify the version:
 
     podman compose run --rm ypb version
 
-> See [Container](guides/install/container.md) for configuration options and more details.
+!!! warning
+    The container already includes a JavaScript runtime and a PO token provider, so the only
+    thing left to set up is
+    [cookies](guides/install/container.md#set-up-cookies-recommended). Without
+    them, you may see a "Sign in to confirm you're not a bot" error.
 
-## Download excerpts
+<div class="grid" markdown>
 
-Let’s start by downloading a small excerpt from a live stream.
+See the full [Container](guides/install/container.md) installation guide for more details.
+{ .card }
+
+</div>
+
+## Play a stream in the browser
+
+Let's start by watching a stream without downloading.
 
 If you are not sure what to watch, the [Cornell Lab Bird
-Cams](https://www.allaboutbirds.org/cams/) project provides access to beatiful
-bird cam streams across the world. As an example, let's watch at the [Northern
+Cams](https://www.allaboutbirds.org/cams/) project provides access to beautiful
+bird cam streams across the world. As an example, let's watch the [Northern
 Royal Albatross nesting](https://www.allaboutbirds.org/cams/royal-albatross/) at
 Taiaroa Head, New Zealand.
 
-To get the last one-minute excerpt from the [YouTube
-stream](https://www.youtube.com/live/Mm_zVDDUeNA), run this command by providing
-the rewind interval (``-i/--interval``) and YouTube video ID (required
-argument):
+### Run the player
+
+Ypb includes a built-in web player. Run it for the
+[stream](https://www.youtube.com/live/Mm_zVDDUeNA) by providing its YouTube video
+ID:
+
+```
+$ ypb play Mm_zVDDUeNA
+(<<) Stream 'Northern Royal Albatross Cam - NZ Dept. of Conservation #RoyalCam | Cornell Lab' is alive!
+(<<) Playback started and listening on http://localhost:9000...
+:::: Open http://localhost:9000/now in your browser to play
+```
+
+Now open http://localhost:9000/now in your browser. By default the player shows
+the live edge of the stream.
+
+### Rewind to a past moment
+
+To jump to a specific moment, add it to the path.
+
+The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
+might be nighttime on the stream depending on your location. For example, let's
+see what's on the stream at noon:
+
+    # If it's already noon there
+    http://localhost:9000/12:00+13
+
+    # Or noon yesterday
+    http://localhost:9000/12:00+13-1d
+
+!!! info "Rewind precision"
+    The moment you rewind to is snapped to the nearest media segment, so the
+    actual time can differ a bit from the requested one. See [Why does the
+    actual time differ from the target
+    time?](appendix/questions.md#why-does-the-actual-time-differ-from-the-target-time)
+    for details.
+
+!!! example "Moment format examples"
+    The requested moment supports flexible formats: dates and times, durations,
+    keywords like `now`, and time arithmetic expressions.
+
+    - Full date and time, with a timezone offset: `2026-01-02T10:20:30+00`
+    - Time of the current day, in the local time zone: `10:20`
+    - Relative to now (30 minutes ago): `now-30m`
+
+    !!! info ""
+        See [Specifying the rewind
+        interval](reference/cli.md#specifying-the-rewind-interval) for the full
+        reference on interval part formats.
+
+### Preview an excerpt
+
+To play an excerpt instead of continuing live, add an end moment to the path.
+
+For example, a 10-minute excerpt from today's noon:
+
+```text
+http://localhost:9000/12:00+13--10m
+```
+
+!!! example "Interval format examples"
+    A bounded excerpt combines a start and an end, separated by `--`:
+
+    - Between two dates and times:
+      `2026-01-02T10:20:30+00--2026-01-02T10:25:30+00`
+    - Start time plus a duration:
+      `2026-01-02T10:20:30+00--5m`
+    - The last 30 minutes up to now:
+      `30m--now`
+
+Once the excerpt is loaded, you can quickly seek within it using the seek bar.
+The preview is also a way to fine-tune the interval before downloading: click
+**Copy the download command** button (`D`) to copy a `ypb download` command for
+the current interval.
+
+For the excerpt above, it would look like this:
 
 ```shell
-$ ypb download --interval 1m/now Mm_zVDDUeNA
+ypb download -i 2026-08-18T12:00:00+13/10m Mm_zVDDUeNA
+```
+
+<div class="grid cards" markdown>
+
+- **Learn more**
+
+    ---
+    
+    See the full guide for other player features, including setting the output
+    timezone, correcting for streaming latency, and more.
+    
+    :octicons-arrow-right-24: [Read the player guide](guides/play-stream.md)
+
+</div>
+
+## Download an excerpt
+
+Once you've found an interesting moment, you can save it to a local file.
+
+### Run the download
+
+Let's download the excerpt we just previewed above. Paste the command you copied
+and run it:
+
+```shell
+$ ypb download -i 2026-08-18T12:00:00+13/10m Mm_zVDDUeNA
 (<<) Collecting info about https://www.youtube.com/live/Mm_zVDDUeNA...
-WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
-enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
-your command/config. YouTube extraction without a JS runtime has been
-deprecated, and some formats may be missing. See
-https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
 Stream 'Live & Just Hatched! Royal Albatross Cam - NZ Dept. of Conservation | Cornell Lab' is alive!
-
 (<<) Locating start and end moments...
-Actual start: Sun, 08 Feb 2026 11:22:50 +0000 (-2s), sq=1647523
-  Actual end: Sun, 08 Feb 2026 11:23:55 +0000, sq=1647535
-
+Actual start: Mon, 17 Aug 2026 23:00:05 +0000 (-2s), sq=1720173
+  Actual end: Mon, 17 Aug 2026 23:10:07 +0000, sq=1720185
 (<<) Downloading and merging media...
 yt-dlp: [generic] Extracting URL: http://localhost:9000/mpd
 yt-dlp: [generic] mpd: Downloading webpage
 yt-dlp: WARNING: [generic] Falling back on generic information extractor
 yt-dlp: [generic] mpd: Extracting information
 yt-dlp: [info] mpd: Downloading 1 format(s): 137+140
-yt-dlp: [dashsegments] Total fragments: 13
-yt-dlp: [download] Destination: Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4
-yt-dlp: [download] 100.0% of ~   1.00KiB at      0.00B/s ETA Unknown (frag 0/13)
-...
-yt-dlp: [Merger] Merging formats into "Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4"
-yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f137.mp4 (pass -k to keep)
-yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.f140.m4a (pass -k to keep)
+yt-dlp: [dashsegments] Total fragments: 130
+yt-dlp: [download] Destination: Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.f137.mp4
+yt-dlp: [download] 100.0% of ~  10.00MiB at   12.34MiB/s ETA Unknown (frag 0/130)
+yt-dlp: [Merger] Merging formats into "Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.mp4"
+yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.f137.mp4 (pass -k to keep)
+yt-dlp: Deleting original file Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.f140.m4a (pass -k to keep)
 ```
-
-!!! warning
-    You may see warnings about a missing JavaSript runtime, if you have not
-    installed or enabled it:
-
-    ```shell
-    WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
-    enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
-    your command/config. YouTube extraction without a JS runtime has been
-    deprecated, and some formats may be missing. See
-    https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
-    ```
-
-    You may also get HTTP 403 errors (approximately every 30 seconds) during the
-    download:
-
-    ```shell
-    time=2026-02-08T11:23:05.127+00:00 level=WARN msg="got transient HTTP error,
-    retrying" status=403 method=GET url=...
-    ```
-
-    While this currently works by retrying and collecting video info again, it is
-    highly recommended to set up the [additional
-    dependencies](guides/install/install.md) to help avoid
-    such errors.
 
 As you can see, downloading consists of three steps: (1) collecting video
 information, (2) locating start and end moments, and (3) the download itself
 with audio and video merging at the end. The first and third stages are carried
-out by `yt-dlp`.
+out by yt-dlp.
 
 Once the download finished, a single MP4 file can be found in the current
 working directory:
 
-    Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260208T112250+00_1m.mp4
+    Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.mp4
 
-### Specify start and end
+> :octicons-arrow-right-24: See [Specifying the rewind
+> interval](reference/cli.md#specifying-the-rewind-interval) for the accepted
+> start and end formats.
 
-The interval start and end moments supports flexible formats including date and
-times, durations, keywords, and even time arithmetic expressions.
+### Choose audio and video formats
 
-The local time in New Zealand is UTC+12 or UTC+13 during daylight saving, and it
-might be nighttime on the stream depending on your location. For example, let's
-see what's on the stream at noon:
+By default, we let yt-dlp choose the audio and video formats automatically,
+following its own defaults or any preferences set in your yt-dlp's
+[configuration file](https://github.com/yt-dlp/yt-dlp#configuration).
 
-``` shell
-# If it is already noon there
-$ ypb download -i '12:00+13/1m' Mm_zVDDUeNA
-
-# Or noon yesterday
-$ ypb download -i '12:00+13 - 1d/1m' Mm_zVDDUeNA
-```
-
-> See [Specifying the rewind
-> interval](reference/cli.md#specifying-the-rewind-interval) for the reference
-> on interval part formats.
-
-If you check the downloaded file, you may notice it starts a bit later than
-requested, visible on the stream's timestamp overlay, off by around 20
-seconds. This is due to streaming latency, and the `-l/--latency` option
-corrects for it:
-
-```shell
-$ ypb download -i '12:00+13/1m' --latency 20 Mm_zVDDUeNA
-```
-
-
-> See [Correcting for streaming
-> latency](reference/cli.md#correcting-for-streaming-latency) for details.
-
-### Specify formats
-
-By default, we let `yt-dlp` choose the audio and video formats automatically,
-following its own defaults or any preferences set in your configuration file.
-
-You can pass options directly to `yt-dlp` by adding them after the `--`
-separator.
-
-> See [Pass options to yt-dlp](reference/cli.md#passing-options-to-yt-dlp) for more details
-> and examples.
-
-For example, let's use the `yt-dlp`'s `-f` option to download only the best
-quality audio:
+!!! tip "Configuring yt-dlp"
+    Ypb uses yt-dlp for specific tasks, like fetching video info and
+    downloading, so its configuration file also applies to ypb. Add options
+    there (formats, cookies, and more) to apply them to every download. See how
+    to set it up for your install: [Pre-built
+    binaries](guides/install/binaries.md#configure-yt-dlp) or [Container
+    (Compose)](guides/install/container.md#configure-yt-dlp).
+    
+Alternatively, you can pass options directly to yt-dlp by adding them after
+the `--` separator (see [Passing options to
+yt-dlp](reference/cli.md#passing-options-to-yt-dlp) for more details). For
+example, let's use the yt-dlp's `-f` option to download only the best quality
+audio:
 
 ```shell
 $ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 ```
 
-Alternatively, any yt-dlp option can be set in your[ yt-dlp configuration
-file](https://github.com/yt-dlp/yt-dlp#configuration) as usual, without having
-to pass them on the command line every time.
+!!! tip "Picking a format"
+    Want to see which formats are available? Run `yt-dlp -F` to list
+    them (see [List available formats with
+    yt-dlp](appendix/cookbook.md#list-available-formats-with-yt-dlp) for
+    details). For the full syntax of the `-f` selector and more examples, see
+    yt-dlp's [Format
+    selection](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#format-selection)
+    docs.
+    
+## Where to go next
 
-Running `yt-dlp -F ...` can be helpful here to list all available formats:
+<div class="grid cards" markdown>
 
-``` shell
-$ yt-dlp -F --live-from-start Mm_zVDDUeNA
-[youtube] Extracting URL: Mm_zVDDUeNA
-[youtube] Mm_zVDDUeNA: Downloading webpage
-[youtube] Mm_zVDDUeNA: Downloading android sdkless player API JSON
-[youtube] Mm_zVDDUeNA: Downloading web safari player API JSON
-[youtube] Mm_zVDDUeNA: Downloading MPD manifest
-[info] Available formats for Mm_zVDDUeNA:
-ID  EXT RESOLUTION FPS │   TBR PROTO │ VCODEC        VBR ACODEC      ABR ASR MORE INFO
-─────────────────────────────────────────────────────────────────────────────────────────────────
-139 m4a audio only     │   64k dashG │ audio only        mp4a.40.5   64k 22k DASH audio, m4a_dash
-140 m4a audio only     │  144k dashG │ audio only        mp4a.40.2  144k 44k DASH audio, m4a_dash
-160 mp4 256x144     15 │  212k dashG │ avc1.42c00b  212k video only          DASH video, mp4_dash
-133 mp4 426x240     30 │  456k dashG │ avc1.4d4015  456k video only          DASH video, mp4_dash
-134 mp4 640x360     30 │ 1008k dashG │ avc1.4d401e 1008k video only          DASH video, mp4_dash
-135 mp4 854x480     30 │ 1350k dashG │ avc1.4d401f 1350k video only          DASH video, mp4_dash
-136 mp4 1280x720    30 │ 2684k dashG │ avc1.4d401f 2684k video only          DASH video, mp4_dash
-137 mp4 1920x1080   30 │ 5019k dashG │ avc1.640028 5019k video only          DASH video, mp4_dash
-```
+- **Command Line Interface**
 
-> See `yt-dlp`'s [Format
-> selection](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#format-selection)
-> for the option syntax and some examples.
+    ---
 
-## Serve and play excerpts
+    Full reference for commands, interval syntax, output naming, and more.
+    
+    :octicons-arrow-right-24: [Read the reference](reference/cli.md)
 
-Now let's explore another feature: play without downloading.
+- **Cookbook**
 
-### Start a playback server
+    ---
 
-This requires us to start a playback in serve mode:
+    Practical recipes for common tasks, from listing formats to playing saved manifests.
+    
+    :octicons-arrow-right-24: [Browse recipes](appendix/cookbook.md)
 
-```shell
-$ ypb serve Mm_zVDDUeNA
-(<<) Served started and listening on http://localhost:9000
-```
-
-As you see, we are not using the interval option here. Format selection is also
-not applicable. The playback server is now running and waiting for our requests.
-
-### Send rewind requests
-
-To rewind an excerpt, open another terminal and type:
-
-    curl localhost:9000/mpd/30m--now
-
-This should return the raw content of the composed static MPEG-DASH manifest.
-
-The rewind path parameter `/mpd/{interval}` has the same format as the
-`-i/--interval` option except that it should be properly URL escaped: use `--`
-instead of `/`, avoid whitespaces or use percent encoding.
-
-> See the [API](reference/api.md) reference for available endpoints.
-
-### Play stream excerpts
-
-Now the intriguing part: playing the excerpt.
-
-``` shell
-ffplay -autoexit -protocol_whitelist file,http,https,tcp,tls \
-  localhost:9000/mpd/30m--now
-```
-
-The option `-protocol_whitelist` is required to allow `ffplay` openining the
-manifest and fetching media segments.
-
-However, the choice is not limited to `ffplay`: you can use any MPEG-DASH
-compatible player you prefer.
-
-### Download media
-
-As a bonus, let's see how to download media content from the composed manifest.
-
-This is actually almost how `ypb download` works behind the scenes:
-
-    yt-dlp -o output.mp4 http://localhost:9000/mpd/30m--now
-
-> Other downloader options: [FFmpeg](https://www.ffmpeg.org/), GPAC's
-> [MP4Box](https://github.com/gpac/gpac/wiki/MP4Box/), or
-> [dash-mpd-cli](https://emarsden.github.io/dash-mpd-cli/).
+</div>

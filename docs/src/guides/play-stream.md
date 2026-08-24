@@ -37,8 +37,8 @@ http://localhost:9000/2026-01-02T12:00
 
 ## Set the output timezone
 
-By default, the playhead timestamp is shown in UTC. To use a different one, add
-the `tz` query parameter:
+By default, the playhead and output timestamps are shown in UTC. To use a
+different one, add the `tz` query parameter:
 
 ```text
 http://localhost:9000/2026-01-02T12:00?tz=+02
@@ -58,9 +58,10 @@ http://localhost:9000/12:00?latency=10
 
 ## Use the player buttons
 
-Below the video, two buttons are available:
+Below the video, three buttons are available:
 
 | Button | Action                                      |
 |--------|---------------------------------------------|
 | `S`    | Take a screenshot of the current frame      |
 | `T`    | Copy the current timestamp to the clipboard |
+| `D`    | Copy a download command for the interval    |

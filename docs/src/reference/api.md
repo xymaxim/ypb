@@ -2,6 +2,39 @@
 
 ## Endpoints
 
+### /
+
+Serves the built-in web player (used by the `play` command).
+
+#### Parameters
+
+interval
+:   The rewind interval or moment to play, given as the last path segment. Use
+    the `--` separator for intervals (e.g., `10:00--12:00`).
+
+tz
+:   Timezone offset used for the playhead and output timestamps. Format
+    `[+-]HH` or `[+-]HH:MM` (e.g., `+02`, `-05:30`). Defaults to UTC (`+00:00`).
+
+latency, l
+:   Correcting for streaming latency by locating the interval later by this many
+    seconds (whole or fractional). See [Correcting for streaming
+    latency](cli.md#correcting-for-streaming-latency) for details.
+
+#### Usage examples
+
+Play a 30-minute excerpt starting 30 minutes ago:
+
+    http://localhost:9000/30m--now
+
+Play from a moment and continue live:
+
+    http://localhost:9000/12:00
+
+Display timestamps in UTC+02:
+
+    http://localhost:9000/12:00?tz=+02
+
 ### /info
 
 Returns information about the YouTube live stream being served.
@@ -40,7 +73,7 @@ interval
 latency, l
 :   Correcting for streaming latency by locating the interval later by this many
     seconds (whole or fractional). See [Correcting for streaming
-    latency](cli.md#correcting-for-streaming-latency).
+    latency](cli.md#correcting-for-streaming-latency) for details.
 
 #### Usage examples
 

@@ -53,6 +53,15 @@ The machine starts automatically on subsequent reboots.
 
    `.env` is yours to customize and won't be overwritten by future updates.
 
+### Configure yt-dlp
+
+Ypb relies on yt-dlp for specific tasks, like fetching video info and
+downloading, and uses its [configuration
+file](https://github.com/yt-dlp/yt-dlp#configuration): you can set the formats
+to download, cookies, and other options there. In the container, edit the config
+file (`config` or `config.txt`) inside your `YPB_YTDLP_CONFIG_DIR` directory —
+see [Configuration](#configuration).
+
 ### Set up cookies (recommended)
 
 YouTube may respond with a "Sign in to confirm you're not a bot" error
@@ -100,7 +109,7 @@ created automatically if it doesn't already exist.
 
 ### YPB_YTDLP_CONFIG_DIR
 
-By default, `ypb` uses its own built-in yt-dlp configuration. Mounting your
+By default, ypb uses its own built-in yt-dlp configuration. Mounting your
 own config directory here lets you add your own settings on top — see
 [Set up cookies](#set-up-cookies-recommended) above for an example.
 
