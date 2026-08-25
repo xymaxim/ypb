@@ -18,9 +18,16 @@ function formatTime(utcSeconds, offsetMs, offsetLabel) {
 }
 
 export function attachPlayheadDisplay(player, el, anchor) {
-  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) || { offsetMs: 0, offsetLabel: '+00:00' };
+  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) || {
+    offsetMs: 0,
+    offsetLabel: '+00:00',
+  };
   const update = () => {
-    el.textContent = formatTime(anchor + player.time(), tz.offsetMs, tz.offsetLabel);
+    el.textContent = formatTime(
+      anchor + player.time(),
+      tz.offsetMs,
+      tz.offsetLabel,
+    );
   };
   player.on(MediaPlayer.events.PLAYBACK_TIME_UPDATED, update);
   player.on(MediaPlayer.events.PLAYBACK_SEEKED, update);

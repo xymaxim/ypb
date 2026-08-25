@@ -16,11 +16,18 @@ export function formatTimestamp(utcSeconds, offsetMs, offsetLabel) {
 }
 
 export function attachCopyTimestamp(player, btnEl, anchorTime) {
-  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) || { offsetMs: 0, offsetLabel: '+00:00' };
+  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) || {
+    offsetMs: 0,
+    offsetLabel: '+00:00',
+  };
 
   btnEl.addEventListener('click', () => {
     const totalSeconds = anchorTime + player.time();
-    const timestamp = formatTimestamp(totalSeconds, tz.offsetMs, tz.offsetLabel);
+    const timestamp = formatTimestamp(
+      totalSeconds,
+      tz.offsetMs,
+      tz.offsetLabel,
+    );
 
     navigator.clipboard.writeText(timestamp).catch(() => {});
   });

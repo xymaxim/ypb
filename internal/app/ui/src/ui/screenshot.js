@@ -1,4 +1,10 @@
-export function attachTakeScreenshot(player, video, btnEl, videoId, anchorTime) {
+export function attachTakeScreenshot(
+  player,
+  video,
+  btnEl,
+  videoId,
+  anchorTime,
+) {
   btnEl.addEventListener('click', () => {
     if (!video.videoWidth || !video.videoHeight) return;
 
@@ -13,7 +19,7 @@ export function attachTakeScreenshot(player, video, btnEl, videoId, anchorTime) 
       if (!blob) return;
 
       const url = URL.createObjectURL(blob);
-        
+
       const totalSeconds = anchorTime + player.time();
       const isoString = new Date(totalSeconds * 1000).toISOString();
       const timestamp = isoString.split('.')[0].replace(/[-:]/g, '');

@@ -41,18 +41,28 @@ export function attachQualitySelector(player, el) {
     const currentIndex = representations.findIndex((r) => r.id === current?.id);
     const labels = ['Auto', ...representations.map(qualityLabel)];
     // index 0 is "Auto"; representations start at index 1
-    renderList(el, 'Quality', labels, autoMode ? 0 : currentIndex + 1, (index) => {
-      autoMode = index === 0;
-      if (autoMode) {
-        player.updateSettings({ streaming: { abr: { autoSwitchBitrate: { video: true } } } });
-      } else {
-        // Manual selection alone doesn't stop ABR from re-picking a
-        // quality on the next segment, and it has to be disabled explicitly
-        player.updateSettings({ streaming: { abr: { autoSwitchBitrate: { video: false } } } });
-        player.setRepresentationForTypeByIndex('video', index - 1, true);
-      }
-      markActive(el, index);
-    });
+    renderList(
+      el,
+      'Quality',
+      labels,
+      autoMode ? 0 : currentIndex + 1,
+      (index) => {
+        autoMode = index === 0;
+        if (autoMode) {
+          player.updateSettings({
+            streaming: { abr: { autoSwitchBitrate: { video: true } } },
+          });
+        } else {
+          // Manual selection alone doesn't stop ABR from re-picking a
+          // quality on the next segment, and it has to be disabled explicitly
+          player.updateSettings({
+            streaming: { abr: { autoSwitchBitrate: { video: false } } },
+          });
+          player.setRepresentationForTypeByIndex('video', index - 1, true);
+        }
+        markActive(el, index);
+      },
+    );
   };
 
   player.on(MediaPlayer.events.STREAM_INITIALIZED, render);

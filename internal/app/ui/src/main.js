@@ -13,7 +13,6 @@ if (latency !== null) mpd.searchParams.set('latency', latency);
 const mpdURL = mpd.href;
 
 const video = document.getElementById('player');
-const container = document.getElementById('player-container');
 
 const errorEl = document.getElementById('error');
 const loadingEl = document.getElementById('loading');
@@ -44,8 +43,7 @@ try {
       channelLink.href = `https://www.youtube.com/channel/${info.channelId}`;
     }
   }
-} catch {
-}
+} catch {}
 
 let startActualTime = NaN;
 let startTargetTime = NaN;
@@ -59,8 +57,16 @@ try {
   const res = await fetch(mpdURL, { headers: { Accept: 'application/json' } });
   if (!res.ok) {
     let detail = '';
-    try { detail = (await res.text()).trim().replace(/^\d+\s*/, ''); } catch { /* ignore */ }
-    throw new Error(detail ? `manifest request failed: ${res.status}: ${detail}` : `manifest request failed: ${res.status}`);
+    try {
+      detail = (await res.text()).trim().replace(/^\d+\s*/, '');
+    } catch {
+      /* ignore */
+    }
+    throw new Error(
+      detail
+        ? `manifest request failed: ${res.status}: ${detail}`
+        : `manifest request failed: ${res.status}`,
+    );
   }
   const data = await res.json();
   startActualTime = new Date(data.metadata.startActualTime).getTime() / 1000;

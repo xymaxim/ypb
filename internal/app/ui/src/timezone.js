@@ -7,5 +7,8 @@ export function parseTzOffset(raw) {
   if (h > 23) return null;
   const min = m[3] ? parseInt(m[3], 10) : 0;
   const ms = (h * 3600 + min * 60) * 1000;
-  return { offsetMs: m[1] === '-' ? -ms : ms, offsetLabel: `${m[1]}${pad(h)}:${pad(min)}` };
+  return {
+    offsetMs: m[1] === '-' ? -ms : ms,
+    offsetLabel: `${m[1]}${pad(h)}:${pad(min)}`,
+  };
 }

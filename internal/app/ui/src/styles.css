@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
 }
 body {
@@ -122,11 +123,11 @@ h3 a {
   flex-wrap: wrap;
 }
 .selector-item {
-    cursor: pointer;
-    color: blue;
+  cursor: pointer;
+  color: blue;
 }
 .selector-item.active {
-    font-weight: bold;
-    color: black;
-    pointer-events: none;
+  font-weight: bold;
+  color: black;
+  pointer-events: none;
 }

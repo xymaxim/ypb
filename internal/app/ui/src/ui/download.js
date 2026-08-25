@@ -24,8 +24,10 @@ export function attachCopyDownload(
   startTargetTime,
   endTargetTime,
 ) {
-  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) ||
-    { offsetMs: 0, offsetLabel: '+00:00' };
+  const tz = parseTzOffset(new URLSearchParams(location.search).get('tz')) || {
+    offsetMs: 0,
+    offsetLabel: '+00:00',
+  };
 
   btnEl.addEventListener('click', () => {
     if (

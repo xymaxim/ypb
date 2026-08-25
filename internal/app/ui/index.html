@@ -1,35 +1,41 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ypb Play</title>
-<link rel="stylesheet" href="src/styles.css">
-</head>
-<body>
-<header>
-  <h3><a id="live" href="#"></a></h3>
-  <div id="channel"><a href="#"></a></div>
-</header>
-<div id="player-container">
-  <video id="player" muted controls playsinline></video>
-  <div id="loading" class="hidden"></div>
-</div>
-<div id="error"></div>
-<div id="play-bar">
-  <div id="playhead"></div>
-  <div id="buttons">
-    <div class="button" id="screenshot" title="Take screenshot">S</div>
-    <div class="button" id="copy-timestamp" title="Copy timestamp">T</div>
-    <div class="button hidden" id="copy-download" title="Copy download command">D</div>
-  </div>
-</div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ypb Play</title>
+    <link rel="stylesheet" href="src/styles.css">
+  </head>
+  <body>
+    <header>
+      <h3><a id="live" href="#"></a></h3>
+      <div id="channel"><a href="#"></a></div>
+    </header>
+    <div id="player-container">
+      <video id="player" muted controls playsinline></video>
+      <div id="loading" class="hidden"></div>
+    </div>
+    <div id="error"></div>
+    <div id="play-bar">
+      <div id="playhead"></div>
+      <div id="buttons">
+        <div class="button" id="screenshot" title="Take screenshot">S</div>
+        <div class="button" id="copy-timestamp" title="Copy timestamp">T</div>
+        <div
+          class="button hidden"
+          id="copy-download"
+          title="Copy download command"
+        >
+          D
+        </div>
+      </div>
+    </div>
 
-<div id="selectors">
-  <div id="tracks" class="selector"></div>
-  <div id="qualities" class="selector"></div>
-</div>
+    <div id="selectors">
+      <div id="tracks" class="selector"></div>
+      <div id="qualities" class="selector"></div>
+    </div>
 
-<script type="module" src="src/main.js"></script>
-</body>
+    <script type="module" src="src/main.js"></script>
+  </body>
 </html>
