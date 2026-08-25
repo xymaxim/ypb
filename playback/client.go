@@ -32,7 +32,7 @@ func NewClient(pb Playbacker) *retryablehttp.Client {
 		Transport: transport,
 		Timeout:   90 * time.Second,
 	}
-	client.RetryMax = 4
+	client.RetryMax = 5
 	client.RetryWaitMin = 2 * time.Second
 	client.RetryWaitMax = 15 * time.Second
 
