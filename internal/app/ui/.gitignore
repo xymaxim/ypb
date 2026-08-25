@@ -1,0 +1,4 @@
+node_modules/
+.biome/
+dist/
+*.log

@@ -1,0 +1,14 @@
+{
+  "name": "ypb-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "build": "bun run build.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0"
+  }
+}
