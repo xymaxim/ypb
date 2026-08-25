@@ -24,16 +24,23 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod' 
+          go-version-file: 'go.mod'
           cache: true
 
       - name: Build ypb
+        shell: bash
         run: make build
-        
+
       - name: Build docs
+        shell: bash
         run: uv run zensical build
 
       - name: Deploy

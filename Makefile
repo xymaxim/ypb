@@ -14,7 +14,7 @@ fmt:
 lint: fmt
 	@golangci-lint run
 
-test:
+test: internal/app/ui/dist
 	go test ./...
 
 UI_SRCS := $(shell find internal/app/ui -type f -not -path '*/node_modules/*' -not -path '*/dist/*')
