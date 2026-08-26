@@ -1483,17 +1483,24 @@ to download, cookies, and other options there. In the container, edit the config
 file (<code>config</code> or <code>config.txt</code>) inside your <code>YPB_YTDLP_CONFIG_DIR</code> directory —
 see <a href="#configuration">Configuration</a>.</p>
 <h3 id="set-up-cookies-recommended">Set up cookies (recommended)<a class="headerlink" href="#set-up-cookies-recommended" title="Permanent link">&para;</a></h3>
-<p>YouTube may respond with a &ldquo;Sign in to confirm you&rsquo;re not a bot&rdquo; error
-without cookies, so setting them up is recommended. To avoid this:</p>
+<p>Without cookies, YouTube may respond with a &ldquo;Sign in to confirm you&rsquo;re not a
+bot&rdquo; error, so setting them up is recommended.</p>
 <ol>
 <li>Export cookies from your browser into a <code>cookies.txt</code> file.</li>
 <li>In <code>.env</code>, set <code>YPB_YTDLP_CONFIG_DIR</code> to the directory where you want
-   to store yt-dlp related config files.</li>
+   to store yt-dlp configuration files.</li>
 <li>Place <code>cookies.txt</code> inside that directory.</li>
-<li>Reference it from your yt-dlp config file (<code>config</code>, <code>config.txt</code>):<div class="language-text highlight"><pre><span></span><code>--cookies /path/to/cookies.txt
+<li>Reference it in your yt-dlp configuration file (<code>config</code>, <code>config.txt</code>):<div class="language-text highlight"><pre><span></span><code>--cookies /path/to/cookies.txt
 </code></pre></div>
 </li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>--cookies-from-browser</code> reads cookies from a browser installed on the same
+machine. Since the app runs inside a container, it can&rsquo;t access the host&rsquo;s
+browser this way. Use <code>--cookies</code> with an exported <code>cookies.txt</code> file
+instead, as described above.</p>
+</div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>Run as many download commands as needed:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>podman<span class="w"> </span>compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span>30s/now<span class="w"> </span>abcdefgh123
