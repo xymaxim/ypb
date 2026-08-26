@@ -64,16 +64,22 @@ see [Configuration](#configuration).
 
 ### Set up cookies (recommended)
 
-YouTube may respond with a "Sign in to confirm you're not a bot" error
-without cookies, so setting them up is recommended. To avoid this:
+Without cookies, YouTube may respond with a "Sign in to confirm you're not a
+bot" error, so setting them up is recommended.
 
 1. Export cookies from your browser into a `cookies.txt` file.
 2. In `.env`, set `YPB_YTDLP_CONFIG_DIR` to the directory where you want
-   to store yt-dlp related config files.
+   to store yt-dlp configuration files.
 3. Place `cookies.txt` inside that directory.
-4. Reference it from your yt-dlp config file (`config`, `config.txt`):
+4. Reference it in your yt-dlp configuration file (`config`, `config.txt`):
 
         --cookies /path/to/cookies.txt
+
+!!! note
+    `--cookies-from-browser` reads cookies from a browser installed on the same
+    machine. Since the app runs inside a container, it can't access the host's
+    browser this way. Use `--cookies` with an exported `cookies.txt` file
+    instead, as described above.
 
 ## Usage
 
