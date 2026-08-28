@@ -6,6 +6,7 @@ import (
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
 	"github.com/xymaxim/ypb/internal/exec"
+	"github.com/xymaxim/ypb/internal/player"
 	"github.com/xymaxim/ypb/playback"
 )
 
@@ -25,7 +26,7 @@ func New(fixtureDir string, actualStartTime time.Time, addr string, ui bool) (ht
 
 	mux := http.NewServeMux()
 	if ui {
-		apppkg.RegisterPlayRoutes(mux)
+		player.RegisterPlayRoutes(mux)
 	}
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)

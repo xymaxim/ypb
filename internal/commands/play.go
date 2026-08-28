@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/player"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -28,9 +29,9 @@ func (c *Play) Run() error {
 	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", apppkg.WithError((&apppkg.PlayHandler{}).ServeRoot))
-	mux.Handle("/", apppkg.WithError((&apppkg.PlayHandler{}).ServeHTTP))
-	mux.Handle("/{interval}", apppkg.WithError((&apppkg.PlayHandler{}).ServePage))
+	mux.Handle("/{$}", apppkg.WithError((&player.PlayHandler{}).ServeRoot))
+	mux.Handle("/", apppkg.WithError((&player.PlayHandler{}).ServeHTTP))
+	mux.Handle("/{interval}", apppkg.WithError((&player.PlayHandler{}).ServePage))
 	mux.HandleFunc(apppkg.InfoPath, apppkg.WithError(
 		(&apppkg.InfoHandler{Info: app.Playback.Info()}).ServeHTTP),
 	)

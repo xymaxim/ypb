@@ -25,9 +25,3 @@ func RegisterMPDRoute(mux *http.ServeMux, app *App) {
 		ServerAddr:    app.Server.Addr,
 	}).ServeHTTP))
 }
-
-func RegisterPlayRoutes(mux *http.ServeMux) {
-	mux.Handle("/{$}", WithError((&PlayHandler{}).ServeRoot))
-	mux.Handle("/", WithError((&PlayHandler{}).ServeHTTP))
-	mux.Handle("/{interval}", WithError((&PlayHandler{}).ServePage))
-}

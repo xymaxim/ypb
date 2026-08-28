@@ -14,23 +14,23 @@ fmt:
 lint: fmt
 	@golangci-lint run
 
-test: internal/app/ui/dist
+test: internal/player/ui/dist
 	go test ./...
 
-UI_SRCS := $(shell find internal/app/ui -type f -not -path '*/node_modules/*' -not -path '*/dist/*')
+UI_SRCS := $(shell find internal/player/ui -type f -not -path '*/node_modules/*' -not -path '*/dist/*')
 
-internal/app/ui/dist: $(UI_SRCS)
-	@cd internal/app/ui/ && bun run --silent build
+internal/player/ui/dist: $(UI_SRCS)
+	@cd internal/player/ui/ && bun run --silent build
 
 .PHONY: build
-build: internal/app/ui/dist
+build: internal/player/ui/dist
 	CGO_ENABLED=0 go build -ldflags "$(VERSION_LDFLAGS)" -o build/ypb ./cmd/ypb
 
-run: internal/app/ui/dist
+run: internal/player/ui/dist
 	@go run -ldflags "$(VERSION_LDFLAGS)" -buildvcs=true ./cmd/ypb $(ARGS)
 
 .PHONY: mockplay
-mockplay: internal/app/ui/dist
+mockplay: internal/player/ui/dist
 	@go run ./cmd/mockplay
 
 release:

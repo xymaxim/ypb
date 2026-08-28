@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/player"
 	"github.com/xymaxim/ypb/internal/urlutil"
 )
 
@@ -30,7 +31,7 @@ func (c *Serve) Run() error {
 
 	mux := http.NewServeMux()
 	if c.UI {
-		apppkg.RegisterPlayRoutes(mux)
+		player.RegisterPlayRoutes(mux)
 	}
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)

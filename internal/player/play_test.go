@@ -1,4 +1,4 @@
-package app_test
+package player_test
 
 import (
 	"net/http"
@@ -8,13 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/player"
 	"github.com/xymaxim/ypb/internal/testutil"
 )
 
 func TestPlayRootRedirectsToNow(t *testing.T) {
 	t.Parallel()
 
-	h := &app.PlayHandler{}
+	h := &player.PlayHandler{}
 
 	mux := http.NewServeMux()
 	mux.Handle("/{$}", app.WithError(h.ServeRoot))
@@ -32,7 +33,7 @@ func TestPlayRootRedirectsToNow(t *testing.T) {
 func TestPlayIntervalPathServesPage(t *testing.T) {
 	t.Parallel()
 
-	h := &app.PlayHandler{}
+	h := &player.PlayHandler{}
 
 	mux := http.NewServeMux()
 	mux.Handle("/", app.WithError(h.ServeHTTP))
@@ -52,9 +53,9 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 	t.Parallel()
 
 	mux := http.NewServeMux()
-	mux.Handle("/{$}", app.WithError((&app.PlayHandler{}).ServeRoot))
-	mux.Handle("/", app.WithError((&app.PlayHandler{}).ServeHTTP))
-	mux.Handle("/{interval}", app.WithError((&app.PlayHandler{}).ServePage))
+	mux.Handle("/{$}", app.WithError((&player.PlayHandler{}).ServeRoot))
+	mux.Handle("/", app.WithError((&player.PlayHandler{}).ServeHTTP))
+	mux.Handle("/{interval}", app.WithError((&player.PlayHandler{}).ServePage))
 	mux.HandleFunc(app.InfoPath, app.WithError(
 		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
 	)

@@ -24,7 +24,7 @@ jobs:
 
       - name: Build UI
         shell: bash
-        run: make internal/app/ui/dist
+        run: make internal/player/ui/dist
 
       - name: Set up Go
         uses: actions/setup-go@v5
