@@ -3,7 +3,7 @@ FROM oven/bun:1-alpine AS bun-source
 FROM golang:1.25-alpine AS builder
 RUN apk update && apk add --no-cache make git curl unzip libstdc++ gcompat
 COPY --from=bun-source /usr/local/bin/bun /usr/local/bin/bun
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -16,4 +16,4 @@ LABEL org.opencontainers.image.description="Ypb binary image."
 LABEL org.opencontainers.image.source="https://github.com/xymaxim/ypb"
 LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
 
-COPY --from=builder /build/ypb /ypb
+COPY --from=builder /app/build/ypb /ypb
