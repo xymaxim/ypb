@@ -3,10 +3,10 @@
 Ypb includes a built-in [dash.js](https://dashjs.org/) web player for watching
 live streams and rewinding to past moments without downloading anything.
 
-   <figure>
-   <img src="./play-stream-files/player.png"/>
-   <figcaption aria-hidden="true">The built-in web player</figcaption>
-   </figure>
+<figure>
+<img src="./play-stream-files/player.png"/>
+<figcaption aria-hidden="true">The built-in web player</figcaption>
+</figure>
 
 ## Prerequisites
 
