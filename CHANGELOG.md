@@ -4,6 +4,29 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.8.28](https://github.com/xymaxim/ypb/releases/tag/v2026.8.28)
+
+### Added
+
+- Add `ypb play` command to play past moments in a web player with dash.js
+- Add `--ui` flag to `serve` to also serve the web player
+- Add mock playback (`ypb mockplay` command and `ypb-mock` container image) for testing without YouTube
+- Add `id` and `start` attributes to the `Period` element in generated MPDs
+- Add `suggestedPresentationDelay`, `minimumUpdatePeriod`, `publishTime`, and `Location` to dynamic MPDs
+- Add `bandwidth` to `Representation` from the stream total bitrate
+- Add `MoreInformationURL` to `ProgramInformation` in generated MPDs
+
+### Changed
+
+- Build Go binaries into the `build` folder
+- Increase HTTP client timeout to 90 seconds and retry count to 5
+
+### Fixed
+
+- Parse times with two hyphens (`--`) as an interval separator
+- Avoid `http: superfluous response.WriteHeader call` error
+- Reject unconsumed trailing input in interval expressions
+
 ## [2026.8.5](https://github.com/xymaxim/ypb/releases/tag/v2026.8.5)
 
 ### Added
