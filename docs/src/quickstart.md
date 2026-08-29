@@ -24,7 +24,7 @@ Use the links from the [latest
 release](https://github.com/xymaxim/ypb/releases/latest) below for your platform
 and architecture:
 
-*Latest release {{git.short_tag}}*
+*Latest release {{ git.short_tag }}*
 
 <div class="grid cards three-cols" markdown>
 
