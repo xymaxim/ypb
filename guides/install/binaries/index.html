@@ -1534,7 +1534,7 @@ location in PowerShell.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
 <p>While optional, the setup steps below are strongly recommended.</p>
 <h3 id="update-yt-dlp-to-nightly">Update yt-dlp to nightly<a class="headerlink" href="#update-yt-dlp-to-nightly" title="Permanent link">&para;</a></h3>
-<p>YouTube changes frequently, and the stable yt-dlp release can lag behind.
+<p>YouTube changes frequently, and the stable yt-dlp release can be outdated.
 Switch to the nightly build, which is updated daily:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>yt-dlp<span class="w"> </span>--update-to<span class="w"> </span>nightly
 </span></code></pre></div>
@@ -1552,20 +1552,17 @@ then add a line to your <a href="https://github.com/yt-dlp/yt-dlp#configuration"
 file</a>:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>--cookies cookies.txt
 </span></code></pre></div>
-<p>or read them straight from the browser:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>--cookies-from-browser chrome
-</span></code></pre></div>
 <h3 id="install-a-javascript-runtime">Install a JavaScript runtime<a class="headerlink" href="#install-a-javascript-runtime" title="Permanent link">&para;</a></h3>
 <p>If yt-dlp cannot find a JavaScript runtime, you will see this warning:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>your command/config. YouTube extraction without a JS runtime has been
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>deprecated, and some formats may be missing. See
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>enabled by default; to use another runtime add --js-runtimes RUNTIME[:PATH] to
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>your command/config. YouTube extraction without a JS runtime has been
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>deprecated, and some formats may be missing. See
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>https://github.com/yt-dlp/yt-dlp/wiki/EJS for details on installing one
 </span></code></pre></div>
 <p>Install <a href="https://deno.com/">Deno</a> (version 2.0 or later). If it is not detected
 automatically, point <code>yt-dlp</code> at it:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>--js-runtimes deno:/path/to/deno
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>--js-runtimes deno:/path/to/deno
 </span></code></pre></div>
 <p>See the <a href="https://github.com/yt-dlp/yt-dlp/wiki/EJS">EJS wiki</a> for other
 supported runtimes.</p>
@@ -1582,13 +1579,13 @@ provider plugin:</p>
 </ol>
 <p>With the default address, no further configuration is needed. If you run the
 server elsewhere, point yt-dlp at it:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>--extractor-args &quot;youtubepot-bgutilhttp:base_url=http://127.0.0.1:8080&quot;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>--extractor-args &quot;youtubepot-bgutilhttp:base_url=http://127.0.0.1:8080&quot;
 </span></code></pre></div>
 <p>See yt-dlp&rsquo;s <a href="https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide">PO Token Guide</a>
 for details.</p>
 <h2 id="install-from-source">Install from source<a class="headerlink" href="#install-from-source" title="Permanent link">&para;</a></h2>
 <p>If you have Go installed, you can build <code>ypb</code> from source:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/xymaxim/ypb@latest
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/xymaxim/ypb@latest
 </span></code></pre></div>
 <p>This is not recommended unless you need a development version.</p>
 
