@@ -77,7 +77,7 @@ While optional, the setup steps below are strongly recommended.
 
 ### Update yt-dlp to nightly
 
-YouTube changes frequently, and the stable yt-dlp release can lag behind.
+YouTube changes frequently, and the stable yt-dlp release can be outdated.
 Switch to the nightly build, which is updated daily:
 
 ```shell
@@ -103,12 +103,6 @@ file](https://github.com/yt-dlp/yt-dlp#configuration):
 
 ```text
 --cookies cookies.txt
-```
-
-or read them straight from the browser:
-
-```text
---cookies-from-browser chrome
 ```
 
 ### Install a JavaScript runtime
