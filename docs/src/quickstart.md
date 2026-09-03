@@ -199,8 +199,7 @@ http://localhost:9000/12:00+13--10m
 
 Once the excerpt is loaded, you can quickly seek within it using the seek bar.
 The preview is also a way to fine-tune the interval before downloading: click
-**Copy the download command** button (`D`) to copy a `ypb download` command for
-the current interval.
+**Copy download** to copy a `ypb download` command for the current interval.
 
 For the excerpt above, it would look like this:
 

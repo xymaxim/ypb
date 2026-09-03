@@ -56,12 +56,12 @@ http://localhost:9000/12:00?l=10
 
 > See [Correcting for streaming latency](../reference/cli/#correcting-for-streaming-latency) for details.
 
-## Use the player buttons
+## Use the player actions
 
 Below the video, three buttons are available:
 
-| Button | Action                                      |
-|--------|---------------------------------------------|
-| `S`    | Take a screenshot of the current frame      |
-| `T`    | Copy the current timestamp to the clipboard |
-| `D`    | Copy a download command for the interval    |
+| Button           | Action                                      |
+|------------------|---------------------------------------------|
+| `Screenshot`     | Take a screenshot of the current frame      |
+| `Copy timestamp` | Copy the current timestamp to the clipboard |
+| `Copy download`  | Copy a download command for the interval    |

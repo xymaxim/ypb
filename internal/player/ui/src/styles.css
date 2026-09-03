@@ -74,7 +74,7 @@ h3 a {
   align-items: center;
   width: 100%;
   max-width: 720px;
-  margin-top: 0.25em;
+  margin-top: 0.5em;
 }
 #play-bar.visible {
   display: grid;
@@ -83,27 +83,27 @@ h3 a {
   grid-column: 2;
   text-align: center;
 }
-#buttons {
-  grid-column: 3;
-  display: flex;
-  gap: 0.5em;
-  justify-content: flex-end;
+#button-bar {
+  display: none;
+  gap: 1em;
+  width: 100%;
+  max-width: 720px;
+  margin-top: 0.5em;
 }
-.button {
-  cursor: pointer;
-  width: 2em;
-  height: 2em;
-  border-radius: 50%;
-  background: navajowhite;
+#play-bar.visible + #button-bar {
   display: flex;
-  align-items: center;
   justify-content: center;
-  position: relative;
 }
-.button:active {
-  top: 1px;
+.button-bar-item {
+  cursor: pointer;
+  color: blue;
+  font-weight: bold;
 }
-.button.hidden {
+.button-bar-item:hover {
+  text-decoration: underline;
+}
+
+.button-bar-item.hidden {
   display: none;
 }
 
@@ -125,6 +125,9 @@ h3 a {
 .selector-item {
   cursor: pointer;
   color: blue;
+}
+.selector-item:hover {
+  text-decoration: underline;
 }
 .selector-item.active {
   font-weight: bold;
