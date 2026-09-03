@@ -107,7 +107,7 @@ func ComposeDynamic(
 		},
 		Location:                   location,
 		AvailabilityStartTime:      availabilityStartTime.UTC(),
-		TimeShiftBufferDepth:       now.Sub(probe.AnchorTime) + segmentDuration,
+		TimeShiftBufferDepth:       now.Sub(probe.AnchorTime) + segmentDuration + minimumUpdatePeriod,
 		SuggestedPresentationDelay: suggestedPresentationDelay,
 		MinimumUpdatePeriod:        minimumUpdatePeriod,
 		PublishTime:                now.UTC(),
