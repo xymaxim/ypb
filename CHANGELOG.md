@@ -4,6 +4,13 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.9.9](https://github.com/xymaxim/ypb/releases/tag/v2026.9.9)
+
+### Changed
+
+- Action buttons replaced with text link buttons
+- TimeShiftBufferDepth padded by minimumUpdatePeriod
+
 ## [2026.8.28](https://github.com/xymaxim/ypb/releases/tag/v2026.8.28)
 
 ### Added
