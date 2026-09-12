@@ -158,3 +158,14 @@ go install github.com/xymaxim/ypb@latest
 ```
 
 This is not recommended unless you need a development version.
+
+## Update ypb
+
+To update ypb to the latest version, run:
+
+    ypb update
+
+This command automatically checks the GitHub [latest
+release](https://github.com/xymaxim/ypb/releases/latest) page and updates your
+current binary if a new version is available. Use the `-y` flag to skip the
+confirmation prompt.
