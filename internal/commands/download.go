@@ -95,7 +95,8 @@ func (c *Download) Run() error {
 	mux.HandleFunc(apppkg.MPDPath, apppkg.WithError(
 		func(w http.ResponseWriter, r *http.Request) error {
 			return serveMPD(w, app, interval)
-		}),
+		},
+	),
 	)
 
 	app.Server.Handler = mux

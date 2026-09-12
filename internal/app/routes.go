@@ -14,7 +14,8 @@ func RegisterInfoRoute(mux *http.ServeMux, app *App) {
 
 func RegisterSegmentRoute(mux *http.ServeMux, app *App) {
 	mux.HandleFunc(SegmentPath, WithError(
-		(&SegmentHandler{Playback: app.Playback}).ServeHTTP),
+		(&SegmentHandler{Playback: app.Playback}).ServeHTTP,
+	),
 	)
 }
 

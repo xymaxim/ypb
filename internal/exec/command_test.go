@@ -88,7 +88,8 @@ func TestCommandRunner_RunWith_Quiet(t *testing.T) {
 		got, err := runner.RunWith(
 			context.Background(),
 			[]exec.Option{exec.WithQuiet()},
-			args...)
+			args...,
+		)
 		if err != nil {
 			t.Fatalf("RunWith() error = %v, want nil", err)
 		}

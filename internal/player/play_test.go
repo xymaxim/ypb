@@ -57,7 +57,8 @@ func TestPlayRootDoesNotShadowAPI(t *testing.T) {
 	mux.Handle("/", app.WithError((&player.PlayHandler{}).ServeHTTP))
 	mux.Handle("/{interval}", app.WithError((&player.PlayHandler{}).ServePage))
 	mux.HandleFunc(app.InfoPath, app.WithError(
-		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP),
+		(&app.InfoHandler{Info: testutil.SampleVideoInfo()}).ServeHTTP,
+	),
 	)
 
 	req := httptest.NewRequest(http.MethodGet, "/info", nil)
