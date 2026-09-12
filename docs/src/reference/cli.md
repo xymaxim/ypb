@@ -264,6 +264,29 @@ ypb download --interval 'now - 10m/now + 10m' --now 2026-01-02T10:20:30+00 ...
 * a date only, e.g. `2026-01-02`
 * a time only, e.g. `10:20:30`
 
+## Specifying the formats
+
+The `download` command and the `capture` subcommands (`frame` and
+`timelapse`) select formats with yt-dlp's `-f/--format` option, either passed
+after `--` or set in a [yt-dlp configuration
+file](https://github.com/yt-dlp/yt-dlp#configuration) as usual.
+
+```shell
+# Download using the format from the yt-dlp configuration file
+ypb download -i <interval> <stream>
+
+# Download with a specific format
+ypb download -i <interval> <stream> -- -f 137
+
+# Capture frames using a specific format
+ypb capture frame -m <moment> <stream> -- -f 137
+```
+
+!!! tip "Use format aliases"
+    To avoid repeating the same `-f` value, you can define a selection with
+    `--alias` in your configuration file and reference it by name. See [Use
+    format aliases](../appendix/cookbook.md#use-format-aliases) in the cookbook.
+    
 ## Specifying the output filename
 
 By default, downloaded files are saved in the current working directory with

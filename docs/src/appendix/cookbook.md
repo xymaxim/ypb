@@ -19,6 +19,28 @@ ID  EXT  RESOLUTION FPS CH │    TBR PROTO │ VCODEC         VBR ACODEC      A
 248 webm 1920x1080   30    │  2896k dashG │ vp9          2896k video only          1080p, webm_dash
 ```
 
+## Use format aliases
+
+You can define format selections in your yt-dlp configuration file using the
+`--alias` flag and reference them in ypb commands.
+
+For example, to configure `ypb capture frame` to use video formats with a
+maximum resolution of 1080p (falling back to a lower resolution):
+
+```shell
+# This remains as the default
+-f "bestvideo+bestaudio/b"
+
+# Passing this overrides the default -f option
+--alias --frames '-f "bv*[height<=1080]"'
+```
+
+Then use the alias in a capture command:
+
+```shell
+ypb capture frame -m <moment> <stream> -- --frames
+```
+
 ## Play a saved manifest with mpv
 
 mpv can play a saved MPEG-DASH manifest (MPD) directly, without
