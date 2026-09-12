@@ -894,6 +894,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#specifying-the-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specifying the formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#specifying-the-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1333,6 +1344,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#specifying-the-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Specifying the formats
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#specifying-the-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1462,10 +1484,13 @@
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="go">  play &lt;stream&gt; [&lt;ytdlp-options&gt; ...] [flags]</span>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="go">    Start web player (alias of &#39;serve --ui&#39;)</span>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="go">  version [flags]</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="go">    Show version info and exit</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="go">  update [flags]</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="go">    Update to the latest release</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="go">Run &quot;ypb &lt;command&gt; --help&quot; for more information on a command.</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="go">  version [flags]</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="go">    Show version info and exit</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="go">Run &quot;ypb &lt;command&gt; --help&quot; for more information on a command.</span>
 </span></code></pre></div>
 <h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
 <h3 id="capture">capture<a class="headerlink" href="#capture" title="Permanent link">&para;</a></h3>
@@ -1786,18 +1811,38 @@ it instead of repeating an absolute date-time on both sides:</p>
 <li>a date only, e.g. <code>2026-01-02</code></li>
 <li>a time only, e.g. <code>10:20:30</code></li>
 </ul>
+<h2 id="specifying-the-formats">Specifying the formats<a class="headerlink" href="#specifying-the-formats" title="Permanent link">&para;</a></h2>
+<p>The <code>download</code> command and the <code>capture</code> subcommands (<code>frame</code> and
+<code>timelapse</code>) select formats with yt-dlp&rsquo;s <code>-f/--format</code> option, either passed
+after <code>--</code> or set in a <a href="https://github.com/yt-dlp/yt-dlp#configuration">yt-dlp configuration
+file</a> as usual.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Download using the format from the yt-dlp configuration file</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span>&lt;interval&gt;<span class="w"> </span>&lt;stream&gt;
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Download with a specific format</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span>&lt;interval&gt;<span class="w"> </span>&lt;stream&gt;<span class="w"> </span>--<span class="w"> </span>-f<span class="w"> </span><span class="m">137</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># Capture frames using a specific format</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>ypb<span class="w"> </span>capture<span class="w"> </span>frame<span class="w"> </span>-m<span class="w"> </span>&lt;moment&gt;<span class="w"> </span>&lt;stream&gt;<span class="w"> </span>--<span class="w"> </span>-f<span class="w"> </span><span class="m">137</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Use format aliases</p>
+<p>To avoid repeating the same <code>-f</code> value, you can define a selection with
+<code>--alias</code> in your configuration file and reference it by name. See <a href="../../appendix/cookbook/#use-format-aliases">Use
+format aliases</a> in the cookbook.</p>
+</div>
 <h2 id="specifying-the-output-filename">Specifying the output filename<a class="headerlink" href="#specifying-the-output-filename" title="Permanent link">&para;</a></h2>
 <p>By default, downloaded files are saved in the current working directory with
 names composed of the adjusted title, YouTube video ID, start time, and
 duration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="m">2026</span>-01-02T10:20:30+00/30s<span class="w"> </span>abcdefgh123<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>-i<span class="w"> </span><span class="m">2026</span>-01-02T10:20:30+00/30s<span class="w"> </span>abcdefgh123<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Stream-title_abcdefgh123_20260102T102030+00_30s.mp4
 </span></code></pre></div>
 <p>To customize output names, use the yt-dlp&rsquo;s <code>-o/--output</code>
 <a href="https://github.com/ytdl-org/youtube-dl/#OUTPUT-TEMPLATE">option</a> by specifying
 a full filename:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>...<span class="w"> </span>--<span class="w"> </span>-o<span class="w"> </span>output/path.mp4<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls<span class="w"> </span>output/*
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>output/path.mp4
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>download<span class="w"> </span>...<span class="w"> </span>--<span class="w"> </span>-o<span class="w"> </span>output/path.mp4<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls<span class="w"> </span>output/*
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>output/path.mp4
 </span></code></pre></div>
 <p>Note that since <code>yt-dlp</code> downloads the MPEG-DASH manifest via the general
 extractor rather than the YouTube extractor, YouTube-specific template
@@ -1810,11 +1855,11 @@ network conditions and other factors.</p>
 <p>The <code>-l/--latency</code> option
 corrects for this by locating requested moments later by the given number of
 seconds (whole or fractional):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a># Fetch from 12:00:10 to correct for 10s latency
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ypb download --interval 12:00/30s --latency 10 ...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a># Fetch from 12:00:10 to correct for 10s latency
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ypb download --interval 12:00/30s --latency 10 ...
 </span></code></pre></div>
 <p>With <code>ypb serve</code>, use the <code>latency</code> (or <code>l</code>) query parameter:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl http://localhost:9000/mpd/12:00?latency=10
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>curl http://localhost:9000/mpd/12:00?latency=10
 </span></code></pre></div>
 <h2 id="passing-options-to-yt-dlp">Passing options to yt-dlp<a class="headerlink" href="#passing-options-to-yt-dlp" title="Permanent link">&para;</a></h2>
 <p>To pass additional options directly to <code>yt-dlp</code>, use the <code>--</code>

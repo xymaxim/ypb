@@ -900,6 +900,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#use-format-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Use format aliases
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#play-a-saved-manifest-with-mpv" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1133,6 +1144,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#use-format-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Use format aliases
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#play-a-saved-manifest-with-mpv" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1252,14 +1274,29 @@ is helpful:</p>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="m">137</span><span class="w"> </span>mp4<span class="w">  </span>1920x1080<span class="w">   </span><span class="m">30</span><span class="w">    </span>│<span class="w">  </span>5019k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>avc1.640028<span class="w">  </span>5019k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>1080p,<span class="w"> </span>mp4_dash
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="m">248</span><span class="w"> </span>webm<span class="w"> </span>1920x1080<span class="w">   </span><span class="m">30</span><span class="w">    </span>│<span class="w">  </span>2896k<span class="w"> </span>dashG<span class="w"> </span>│<span class="w"> </span>vp9<span class="w">          </span>2896k<span class="w"> </span>video<span class="w"> </span>only<span class="w">          </span>1080p,<span class="w"> </span>webm_dash
 </span></code></pre></div>
+<h2 id="use-format-aliases">Use format aliases<a class="headerlink" href="#use-format-aliases" title="Permanent link">&para;</a></h2>
+<p>You can define format selections in your yt-dlp configuration file using the
+<code>--alias</code> flag and reference them in ypb commands.</p>
+<p>For example, to configure <code>ypb download</code> to use video formats with a maximum
+resolution of 1080p (falling back to a lower resolution) by default, while <code>ypb
+capture frame</code> uses the best available video quality:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Default for ypb download: limit to 1080p with fallback</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-f<span class="w"> </span><span class="s2">&quot;bv*[height&lt;=1080]+ba/b&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Alias for ypb capture frame: use best available quality</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>--alias<span class="w"> </span>--frames<span class="w"> </span><span class="s1">&#39;-f &quot;bv/b&quot;&#39;</span>
+</span></code></pre></div>
+<p>Then use the alias in a capture command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ypb<span class="w"> </span>capture<span class="w"> </span>frame<span class="w"> </span>-m<span class="w"> </span>&lt;moment&gt;<span class="w"> </span>&lt;stream&gt;<span class="w"> </span>--<span class="w"> </span>--frames
+</span></code></pre></div>
 <h2 id="play-a-saved-manifest-with-mpv">Play a saved manifest with mpv<a class="headerlink" href="#play-a-saved-manifest-with-mpv" title="Permanent link">&para;</a></h2>
 <p>mpv can play a saved MPEG-DASH manifest (MPD) directly, without
 downloading anything first.</p>
 <p>The manifest&rsquo;s <code>SegmentTemplate</code>s reference <code>http://localhost:9000/...</code>
 segments, but by default ffmpeg&rsquo;s demuxer only allows the <code>file</code> and
 <code>crypto</code> protocols for local files. Whitelist the ones the manifest needs:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mpv --demuxer-lavf-o=&#39;protocol_whitelist=&quot;file,crypto,data,http,https,tcp,tls&quot;&#39; \
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  manifest.mpd
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mpv --demuxer-lavf-o=&#39;protocol_whitelist=&quot;file,crypto,data,http,https,tcp,tls&quot;&#39; \
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  manifest.mpd
 </span></code></pre></div>
 <p>To pick a specific stream, use mpv&rsquo;s interactive track selector: press <code>g</code>
 then <code>v</code> for video, or <code>g</code> then <code>a</code> for audio. Each opens a console menu
@@ -1268,25 +1305,25 @@ listing the available tracks to choose from.</p>
 <p><code>ypb serve</code>&rsquo;s JSON response includes <code>metadata.outputName</code>, the same name
 <code>ypb download</code> would use for the same input. Reuse it when running another
 tool against the stream:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>serve<span class="w"> </span>STREAM
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span><span class="nv">response</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>http://localhost:9000/mpd/10s--now<span class="k">)</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>$<span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.metadata.outputName&#39;</span><span class="k">)</span>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>serve<span class="w"> </span>STREAM
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span><span class="nv">response</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>http://localhost:9000/mpd/10s--now<span class="k">)</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>$<span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.metadata.outputName&#39;</span><span class="k">)</span>
 </span></code></pre></div>
 <p>yt-dlp can read the manifest off disk instead of fetching it again, so save it
 and pass <code>filename</code> for the output location:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.mpd&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/manifest.mpd
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">output_name</span><span class="si">}</span><span class="s2">.%(ext)s&quot;</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.mpd&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/manifest.mpd
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">output_name</span><span class="si">}</span><span class="s2">.%(ext)s&quot;</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
 </span></code></pre></div>
 <h2 id="download-multiple-formats-from-one-saved-manifest">Download multiple formats from one saved manifest<a class="headerlink" href="#download-multiple-formats-from-one-saved-manifest" title="Permanent link">&para;</a></h2>
 <p>Requesting <code>/mpd</code> from <code>ypb serve</code> lets you rewind once and save the manifest, then run
 <code>yt-dlp</code> against it as many times as you like. Each run reads the same
 saved segments instead of triggering a new rewind, as <code>ypb download</code> would:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>serve<span class="w"> </span>STREAM
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span><span class="nv">response</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>http://localhost:9000/mpd/10s--now<span class="k">)</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>$<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.mpd&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/manifest.mpd
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;output.f%(format_id)s.%(ext)s&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">137</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;output.f%(format_id)s.%(ext)s&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">140</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>serve<span class="w"> </span>STREAM
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>$<span class="w"> </span><span class="nv">response</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span>http://localhost:9000/mpd/10s--now<span class="k">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>$<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$response</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.mpd&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/manifest.mpd
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;output.f%(format_id)s.%(ext)s&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">137</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>$<span class="w"> </span>yt-dlp<span class="w"> </span>--enable-file-urls<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;output.f%(format_id)s.%(ext)s&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">140</span><span class="w"> </span><span class="s2">&quot;file:///tmp/manifest.mpd&quot;</span>
 </span></code></pre></div>
 <p>You could get the same files with a single <code>-f "137,140"</code> call, but keeping the
 manifest around lets you work incrementally.</p>
