@@ -16,6 +16,8 @@ builds:
     main: ./cmd/ypb/
     env:
       - CGO_ENABLED=0
+    flags:
+      - -buildvcs=false
     ldflags: "-s -w -X github.com/xymaxim/ypb/internal/version.GitVersion={{ .Tag }}"
     goos:
       - linux
