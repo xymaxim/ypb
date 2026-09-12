@@ -24,15 +24,17 @@ ID  EXT  RESOLUTION FPS CH │    TBR PROTO │ VCODEC         VBR ACODEC      A
 You can define format selections in your yt-dlp configuration file using the
 `--alias` flag and reference them in ypb commands.
 
-For example, to configure `ypb capture frame` to use video formats with a
-maximum resolution of 1080p (falling back to a lower resolution):
+For example, to configure `ypb download` to use video formats with a maximum
+resolution of 1080p (falling back to a lower resolution) by default, while `ypb
+capture frame` uses the best available video quality:
+
 
 ```shell
-# This remains as the default
--f "bestvideo+bestaudio/b"
+# Default for ypb download: limit to 1080p with fallback
+-f "bv*[height<=1080]+ba/b"
 
-# Passing this overrides the default -f option
---alias --frames '-f "bv*[height<=1080]"'
+# Alias for ypb capture frame: use best available quality
+--alias --frames '-f "bv/b"'
 ```
 
 Then use the alias in a capture command:
