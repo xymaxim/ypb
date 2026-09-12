@@ -4,6 +4,12 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.9.12](https://github.com/xymaxim/ypb/releases/tag/v2026.9.12)
+
+### Changed
+
+- Use yt-dlp's selected video format in `ypb capture` instead of the best available
+
 ## [2026.9.9](https://github.com/xymaxim/ypb/releases/tag/v2026.9.9)
 
 ### Changed

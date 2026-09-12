@@ -3,6 +3,7 @@ package actions
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,6 +13,17 @@ import (
 	"github.com/xymaxim/ypb/playback"
 )
 
+func captureVideoItag(pb playback.Playbacker) (string, error) {
+	itag := pb.Info().PreferredVideoItag
+	if itag == "" {
+		return "", errors.New(
+			"selected format has no video stream",
+		)
+	}
+	slog.Debug("capturing from format", "itag", itag)
+	return itag, nil
+}
+
 // CaptureFrame extracts a frame corresponding to a moment.
 func CaptureFrame(
 	pb playback.Playbacker,
@@ -20,10 +32,15 @@ func CaptureFrame(
 	runner exec.Runner,
 	latency time.Duration,
 ) error {
+	itag, err := captureVideoItag(pb)
+	if err != nil {
+		return err
+	}
+
 	var buf bytes.Buffer
 
-	err := pb.StreamSegment(
-		pb.Info().BestVideo().Itag,
+	err = pb.StreamSegment(
+		itag,
 		moment.Metadata.SequenceNumber,
 		&buf,
 	)
@@ -56,6 +73,11 @@ func CaptureFrames(
 
 	reference := locateContext.Head
 
+	itag, err := captureVideoItag(pb)
+	if err != nil {
+		return captured, skipped, err
+	}
+
 	for frameIndex, t := range times {
 		rewindMoment, err := locateWithLatency(
 			pb,
@@ -87,7 +109,7 @@ func CaptureFrames(
 		if previousSegment == nil || previousSq != sq {
 			var buf bytes.Buffer
 			if err := pb.StreamSegment(
-				pb.Info().BestVideo().Itag,
+				itag,
 				sq,
 				&buf,
 			); err != nil {

@@ -13,6 +13,9 @@ type VideoInformation struct {
 	SegmentDuration time.Duration
 	AudioStreams    []AudioStream
 	VideoStreams    []VideoStream
+	// PreferredVideoItag is the video itag resolved from yt-dlp's format
+	// selection; empty when the selection has no video stream.
+	PreferredVideoItag string
 }
 
 func (i VideoInformation) BestVideo() *VideoStream {

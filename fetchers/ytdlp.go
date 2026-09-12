@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/info"
@@ -29,6 +30,7 @@ type jsonDump struct {
 	ChannelID        string   `json:"channel_id"`
 	ChannelTitle     string   `json:"channel"`
 	ReleaseTimestamp int64    `json:"release_timestamp"`
+	FormatID         string   `json:"format_id"`
 	Formats          []format `json:"formats"`
 }
 
@@ -44,6 +46,17 @@ type format struct {
 	FrameRate         *int              `json:"fps"`
 	Tbr               float64           `json:"tbr"`
 	HTTPHeaders       map[string]string `json:"http_headers"`
+}
+
+func resolveVideoItag(formatID string, videoStreams []info.VideoStream) string {
+	for part := range strings.SplitSeq(formatID, "+") {
+		for _, s := range videoStreams {
+			if s.Itag == part {
+				return part
+			}
+		}
+	}
+	return ""
 }
 
 func (fetcher *YtdlpFetcher) FetchInfo(
@@ -104,14 +117,15 @@ func (fetcher *YtdlpFetcher) FetchInfo(
 
 	segmentDuration := time.Duration(float64(dump.Formats[0].TargetDuration)) * time.Second
 	information := &info.VideoInformation{
-		ID:              fetcher.VideoID,
-		Title:           dump.Title,
-		ChannelID:       dump.ChannelID,
-		ChannelTitle:    dump.ChannelTitle,
-		ActualStartTime: time.Unix(dump.ReleaseTimestamp, 0).UTC(),
-		SegmentDuration: segmentDuration,
-		AudioStreams:    audioStreams,
-		VideoStreams:    videoStreams,
+		ID:                 fetcher.VideoID,
+		Title:              dump.Title,
+		ChannelID:          dump.ChannelID,
+		ChannelTitle:       dump.ChannelTitle,
+		ActualStartTime:    time.Unix(dump.ReleaseTimestamp, 0).UTC(),
+		SegmentDuration:    segmentDuration,
+		AudioStreams:       audioStreams,
+		VideoStreams:       videoStreams,
+		PreferredVideoItag: resolveVideoItag(dump.FormatID, videoStreams),
 	}
 
 	additionals := YtdlpAdditionals{
