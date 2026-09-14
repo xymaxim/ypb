@@ -2,11 +2,14 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -18,8 +21,9 @@ import (
 
 type Download struct {
 	CommonFlags
-	Stream   string `arg:"" help:"YouTube video ID"         required:""`
-	Interval string `       help:"Time or segment interval" required:"" short:"i"`
+	Stream     string `arg:"" help:"YouTube video ID"             required:""`
+	Interval   string `       help:"Time or segment interval"     required:"" short:"i"`
+	NoMetadata bool   `       help:"Skip embedding metadata tags"`
 	LatencyFlag
 	YtdlpOptionsFlag
 }
@@ -113,6 +117,16 @@ func (c *Download) Run() error {
 		"/mpd/" +
 		url.PathEscape(c.Interval)
 
+	ytdlpPathFile, err := os.CreateTemp("", "ypb-path-*")
+	if err != nil {
+		return fmt.Errorf("creating output path file: %w", err)
+	}
+	ytdlpPath := ytdlpPathFile.Name()
+	if err := ytdlpPathFile.Close(); err != nil {
+		return fmt.Errorf("closing output path file: %w", err)
+	}
+	defer func() { _ = os.Remove(ytdlpPath) }()
+
 	args := append(
 		[]string{
 			mpdURL,
@@ -121,10 +135,38 @@ func (c *Download) Run() error {
 		},
 		ytdlpOptions...,
 	)
+	args = append(args, "--print-to-file", "after_move:filepath", ytdlpPath)
 
 	fmt.Println("(<<) Downloading and merging media...")
 	if err := app.YtdlpRunner.Run(context.Background(), args...); err != nil {
 		return fmt.Errorf("downloading failed: %w", err)
+	}
+
+	if c.NoMetadata {
+		slog.Info("skip metadata tag embedding")
+		return nil
+	}
+
+	pathBytes, err := os.ReadFile(ytdlpPath)
+	if err != nil {
+		return fmt.Errorf("reading output file path: %w", err)
+	}
+	outputPath := strings.TrimSpace(string(pathBytes))
+	if outputPath == "" {
+		return errors.New("output file path is empty")
+	}
+
+	slog.Info("embedding metadata tags")
+	metadata_ctx := &metadataContext{
+		LocateOutputContext: outputContext,
+		ChannelTitle:        app.Playback.Info().ChannelTitle,
+	}
+	if err := embedMetadata(
+		app.FFmpegRunner,
+		outputPath,
+		metadataTags(metadata_ctx),
+	); err != nil {
+		return fmt.Errorf("embedding metadata: %w", err)
 	}
 
 	return nil
