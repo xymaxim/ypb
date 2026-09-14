@@ -2,9 +2,9 @@
 
 Here are the answers to the most asked/anticipated questions.
 
-## Why does the actual time differ from the target time?
+## Why does the actual time differ from the input time?
 
-The target time is the moment you requested, while the actual time is snapped to
+The input time is the moment you requested, while the actual time is snapped to
 the nearest matching segment boundary, start or end. The difference between the
 two can be up to one full segment in length, with the segment duration depending
 on the [YoutTube streaming
@@ -16,8 +16,8 @@ for normal latency.
 
 Segments are merged as-is, without trimming the boundary segments to match the
 requested interval. As a result, both boundaries can extend beyond the requested
-interval (see [Why does the actual time differ from the target
-time?](#why-does-the-actual-time-differ-from-the-target-time)). This means the
+interval (see [Why does the actual time differ from the input
+time?](#why-does-the-actual-time-differ-from-the-input-time)). This means the
 excerpt can be up to two full segments longer than requested: 2 seconds
 (ultra-low latency), 4 seconds (low), or 10 seconds (normal).
 

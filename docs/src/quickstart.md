@@ -160,8 +160,8 @@ see what's on the stream at noon:
 !!! info "Rewind precision"
     The moment you rewind to is snapped to the nearest media segment, so the
     actual time can differ a bit from the requested one. See [Why does the
-    actual time differ from the target
-    time?](appendix/questions.md#why-does-the-actual-time-differ-from-the-target-time)
+    actual time differ from the input
+    time?](appendix/questions.md#why-does-the-actual-time-differ-from-the-input-time)
     for details.
 
 !!! example "Moment format examples"

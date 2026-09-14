@@ -40,7 +40,7 @@ it. Ypb locates it with a three-step search:
 1. **Jump-based search** --- uses time differences to quickly find a segment or
    narrow the search domain
 2. **Binary search** --- refines the search within the discovered domain
-3. **Gap detection** --- checks whether the target time falls within a gap
+3. **Gap detection** --- checks whether the input time falls within a gap
 
 This multi-step approach handles timeline instabilities and gaps that could
 otherwise cause incorrect rewind timing
