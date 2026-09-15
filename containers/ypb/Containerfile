@@ -1,7 +1,7 @@
 # Build stage
 FROM oven/bun:1-alpine AS bun-source
 
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 RUN apk update && apk add --no-cache make git curl unzip libstdc++ gcompat
 COPY --from=bun-source /usr/local/bin/bun /usr/local/bin/bun
