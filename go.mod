@@ -8,6 +8,7 @@ require (
 	github.com/creativeprojects/go-selfupdate v1.6.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v91 v91.0.0
+	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/gosimple/slug v1.15.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/oleiade/gomme v0.0.0-20231216113819-c8967c191356

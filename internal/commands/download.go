@@ -21,9 +21,11 @@ import (
 
 type Download struct {
 	CommonFlags
-	Stream     string `arg:"" help:"YouTube video ID"             required:""`
-	Interval   string `       help:"Time or segment interval"     required:"" short:"i"`
-	NoMetadata bool   `       help:"Skip embedding metadata tags"`
+	Stream           string `arg:"" help:"YouTube video ID"                                             required:""`
+	Interval         string `       help:"Time or segment interval"                                     required:"" short:"i"` //nolint:lll
+	NoMetadata       bool   `       help:"Skip embedding metadata tags"`
+	Cut              bool   `       help:"Cut downloaded file to input times (experimental)"                        short:"c"` //nolint:lll
+	CutFFmpegOptions string `       help:"Extra FFmpeg options for cut (e.g. \"-c:v libx264 -crf 20\")"`
 	LatencyFlag
 	YtdlpOptionsFlag
 }
@@ -91,8 +93,11 @@ func (c *Download) Run() error {
 		return fmt.Errorf("locating interval: %w", err)
 	}
 
-	fmt.Println(formatActualLine("start", interval.Start))
-	fmt.Println(" ", formatActualLine("end", interval.End))
+	fmt.Println(formatActualLine("start", interval.Start, c.Cut))
+	fmt.Println(" ", formatActualLine("end", interval.End, c.Cut))
+	if c.Cut {
+		fmt.Println("--cut enabled, output will be trimmed to these times")
+	}
 
 	mux := http.NewServeMux()
 	apppkg.RegisterSegmentRoute(mux, app)
@@ -142,11 +147,6 @@ func (c *Download) Run() error {
 		return fmt.Errorf("downloading failed: %w", err)
 	}
 
-	if c.NoMetadata {
-		slog.Info("skip metadata tag embedding")
-		return nil
-	}
-
 	pathBytes, err := os.ReadFile(ytdlpPath)
 	if err != nil {
 		return fmt.Errorf("reading output file path: %w", err)
@@ -154,6 +154,39 @@ func (c *Download) Run() error {
 	outputPath := strings.TrimSpace(string(pathBytes))
 	if outputPath == "" {
 		return errors.New("output file path is empty")
+	}
+
+	if c.Cut {
+		fmt.Println("(<<) Cutting downloaded file...")
+
+		cutStart := outputContext.InputStartTime.
+			Sub(outputContext.ActualStartTime).Seconds()
+		if cutStart < 0 {
+			slog.Warn("input start time was in a gap, clamped to start")
+			cutStart = 0
+		}
+
+		actualDuration := outputContext.ActualDuration.Seconds()
+		cutEnd := outputContext.InputEndTime.
+			Sub(outputContext.ActualStartTime).Seconds()
+		if cutEnd > actualDuration {
+			slog.Warn("input end time was in a gap, clamped to end")
+			cutEnd = actualDuration
+		}
+
+		opts := CutOptions{
+			StartSeconds:    cutStart,
+			EndSeconds:      cutEnd,
+			ExtraFFmpegArgs: c.CutFFmpegOptions,
+		}
+		if err := cut(context.Background(), outputPath, outputPath, opts); err != nil {
+			return fmt.Errorf("cutting downloaded file: %w", err)
+		}
+	}
+
+	if c.NoMetadata {
+		slog.Info("skip metadata tag embedding")
+		return nil
 	}
 
 	slog.Info("embedding metadata tags")
@@ -191,9 +224,17 @@ func serveMPD(w http.ResponseWriter, app *apppkg.App, interval *playback.RewindI
 	return nil
 }
 
-func formatActualLine(side string, moment *playback.RewindMoment) string {
-	diffPart := ""
+func formatActualLine(side string, moment *playback.RewindMoment, cutEnabled bool) string {
+	if cutEnabled {
+		return fmt.Sprintf(
+			"Actual %s: %s, sq=%d",
+			side,
+			moment.TargetTime.Format(time.RFC1123Z),
+			moment.Metadata.SequenceNumber,
+		)
+	}
 
+	diffPart := ""
 	diff := moment.TimeDifference()
 	if diff.Abs() >= time.Second {
 		diffPart = fmt.Sprintf(" (%s)", FormatDifference(diff, true))
