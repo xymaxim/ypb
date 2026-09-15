@@ -52,9 +52,9 @@ excerpt file. Use the `--no-metadata` flag to disable it.
 | `Title`           | Video title                   | `Sample Title`                                |
 | `Author`          | Video channel name            | `Sample Channel`                              |
 | `Comment`         | YouTube video URL             | `https://www.youtube.com/watch?v=abcdefgh123` |
-| `ActualStartTime` | Actual start time             | `2026-01-02T10:20:30.123Z`                    |
+| `ActualStartTime` | Actual start time             | `2026-01-02T10:20:28.123Z`                    |
 | `InputStartTime`  | Input start time              | `2026-01-02T10:20:30.000Z`                    |
-| `ActualEndTime`   | Actual end time               | `2026-01-02T10:20:35.456Z`                    |
+| `ActualEndTime`   | Actual end time               | `2026-01-02T10:20:37.456Z`                    |
 | `InputEndTime`    | Input end time                | `2026-01-02T10:20:35.000Z`                    |
 | `StartSegment`    | Start segment sequence number | `1000`                                        |
 | `EndSegment`      | End segment sequence number   | `1001`                                        |
