@@ -269,6 +269,20 @@ start and end formats.
 
 </div>
 
+!!! tip "Precise trimming"
+    By default, the downloaded file's start and end are snapped
+    ([why?](appendix/questions.md#why-does-the-actual-time-differ-from-the-input-time))
+    to the nearest source segment boundaries. Pass `--cut`/`-c` to trim the
+    output to the exact input start and end times with frame accuracy:
+
+        ypb download -i 2026-08-18T12:00:00+13/10m --cut Mm_zVDDUeNA
+
+    !!! note ""
+        Trimming requires re-encoding the video, which can take a long time, so
+        cutting is recommended for relatively small intervals where precision
+        matters. See [Cutting to input
+        times](reference/cli/download.md#cutting-to-input-times) for details.
+
 ### Choose audio and video formats
 
 By default, we let yt-dlp choose the audio and video formats automatically,
