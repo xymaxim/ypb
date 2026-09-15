@@ -24,7 +24,8 @@ timing issues that can occur when copying the audio stream:
 ```sh
 
 ffmpeg -ss <start> -i <input> -t <duration> -c:a copy \
-       -avoid_negative_ts make_zero -shortest -fflags +genpts <output>
+  -avoid_negative_ts make_zero -shortest -fflags +genpts \
+  <output>
 ```
 
 !!! warning "Re-encoding takes time"
@@ -36,9 +37,9 @@ To override the video encoding (or any other FFmpeg option), pass
 the default options, so later values take precedence for conflicts:
 
 ```sh
-ypb download -i 00:10:00-00:15:00 --cut \
+ypb download -i 2026-01-02T10:20:30/30s --cut \
   --cut-ffmpeg-options "-c:v libx264 -preset fast -crf 18" \
-  https://example.com/stream
+  abcdefgh123
 ```
 
 ## Embedding metadata tags
