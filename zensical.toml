@@ -30,8 +30,11 @@ nav = [
     "guides/download-segments.md",
   ]},
   { "Reference" = [
-    {"CLI" = "reference/cli.md"},
-    "reference/api.md",
+    { "CLI" = [
+      "reference/cli/cli.md",
+      "reference/cli/download.md",
+    ]},
+    { "API" = "reference/api.md" },
   ]},
   { "Appendix" = [
     "appendix/cookbook.md",

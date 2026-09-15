@@ -354,25 +354,3 @@ from a file:
 For a complete list of available options, see the [yt-dlp
 documentation](https://github.com/yt-dlp/yt-dlp#usage-and-options).
 
-## Embedding metadata tags
-
-By default, the `ypb download` command adds metadata tags to a downloaded
-excerpt file. Use the `--no-metadata` flag to disable it.
-
-| Metadata tag      | Description                   | Example                                       |
-|-------------------|-------------------------------|-----------------------------------------------|
-| `Title`           | Video title                   | `Sample Title`                                |
-| `Author`          | Video channel name            | `Sample Channel`                              |
-| `Comment`         | YouTube video URL             | `https://www.youtube.com/watch?v=abcdefgh123` |
-| `ActualStartTime` | Actual start time             | `2026-01-02T10:20:30.123Z`                    |
-| `InputStartTime`  | Input start time              | `2026-01-02T10:20:30.000Z`                    |
-| `ActualEndTime`   | Actual end time               | `2026-01-02T10:20:35.456Z`                    |
-| `InputEndTime`    | Input end time                | `2026-01-02T10:20:35.000Z`                    |
-| `StartSegment`    | Start segment sequence number | `1000`                                        |
-| `EndSegment`      | End segment sequence number   | `1001`                                        |
-
-!!! note "Input and actual times"
-    The input time is the requested moment, while the actual time is snapped to
-    the nearest matching segment boundary. See [Why does the actual time differ
-    from the input
-    time?](../appendix/questions.md#why-does-the-actual-time-differ-from-the-input-time)

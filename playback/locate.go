@@ -231,10 +231,14 @@ func searchInRange(
 		return NewRewindMoment(targetTime, *candidate, isEnd, false), nil
 	}
 
+	side := "start"
+	if isEnd {
+		side = "end"
+	}
 	slog.Warn("target (input) time falls inside a gap",
-		slog.Bool("end", isEnd),
+		slog.String("side", side),
 		slog.Time("target", targetTime.In(time.UTC)),
-		slog.Time("actual", candidate.Time()),
+		slog.Time("actual", candidate.Time().In(time.UTC)),
 		slog.Duration("diff", timeDiff),
 	)
 
