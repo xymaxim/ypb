@@ -59,7 +59,7 @@ How you specify it depends on the command:
 - `capture frame` takes a rewind moment, given with the `-m/--moment` option.
 
 - `play` and `serve` take the rewind interval or moment from the URL — see
-  [API](api.md).
+  [API](../api.md).
 
 ### Absolute and relative moments
 
@@ -285,7 +285,7 @@ ypb capture frame -m <moment> <stream> -- -f 137
 !!! tip "Use format aliases"
     To avoid repeating the same `-f` value, you can define a selection with
     `--alias` in your configuration file and reference it by name. See [Use
-    format aliases](../appendix/cookbook.md#use-format-aliases) in the cookbook.
+    format aliases](../../appendix/cookbook.md#use-format-aliases) in the cookbook.
     
 ## Specifying the output filename
 
