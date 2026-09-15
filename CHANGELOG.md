@@ -4,7 +4,13 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
-## [2026.9.12](https://github.com/xymaxim/ypb/releases/tag/v2026.9.12)
+## [2026.9.15](https://github.com/xymaxim/ypb/releases/tag/v2026.9.15)
+
+### Added
+
+- `--cut` and `--cut-ffmpeg-options` for trimming downloaded files to input times
+- `ypb update` command to self-update ypb binaries
+- Embed metadata tags in downloaded files
 
 ### Changed
 
