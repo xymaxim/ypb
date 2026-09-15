@@ -32,7 +32,7 @@ http://localhost:9000/2026-01-02T12:00
 ```
 
 > See [Specifying the rewind
-> time](../reference/cli.md#specifying-the-rewind-time) for the accepted
+> time](../reference/cli/cli.md#specifying-the-rewind-time) for the accepted
 > formats.
 
 ## Set the output timezone

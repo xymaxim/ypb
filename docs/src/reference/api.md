@@ -1,7 +1,7 @@
 # API
 
 The following endpoints are served by the playback server started with
-the [`serve`](cli.md#serve) command.
+the [`serve`](cli/cli.md#serve) command.
 
 ## Endpoints
 
@@ -22,7 +22,7 @@ tz
 latency, l
 :   Correcting for streaming latency by locating the interval later by this many
     seconds (whole or fractional). See [Correcting for streaming
-    latency](cli.md#correcting-for-streaming-latency) for details.
+    latency](cli/cli.md#correcting-for-streaming-latency) for details.
 
 #### Usage examples
 
@@ -66,7 +66,7 @@ interval
 :   The rewind interval to retrieve.
 
     !!! note
-        See [Specifying the rewind time](cli.md#specifying-the-rewind-time)
+        See [Specifying the rewind time](cli/cli.md#specifying-the-rewind-time)
         for all available interval format options. When using absolute timestamps,
         prefer the `Z` suffix for UTC (e.g., `2026-01-02T10:20:30Z`) over `+00:00`,
         since `+` must be percent-encoded as `%2B`. In general, ensure the path
@@ -76,7 +76,7 @@ interval
 latency, l
 :   Correcting for streaming latency by locating the interval later by this many
     seconds (whole or fractional). See [Correcting for streaming
-    latency](cli.md#correcting-for-streaming-latency) for details.
+    latency](cli/cli.md#correcting-for-streaming-latency) for details.
 
 #### Usage examples
 

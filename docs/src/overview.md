@@ -7,7 +7,7 @@ its core is a playback proxy: it wraps base URLs for each available format,
 fetched with [yt-dlp](https://github.com/yt-dlp/yt-dlp), so media segment
 requests aren't sent to YouTube directly and can be automatically retried on
 errors such as 403s. This proxy can be served by a playback server that handles
-[API](./reference/api.md) requests (the [serve](./reference/cli.md#serve)
+[API](./reference/api.md) requests (the [serve](./reference/cli/cli.md#serve)
 command), including generating static and dynamic MPEG-DASH manifests (MPDs) and
 streaming segments. The generated manifests can be passed to any MPEG-DASH
 compatible player or downloader.
@@ -49,7 +49,7 @@ otherwise cause incorrect rewind timing
 
 Feeding a generated MPEG-DASH manifest (MPD) to the built-in
 [dash.js](https://dashjs.org/) player, via the
-[play](http://localhost:8000/ypb/reference/cli/#play) command, allows rewinding
+[play](reference/cli/cli.md#play) command, allows rewinding
 and rewatching past moments in the browser without downloading.
 
 ```mermaid
@@ -75,7 +75,7 @@ sequenceDiagram
 ## Downloading excerpts to local files
 
 Saving stream excerpts to local files is possible with a single command,
-[download](http://localhost:8000/ypb/reference/cli/#download). It composes a
+[download](reference/cli/download.md). It composes a
 static MPEG-DASH manifest (MPD), then starts the proxy to stream segments before
 passing it to yt-dlp's general extractor.
 

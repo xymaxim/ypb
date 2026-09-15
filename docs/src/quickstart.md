@@ -174,7 +174,7 @@ see what's on the stream at noon:
 
     !!! info ""
         :octicons-redo-16: See [Specifying the rewind
-        time](reference/cli.md#specifying-the-rewind-time) for the full
+        time](reference/cli/cli.md#specifying-the-rewind-time) for the full
         reference on interval part formats.
 
 ### Preview an excerpt
@@ -263,7 +263,7 @@ working directory:
 <div class="grid" markdown>
 
 :lucide-forward: See [Specifying the rewind
-time](reference/cli.md#specifying-the-rewind-time) for the accepted
+time](reference/cli/cli.md#specifying-the-rewind-time) for the accepted
 start and end formats.
 { .card }
 
@@ -285,7 +285,7 @@ following its own defaults or any preferences set in your yt-dlp's
     
 Alternatively, you can pass options directly to yt-dlp by adding them after
 the `--` separator (see [Passing options to
-yt-dlp](reference/cli.md#passing-options-to-yt-dlp) for more details). For
+yt-dlp](reference/cli/cli.md#passing-options-to-yt-dlp) for more details). For
 example, let's use the yt-dlp's `-f` option to download only the best quality
 audio:
 
@@ -312,7 +312,7 @@ $ ypb download -i 30s/now Mm_zVDDUeNA -- -f bestaudio -x
 
     Full reference for commands, interval syntax, output naming, and more.
     
-    :lucide-arrow-right: [Read the reference](reference/cli.md)
+    :lucide-arrow-right: [Read the reference](reference/cli/cli.md)
 
 - **Cookbook**
 

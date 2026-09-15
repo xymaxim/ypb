@@ -61,7 +61,7 @@ player, or download them as local files.
 
     Overview of the command line interface.
 
-    :lucide-arrow-right: [Read the reference](reference/cli.md)
+    :lucide-arrow-right: [Read the reference](reference/cli/cli.md)
 
 - **API**
 

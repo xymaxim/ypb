@@ -50,7 +50,7 @@ the `download` command. Two things change in a URL: use `--` instead of `/`,
 and avoid whitespace (or percent-encode it).
 
 > See [Specifying the rewind
-> time](../reference/cli.md#specifying-the-rewind-time) for all the
+> time](../reference/cli/cli.md#specifying-the-rewind-time) for all the
 > interval formats.
 
 !!! note "Static and dynamic manifests"
@@ -93,7 +93,7 @@ demuxer, letting it open the manifest and fetch its media segments.
 You can also point the manifest to a downloader, instead of a player.
 
 For example, let's use yt-dlp's general extractor directly: this is kind of
-similar to what the [`download`](../reference/cli.md#download) command does
+similar to what the [`download`](../reference/cli/download.md) command does
 under the hood:
 
 ```shell

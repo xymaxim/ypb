@@ -5,9 +5,9 @@ assemble them into a short time-lapse video. We’ll work through the full proce
 from a single frame to a finished video using a [live
 stream](https://www.youtube.com/live/0ujj4HexRpk/) from [Aurora Reykjavik – The
 Northern Lights Center](https://aurorareykjavik.is/) as an example. Throughout,
-we’ll use the [ypb capture](../reference/cli.md#capture) subcommands, which
+we’ll use the [ypb capture](../reference/cli/cli.md#capture) subcommands, which
 extract frames with per-second precision (unlike [ypb
-download](../reference/cli.md#download), which operates at the segment level).
+download](../reference/cli/download.md), which operates at the segment level).
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ Before you begin, make sure you have:
 ## Step 1. Capture the first frame
 
 Let’s start with a single frame to confirm everything is working correctly using
-the [capture frame](../reference/cli.md#frame) subcommand:
+the [capture frame](../reference/cli/cli.md#frame) subcommand:
 
 ``` shell
 $ ypb capture frame --moment '20:00:00+00 - 1d' 0ujj4HexRpk
@@ -66,7 +66,7 @@ alt="Captured frame (shifted): --moment '20:00:03+00 - 1d'" />
         ypb capture frame --moment '20:00:00+00 - 1d' -l 3 0ujj4HexRpk
 
     See [Correcting for streaming
-    latency](../reference/cli.md#correcting-for-streaming-latency) for
+    latency](../reference/cli/cli.md#correcting-for-streaming-latency) for
     details.
 
 Now the timestamp matches our request. We’ll apply this 3-second offset
@@ -75,7 +75,7 @@ to all subsequent commands.
 ## Step 2. Capture all night
 
 Nautical twilight in Reykjavík ran from 19:49 to 07:35 on February 15.  Let’s
-capture it using the [capture timeline](../reference/cli.md#timelapse)
+capture it using the [capture timeline](../reference/cli/cli.md#timelapse)
 subcommand with 30-minute intervals to get a quick overview of potential aurora
 activity. The `-e/--every` flag sets the interval between frames:
 
