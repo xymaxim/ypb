@@ -17,7 +17,7 @@ type Serve struct {
 }
 
 func (c *Serve) Run() error {
-	if err := checkYtdlp(); err != nil {
+	if err := CheckYtdlp(); err != nil {
 		return err
 	}
 

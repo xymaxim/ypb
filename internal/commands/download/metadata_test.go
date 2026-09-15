@@ -1,4 +1,4 @@
-package commands
+package download
 
 import (
 	"context"
@@ -83,7 +83,7 @@ func TestFormatISO8601(t *testing.T) {
 func TestMetadataTags(t *testing.T) {
 	t.Parallel()
 	metadata_ctx := &metadataContext{
-		LocateOutputContext: &actions.LocateOutputContext{
+		LocateOutputContext: actions.LocateOutputContext{
 			ID:                  "abcdefgh123",
 			Title:               "Test Title",
 			StartSequenceNumber: 1,
@@ -137,6 +137,7 @@ func TestEmbedMetadata(t *testing.T) {
 		"-i", file,
 		"-map", "0",
 		"-c", "copy",
+		"-movflags", "use_metadata_tags",
 		"-metadata", "Title=Test Title",
 		"-metadata", "StartSegment=1",
 		tmpArg,
@@ -161,4 +162,79 @@ func TestEmbedMetadataNoExtensionSkips(t *testing.T) {
 	runner := &recordingRunner{args: make([]string, 0)}
 	require.NoError(t, embedMetadata(runner, file, nil))
 	assert.Empty(t, runner.args)
+}
+
+func TestIsMP4Container(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name     string
+		path     string
+		expected bool
+	}{
+		{name: "mp4", path: "video.mp4", expected: true},
+		{name: "m4a", path: "audio.m4a", expected: true},
+		{name: "webm", path: "video.webm", expected: false},
+		{name: "no extension", path: "video", expected: false},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.expected, isMP4Container(tc.path))
+		})
+	}
+}
+
+func TestEmbedMetadataArgs(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name        string
+		file        string
+		tmpPath     string
+		wantMovflags bool
+	}{
+		{
+			name:        "mp4 container",
+			file:        "video.mp4",
+			tmpPath:     "video.123456.mp4",
+			wantMovflags: true,
+		},
+		{
+			name:        "m4a container",
+			file:        "audio.m4a",
+			tmpPath:     "audio.123456.m4a",
+			wantMovflags: true,
+		},
+		{
+			name:        "mkv container",
+			file:        "video.mkv",
+			tmpPath:     "video.123456.mkv",
+			wantMovflags: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			tags := [][2]string{{"Title", "Test Title"}}
+			args := embedMetadataArgs(tc.file, tc.tmpPath, tags)
+
+			assert.Equal(t, []string{
+				"-y",
+				"-i", tc.file,
+				"-map",
+			}, args[:4])
+
+			assert.Equal(t, tc.tmpPath, args[len(args)-1])
+
+			foundMovflags := false
+			for i := range args {
+				if args[i] == "-movflags" &&
+					i+1 < len(args) &&
+					args[i+1] == "use_metadata_tags" {
+					foundMovflags = true
+					break
+				}
+			}
+			assert.Equal(t, tc.wantMovflags, foundMovflags)
+		})
+	}
 }

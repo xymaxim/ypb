@@ -78,7 +78,8 @@ func FormatDifference(diff time.Duration, showPlus bool) string {
 	return sign + actions.FormatDuration(diff)
 }
 
-func checkYtdlp() error {
+// CheckYtdlp verifies that the yt-dlp binary is available.
+func CheckYtdlp() error {
 	_, err := osexec.LookPath(apppkg.YtdlpBinaryPath)
 	if err != nil {
 		return fmt.Errorf("unable to find yt-dlp: %w", err)

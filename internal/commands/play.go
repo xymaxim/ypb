@@ -16,7 +16,7 @@ type Play struct {
 }
 
 func (c *Play) Run() error {
-	if err := checkYtdlp(); err != nil {
+	if err := CheckYtdlp(); err != nil {
 		return err
 	}
 

@@ -1,4 +1,4 @@
-package commands
+package download
 
 import (
 	"context"
@@ -14,29 +14,30 @@ import (
 
 	"github.com/xymaxim/ypb/internal/actions"
 	apppkg "github.com/xymaxim/ypb/internal/app"
+	"github.com/xymaxim/ypb/internal/commands"
 	"github.com/xymaxim/ypb/internal/input"
 	"github.com/xymaxim/ypb/internal/urlutil"
 	"github.com/xymaxim/ypb/playback"
 )
 
 type Download struct {
-	CommonFlags
+	commands.CommonFlags
 	Stream           string `arg:"" help:"YouTube video ID"                                             required:""`
 	Interval         string `       help:"Time or segment interval"                                     required:"" short:"i"` //nolint:lll
 	NoMetadata       bool   `       help:"Skip embedding metadata tags"`
 	Cut              bool   `       help:"Cut downloaded file to input times (experimental)"                        short:"c"` //nolint:lll
 	CutFFmpegOptions string `       help:"Extra FFmpeg options for cut (e.g. \"-c:v libx264 -crf 20\")"`
-	LatencyFlag
-	YtdlpOptionsFlag
+	commands.LatencyFlag
+	commands.YtdlpOptionsFlag
 }
 
 func (c *Download) Validate() error {
-	return ValidateLatency(c.Latency)
+	return commands.ValidateLatency(c.Latency)
 }
 
 func (c *Download) Run() error {
 	startupTime := time.Now().UTC()
-	pinnedTime, err := ResolvePinnedTime(c.Now, startupTime)
+	pinnedTime, err := commands.ResolvePinnedTime(c.Now, startupTime)
 	if err != nil {
 		return err
 	}
@@ -47,7 +48,7 @@ func (c *Download) Run() error {
 		slog.Time("pinned", pinnedTime),
 	)
 
-	if err := checkYtdlp(); err != nil {
+	if err := commands.CheckYtdlp(); err != nil {
 		return err
 	}
 
@@ -61,14 +62,14 @@ func (c *Download) Run() error {
 	for _, mv := range []input.MomentValue{start, end} {
 		if err := input.ValidateMoment(
 			mv,
-			ToLatencyDuration(c.Latency),
+			commands.ToLatencyDuration(c.Latency),
 			startupTime,
 		); err != nil {
 			return fmt.Errorf("bad input interval: %w", err)
 		}
 	}
 
-	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
+	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
 	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
 	if err != nil {
 		return err
@@ -81,7 +82,7 @@ func (c *Download) Run() error {
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
-	locateContext.Latency = ToLatencyDuration(c.Latency)
+	locateContext.Latency = commands.ToLatencyDuration(c.Latency)
 
 	interval, outputContext, err := actions.LocateInterval(
 		app.Playback,
@@ -156,25 +157,19 @@ func (c *Download) Run() error {
 		return errors.New("output file path is empty")
 	}
 
+	var trimmedStartTime, trimmedEndTime time.Time
+
 	if c.Cut {
-		fmt.Println("(<<) Cutting downloaded file...")
+		fmt.Println("(<<) Cutting downloaded file (experimental)...")
 
-		cutStart := outputContext.InputStartTime.
-			Sub(outputContext.ActualStartTime).Seconds()
-		if cutStart < 0 {
-			slog.Warn("input start time was in a gap, clamped to start")
-			cutStart = 0
-		}
+		cutStart, cutEnd := cutOffsets(outputContext)
 
-		actualDuration := outputContext.ActualDuration.Seconds()
-		cutEnd := outputContext.InputEndTime.
-			Sub(outputContext.ActualStartTime).Seconds()
-		if cutEnd > actualDuration {
-			slog.Warn("input end time was in a gap, clamped to end")
-			cutEnd = actualDuration
-		}
+		trimmedStartTime = outputContext.ActualStartTime.
+			Add(time.Duration(cutStart * float64(time.Second)))
+		trimmedEndTime = outputContext.ActualStartTime.
+			Add(time.Duration(cutEnd * float64(time.Second)))
 
-		opts := CutOptions{
+		opts := cutOptions{
 			StartSeconds:    cutStart,
 			EndSeconds:      cutEnd,
 			ExtraFFmpegArgs: c.CutFFmpegOptions,
@@ -191,8 +186,12 @@ func (c *Download) Run() error {
 
 	slog.Info("embedding metadata tags")
 	metadata_ctx := &metadataContext{
-		LocateOutputContext: outputContext,
+		LocateOutputContext: *outputContext,
 		ChannelTitle:        app.Playback.Info().ChannelTitle,
+	}
+	if c.Cut {
+		metadata_ctx.ActualStartTime = trimmedStartTime
+		metadata_ctx.ActualEndTime = trimmedEndTime
 	}
 	if err := embedMetadata(
 		app.FFmpegRunner,
@@ -237,7 +236,7 @@ func formatActualLine(side string, moment *playback.RewindMoment, cutEnabled boo
 	diffPart := ""
 	diff := moment.TimeDifference()
 	if diff.Abs() >= time.Second {
-		diffPart = fmt.Sprintf(" (%s)", FormatDifference(diff, true))
+		diffPart = fmt.Sprintf(" (%s)", commands.FormatDifference(diff, true))
 	}
 
 	return fmt.Sprintf(
@@ -251,4 +250,21 @@ func formatActualLine(side string, moment *playback.RewindMoment, cutEnabled boo
 
 func buildOutputName(ctx *actions.LocateOutputContext) string {
 	return actions.BuildOutputStem(ctx) + ".%(ext)s"
+}
+
+func cutOffsets(ctx *actions.LocateOutputContext) (float64, float64) {
+	startSeconds := ctx.InputStartTime.Sub(ctx.ActualStartTime).Seconds()
+	if startSeconds < 0 {
+		slog.Warn("input start time was in a gap, clamped to start")
+		startSeconds = 0
+	}
+
+	actualDuration := ctx.ActualDuration.Seconds()
+	endSeconds := ctx.InputEndTime.Sub(ctx.ActualStartTime).Seconds()
+	if endSeconds > actualDuration {
+		slog.Warn("input end time was in a gap, clamped to end")
+		endSeconds = actualDuration
+	}
+
+	return startSeconds, endSeconds
 }

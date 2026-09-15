@@ -1,4 +1,4 @@
-package commands
+package download
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/xymaxim/ypb/internal/exec"
 )
 
-type CutOptions struct {
+type cutOptions struct {
 	StartSeconds    float64
 	EndSeconds      float64
 	ExtraFFmpegArgs string
@@ -23,7 +23,7 @@ type CutOptions struct {
 
 // cut writes inputPath, trimmed to opts' time range, to outputPath.
 // Output is atomically renamed into place, so inputPath may equal outputPath.
-func cut(ctx context.Context, inputPath, outputPath string, opts CutOptions) error {
+func cut(ctx context.Context, inputPath, outputPath string, opts cutOptions) error {
 	slog.Info("cutting file",
 		"start", opts.StartSeconds,
 		"end", opts.EndSeconds,
@@ -63,7 +63,7 @@ func cut(ctx context.Context, inputPath, outputPath string, opts CutOptions) err
 }
 
 // cutArgs builds ffmpeg arguments for cutting inputPath per opts.
-func cutArgs(inputPath string, opts CutOptions) ([]string, error) {
+func cutArgs(inputPath string, opts cutOptions) ([]string, error) {
 	if opts.StartSeconds < 0 {
 		return nil, fmt.Errorf(
 			"invalid cut range: start (%.3f) must be non-negative",
@@ -88,8 +88,6 @@ func cutArgs(inputPath string, opts CutOptions) ([]string, error) {
 		"-t", strconv.FormatFloat(duration, 'f', 3, 64),
 		"-c:a", "copy",
 		"-avoid_negative_ts", "make_zero",
-		"-shortest",
-		"-fflags", "+genpts",
 	}
 
 	if opts.ExtraFFmpegArgs != "" {

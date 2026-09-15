@@ -1,4 +1,4 @@
-package commands
+package download
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func formatISO8601(t time.Time) string {
 }
 
 type metadataContext struct {
-	*actions.LocateOutputContext
+	actions.LocateOutputContext
 	ChannelTitle string
 }
 
@@ -64,11 +64,7 @@ func embedMetadata(
 	}
 	defer func() { _ = os.Remove(tmpPath) }()
 
-	args := []string{"-y", "-i", file, "-map", "0", "-c", "copy"}
-	for _, tag := range tags {
-		args = append(args, "-metadata", tag[0]+"="+tag[1])
-	}
-	args = append(args, tmpPath)
+	args := embedMetadataArgs(file, tmpPath, tags)
 
 	result, err := runner.RunWith(
 		context.Background(),
@@ -87,4 +83,27 @@ func embedMetadata(
 	}
 
 	return nil
+}
+
+func embedMetadataArgs(file, tmpPath string, tags [][2]string) []string {
+	args := []string{"-y", "-i", file, "-map", "0", "-c", "copy"}
+
+	if isMP4Container(tmpPath) {
+		args = append(args, "-movflags", "use_metadata_tags")
+	}
+
+	for _, tag := range tags {
+		args = append(args, "-metadata", tag[0]+"="+tag[1])
+	}
+
+	return append(args, tmpPath)
+}
+
+func isMP4Container(path string) bool {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".mp4", ".m4a":
+		return true
+	default:
+		return false
+	}
 }
