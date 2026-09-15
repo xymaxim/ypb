@@ -847,9 +847,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../reference/cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -862,7 +873,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1308,8 +1388,8 @@ assemble them into a short time-lapse video. We’ll work through the full proce
 from a single frame to a finished video using a <a href="https://www.youtube.com/live/0ujj4HexRpk/">live
 stream</a> from <a href="https://aurorareykjavik.is/">Aurora Reykjavik – The
 Northern Lights Center</a> as an example. Throughout,
-we’ll use the <a href="../../reference/cli/#capture">ypb capture</a> subcommands, which
-extract frames with per-second precision (unlike <a href="../../reference/cli/#download">ypb
+we’ll use the <a href="../../reference/cli/cli/#capture">ypb capture</a> subcommands, which
+extract frames with per-second precision (unlike <a href="../../reference/cli/download/">ypb
 download</a>, which operates at the segment level).</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <p>Before you begin, make sure you have:</p>
@@ -1319,7 +1399,7 @@ download</a>, which operates at the segment level).</p>
 </ol>
 <h2 id="step-1-capture-the-first-frame">Step 1. Capture the first frame<a class="headerlink" href="#step-1-capture-the-first-frame" title="Permanent link">&para;</a></h2>
 <p>Let’s start with a single frame to confirm everything is working correctly using
-the <a href="../../reference/cli/#frame">capture frame</a> subcommand:</p>
+the <a href="../../reference/cli/cli/#frame">capture frame</a> subcommand:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>capture<span class="w"> </span>frame<span class="w"> </span>--moment<span class="w"> </span><span class="s1">&#39;20:00:00+00 - 1d&#39;</span><span class="w"> </span>0ujj4HexRpk
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">(</span>&lt;&lt;<span class="o">)</span><span class="w"> </span>Collecting<span class="w"> </span>info<span class="w"> </span>about<span class="w"> </span>https://www.youtube.com/live/0ujj4HexRpk...
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Stream<span class="w"> </span><span class="s1">&#39;Live Aurora stream from The Golden Circle in Iceland&#39;</span><span class="w"> </span>is<span class="w"> </span>alive!
@@ -1362,7 +1442,7 @@ can apply this correction automatically instead of offsetting each
 moment by hand:</p>
 <div class="language-text highlight"><pre><span></span><code>ypb capture frame --moment &#39;20:00:00+00 - 1d&#39; -l 3 0ujj4HexRpk
 </code></pre></div>
-<p>See <a href="../../reference/cli/#correcting-for-streaming-latency">Correcting for streaming
+<p>See <a href="../../reference/cli/cli/#correcting-for-streaming-latency">Correcting for streaming
 latency</a> for
 details.</p>
 </div>
@@ -1370,7 +1450,7 @@ details.</p>
 to all subsequent commands.</p>
 <h2 id="step-2-capture-all-night">Step 2. Capture all night<a class="headerlink" href="#step-2-capture-all-night" title="Permanent link">&para;</a></h2>
 <p>Nautical twilight in Reykjavík ran from 19:49 to 07:35 on February 15.  Let’s
-capture it using the <a href="../../reference/cli/#timelapse">capture timeline</a>
+capture it using the <a href="../../reference/cli/cli/#timelapse">capture timeline</a>
 subcommand with 30-minute intervals to get a quick overview of potential aurora
 activity. The <code>-e/--every</code> flag sets the interval between frames:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>ypb<span class="w"> </span>capture<span class="w"> </span>timelapse<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;19:30:03+00 - 1d/07:30:03+00&#39;</span><span class="w"> </span>-e<span class="w"> </span>30m<span class="w"> </span>0ujj4HexRpk

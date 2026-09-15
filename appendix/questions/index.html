@@ -721,9 +721,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../reference/cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -736,7 +747,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -916,10 +996,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-does-the-actual-time-differ-from-the-target-time" class="md-nav__link">
+  <a href="#why-does-the-actual-time-differ-from-the-input-time" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Why does the actual time differ from the target time?
+        Why does the actual time differ from the input time?
       </span>
     </span>
   </a>
@@ -1111,10 +1191,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-does-the-actual-time-differ-from-the-target-time" class="md-nav__link">
+  <a href="#why-does-the-actual-time-differ-from-the-input-time" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Why does the actual time differ from the target time?
+        Why does the actual time differ from the input time?
       </span>
     </span>
   </a>
@@ -1216,18 +1296,18 @@
 
 <h1 id="anticipated-questions">Anticipated questions<a class="headerlink" href="#anticipated-questions" title="Permanent link">&para;</a></h1>
 <p>Here are the answers to the most asked/anticipated questions.</p>
-<h2 id="why-does-the-actual-time-differ-from-the-target-time">Why does the actual time differ from the target time?<a class="headerlink" href="#why-does-the-actual-time-differ-from-the-target-time" title="Permanent link">&para;</a></h2>
-<p>The target time is the moment you requested, while the actual time is snapped to
-the nearest matching segment boundary, start or end. The difference between the
-two can be up to one full segment in length, with the segment duration depending
-on the <a href="https://support.google.com/youtube/answer/7444635?sjid=3264258360401641547-EU">YoutTube streaming
+<h2 id="why-does-the-actual-time-differ-from-the-input-time">Why does the actual time differ from the input time?<a class="headerlink" href="#why-does-the-actual-time-differ-from-the-input-time" title="Permanent link">&para;</a></h2>
+<p>The input time is the moment you requested, while the actual time is snapped to
+the nearest matching source segment<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> boundary, either start or end. The
+difference between the two can be up to one full segment in length, with the
+segment duration depending on the <a href="https://support.google.com/youtube/answer/7444635?sjid=3264258360401641547-EU">YoutTube streaming
 latency</a>
 settings: 1 second (ultra-low latency), 2 seconds (low latency), or 5 seconds
 for normal latency.</p>
 <h2 id="why-is-the-output-duration-longer-than-requested">Why is the output duration longer than requested?<a class="headerlink" href="#why-is-the-output-duration-longer-than-requested" title="Permanent link">&para;</a></h2>
-<p>Segments are merged as-is, without trimming the boundary segments to match the
-requested interval. As a result, both boundaries can extend beyond the requested
-interval (see <a href="#why-does-the-actual-time-differ-from-the-target-time">Why does the actual time differ from the target
+<p>Source segments are merged as-is, without trimming the boundary segments to
+match the requested interval. As a result, both boundaries can extend beyond the
+requested interval (see <a href="#why-does-the-actual-time-differ-from-the-input-time">Why does the actual time differ from the input
 time?</a>). This means the
 excerpt can be up to two full segments longer than requested: 2 seconds
 (ultra-low latency), 4 seconds (low), or 10 seconds (normal).</p>
@@ -1237,6 +1317,14 @@ output excerpt (by seconds, minutes, or even hours) can result from: (a) the
 start and/or end point falling within a gap, in which case the nearest available
 segment is used instead, or (b) the excerpt containing one or more gaps
 internally.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Source segments are MPEG-DASH media segments from YouTube.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

@@ -836,9 +836,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../reference/cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -851,7 +862,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1319,7 +1399,7 @@ endpoint, where <code>{interval}</code> is the moment you want. Let&rsquo;s ask 
 the <code>download</code> command. Two things change in a URL: use <code>--</code> instead of <code>/</code>,
 and avoid whitespace (or percent-encode it).</p>
 <blockquote>
-<p>See <a href="../../reference/cli/#specifying-the-rewind-time">Specifying the rewind
+<p>See <a href="../../reference/cli/cli/#specifying-the-rewind-time">Specifying the rewind
 time</a> for all the
 interval formats.</p>
 </blockquote>
@@ -1356,7 +1436,7 @@ directly.</p>
 <h2 id="download-the-excerpt">Download the excerpt<a class="headerlink" href="#download-the-excerpt" title="Permanent link">&para;</a></h2>
 <p>You can also point the manifest to a downloader, instead of a player.</p>
 <p>For example, let&rsquo;s use yt-dlp&rsquo;s general extractor directly: this is kind of
-similar to what the <a href="../../reference/cli/#download"><code>download</code></a> command does
+similar to what the <a href="../../reference/cli/download/"><code>download</code></a> command does
 under the hood:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>yt-dlp<span class="w"> </span>-o<span class="w"> </span>output.mp4<span class="w"> </span>http://localhost:9000/mpd/30m--now
 </span></code></pre></div>

@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://xymaxim.github.io/ypb/reference/api/">
       
       
-        <link rel="prev" href="../cli/">
+        <link rel="prev" href="../cli/download/">
       
       
         <link rel="next" href="../../appendix/cookbook/">
@@ -723,9 +723,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -738,7 +749,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1245,8 +1325,16 @@
     
     
     
+      
+  
+  
+    
+    
+    
+    
+    
       <li class="md-path__item">
-        <a href="../cli/" class="md-path__link">
+        <a href="../cli/cli/" class="md-path__link">
           
   
   <span class="md-ellipsis">
@@ -1255,6 +1343,9 @@
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -1272,7 +1363,7 @@
 
 <h1 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h1>
 <p>The following endpoints are served by the playback server started with
-the <a href="../cli/#serve"><code>serve</code></a> command.</p>
+the <a href="../cli/cli/#serve"><code>serve</code></a> command.</p>
 <h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
 <h3 id="_1">/<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
 <p>Serves the built-in web player (used by the <code>play</code> command).</p>
@@ -1286,7 +1377,7 @@ the <code>--</code> separator for intervals (e.g., <code>10:00--12:00</code>).</
 <code>[+-]HH</code> or <code>[+-]HH:MM</code> (e.g., <code>+02</code>, <code>-05:30</code>). Defaults to UTC (<code>+00:00</code>).</dd>
 <dt>latency, l</dt>
 <dd>Correcting for streaming latency by locating the interval later by this many
-seconds (whole or fractional). See <a href="../cli/#correcting-for-streaming-latency">Correcting for streaming
+seconds (whole or fractional). See <a href="../cli/cli/#correcting-for-streaming-latency">Correcting for streaming
 latency</a> for details.</dd>
 </dl>
 <h4 id="usage-examples">Usage examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h4>
@@ -1321,7 +1412,7 @@ is provided.</p>
 <p>The rewind interval to retrieve.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>See <a href="../cli/#specifying-the-rewind-time">Specifying the rewind time</a>
+<p>See <a href="../cli/cli/#specifying-the-rewind-time">Specifying the rewind time</a>
 for all available interval format options. When using absolute timestamps,
 prefer the <code>Z</code> suffix for UTC (e.g., <code>2026-01-02T10:20:30Z</code>) over <code>+00:00</code>,
 since <code>+</code> must be percent-encoded as <code>%2B</code>. In general, ensure the path
@@ -1331,7 +1422,7 @@ instead of <code>/</code> and avoid unencoded whitespace.</p>
 </dd>
 <dt>latency, l</dt>
 <dd>Correcting for streaming latency by locating the interval later by this many
-seconds (whole or fractional). See <a href="../cli/#correcting-for-streaming-latency">Correcting for streaming
+seconds (whole or fractional). See <a href="../cli/cli/#correcting-for-streaming-latency">Correcting for streaming
 latency</a> for details.</dd>
 </dl>
 <h4 id="usage-examples_1">Usage examples<a class="headerlink" href="#usage-examples_1" title="Permanent link">&para;</a></h4>

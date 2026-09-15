@@ -909,9 +909,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../reference/cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -924,7 +935,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1547,8 +1627,8 @@ http://localhost:9000/12:00+13-1d
 <div class="admonition info">
 <p class="admonition-title">Rewind precision</p>
 <p>The moment you rewind to is snapped to the nearest media segment, so the
-actual time can differ a bit from the requested one. See <a href="../appendix/questions/#why-does-the-actual-time-differ-from-the-target-time">Why does the
-actual time differ from the target
+actual time can differ a bit from the requested one. See <a href="../appendix/questions/#why-does-the-actual-time-differ-from-the-input-time">Why does the
+actual time differ from the input
 time?</a>
 for details.</p>
 </div>
@@ -1562,7 +1642,7 @@ keywords like <code>now</code>, and time arithmetic expressions.</p>
 <li>Relative to now (30 minutes ago): <code>now-30m</code></li>
 </ul>
 <div class="admonition info">
-<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M14.78 6.28a.75.75 0 0 0 0-1.06l-3.5-3.5a.749.749 0 1 0-1.06 1.06L12.439 5H5.251l-.001.007L5.251 5a1 1 0 0 0-.171.019A4.501 4.501 0 0 0 5.5 14h1.704a.75.75 0 0 0 0-1.5H5.5a3 3 0 1 1 0-6h6.939L10.22 8.72a.749.749 0 1 0 1.06 1.06z"/></svg></span> See <a href="../reference/cli/#specifying-the-rewind-time">Specifying the rewind
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M14.78 6.28a.75.75 0 0 0 0-1.06l-3.5-3.5a.749.749 0 1 0-1.06 1.06L12.439 5H5.251l-.001.007L5.251 5a1 1 0 0 0-.171.019A4.501 4.501 0 0 0 5.5 14h1.704a.75.75 0 0 0 0-1.5H5.5a3 3 0 1 1 0-6h6.939L10.22 8.72a.749.749 0 1 0 1.06 1.06z"/></svg></span> See <a href="../reference/cli/cli/#specifying-the-rewind-time">Specifying the rewind
 time</a> for the full
 reference on interval part formats.</p>
 </div>
@@ -1634,9 +1714,24 @@ working directory:</p>
 <div class="language-text highlight"><pre><span></span><code>Live-and-Just-Hatched-Royal_Mm_zVDDUeNA_20260817T230005+00_10m.mp4
 </code></pre></div>
 <div class="grid">
-<p class="card"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-forward" viewBox="0 0 24 24"><path d="m15 17 5-5-5-5"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg></span> See <a href="../reference/cli/#specifying-the-rewind-time">Specifying the rewind
+<p class="card"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-forward" viewBox="0 0 24 24"><path d="m15 17 5-5-5-5"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg></span> See <a href="../reference/cli/cli/#specifying-the-rewind-time">Specifying the rewind
 time</a> for the accepted
 start and end formats.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Precise trimming</p>
+<p>By default, the downloaded file&rsquo;s start and end are snapped
+(<a href="../appendix/questions/#why-does-the-actual-time-differ-from-the-input-time">why?</a>)
+to the nearest source segment boundaries. Pass <code>--cut</code>/<code>-c</code> to trim the
+output to the exact input start and end times with frame accuracy:</p>
+<div class="language-text highlight"><pre><span></span><code>ypb download -i 2026-08-18T12:00:00+13/10m --cut Mm_zVDDUeNA
+</code></pre></div>
+<div class="admonition note">
+<p>Trimming requires re-encoding the video, which can take a long time, so
+cutting is recommended for relatively small intervals where precision
+matters. See <a href="../reference/cli/download/#cutting-to-input-times">Cutting to input
+times</a> for details.</p>
+</div>
 </div>
 <h3 id="choose-audio-and-video-formats">Choose audio and video formats<a class="headerlink" href="#choose-audio-and-video-formats" title="Permanent link">&para;</a></h3>
 <p>By default, we let yt-dlp choose the audio and video formats automatically,
@@ -1652,7 +1747,7 @@ binaries</a> or <a href="../guides/install/container/#configure-yt-dlp">Containe
 (Compose)</a>.</p>
 </div>
 <p>Alternatively, you can pass options directly to yt-dlp by adding them after
-the <code>--</code> separator (see <a href="../reference/cli/#passing-options-to-yt-dlp">Passing options to
+the <code>--</code> separator (see <a href="../reference/cli/cli/#passing-options-to-yt-dlp">Passing options to
 yt-dlp</a> for more details). For
 example, let&rsquo;s use the yt-dlp&rsquo;s <code>-f</code> option to download only the best quality
 audio:</p>
@@ -1675,7 +1770,7 @@ docs.</p>
 <p><strong>Command Line Interface</strong></p>
 <hr />
 <p>Full reference for commands, interval syntax, output naming, and more.</p>
-<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span> <a href="../reference/cli/">Read the reference</a></p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span> <a href="../reference/cli/cli/">Read the reference</a></p>
 </li>
 <li>
 <p><strong>Cookbook</strong></p>

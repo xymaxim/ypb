@@ -812,9 +812,20 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../reference/cli/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
   
   
   <span class="md-ellipsis">
@@ -827,7 +838,76 @@
   
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  CLI
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Command Line Interface
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  download
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1196,7 +1276,7 @@ its core is a playback proxy: it wraps base URLs for each available format,
 fetched with <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>, so media segment
 requests aren&rsquo;t sent to YouTube directly and can be automatically retried on
 errors such as 403s. This proxy can be served by a playback server that handles
-<a href=".././reference/api/">API</a> requests (the <a href=".././reference/cli/#serve">serve</a>
+<a href=".././reference/api/">API</a> requests (the <a href=".././reference/cli/cli/#serve">serve</a>
 command), including generating static and dynamic MPEG-DASH manifests (MPDs) and
 streaming segments. The generated manifests can be passed to any MPEG-DASH
 compatible player or downloader.</p>
@@ -1223,14 +1303,14 @@ it. Ypb locates it with a three-step search:</p>
 <li><strong>Jump-based search</strong> &mdash; uses time differences to quickly find a segment or
    narrow the search domain</li>
 <li><strong>Binary search</strong> &mdash; refines the search within the discovered domain</li>
-<li><strong>Gap detection</strong> &mdash; checks whether the target time falls within a gap</li>
+<li><strong>Gap detection</strong> &mdash; checks whether the input time falls within a gap</li>
 </ol>
 <p>This multi-step approach handles timeline instabilities and gaps that could
 otherwise cause incorrect rewind timing</p>
 <h2 id="rewatching-past-moments-in-a-browser">Rewatching past moments in a browser<a class="headerlink" href="#rewatching-past-moments-in-a-browser" title="Permanent link">&para;</a></h2>
 <p>Feeding a generated MPEG-DASH manifest (MPD) to the built-in
 <a href="https://dashjs.org/">dash.js</a> player, via the
-<a href="http://localhost:8000/ypb/reference/cli/#play">play</a> command, allows rewinding
+<a href="../reference/cli/cli/#play">play</a> command, allows rewinding
 and rewatching past moments in the browser without downloading.</p>
 <pre class="mermaid"><code>sequenceDiagram
     autonumber
@@ -1250,7 +1330,7 @@ and rewatching past moments in the browser without downloading.</p>
 <p><em>Watching past moments in the browser with a built-in player</em></p>
 <h2 id="downloading-excerpts-to-local-files">Downloading excerpts to local files<a class="headerlink" href="#downloading-excerpts-to-local-files" title="Permanent link">&para;</a></h2>
 <p>Saving stream excerpts to local files is possible with a single command,
-<a href="http://localhost:8000/ypb/reference/cli/#download">download</a>. It composes a
+<a href="../reference/cli/download/">download</a>. It composes a
 static MPEG-DASH manifest (MPD), then starts the proxy to stream segments before
 passing it to yt-dlp&rsquo;s general extractor.</p>
 <pre class="mermaid"><code>sequenceDiagram

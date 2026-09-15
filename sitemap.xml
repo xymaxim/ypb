@@ -31,7 +31,10 @@
         <loc>https://xymaxim.github.io/ypb/guides/download-segments/</loc>
       </url>
       <url>
-        <loc>https://xymaxim.github.io/ypb/reference/cli/</loc>
+        <loc>https://xymaxim.github.io/ypb/reference/cli/cli/</loc>
+      </url>
+      <url>
+        <loc>https://xymaxim.github.io/ypb/reference/cli/download/</loc>
       </url>
       <url>
         <loc>https://xymaxim.github.io/ypb/reference/api/</loc>
