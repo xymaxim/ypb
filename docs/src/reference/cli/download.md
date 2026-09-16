@@ -18,13 +18,11 @@ times:
 
 Precise cuts require re-encoding the video stream, so `--cut` re-encodes video
 using FFmpeg's default settings for the output container. The audio stream is
-copied without re-encoding. This is equivalent to, with the extra options fixing
-timing issues that can occur when copying the audio stream:
+copied without re-encoding. This is equivalent to:
 
 ```sh
-
 ffmpeg -ss <start> -i <input> -t <duration> -c:a copy \
-  -avoid_negative_ts make_zero -shortest -fflags +genpts \
+  -avoid_negative_ts make_zero \
   <output>
 ```
 
