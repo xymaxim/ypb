@@ -187,27 +187,27 @@ func TestIsMP4Container(t *testing.T) {
 func TestEmbedMetadataArgs(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
-		name        string
-		file        string
-		tmpPath     string
+		name         string
+		file         string
+		tmpPath      string
 		wantMovflags bool
 	}{
 		{
-			name:        "mp4 container",
-			file:        "video.mp4",
-			tmpPath:     "video.123456.mp4",
+			name:         "mp4 container",
+			file:         "video.mp4",
+			tmpPath:      "video.123456.mp4",
 			wantMovflags: true,
 		},
 		{
-			name:        "m4a container",
-			file:        "audio.m4a",
-			tmpPath:     "audio.123456.m4a",
+			name:         "m4a container",
+			file:         "audio.m4a",
+			tmpPath:      "audio.123456.m4a",
 			wantMovflags: true,
 		},
 		{
-			name:        "mkv container",
-			file:        "video.mkv",
-			tmpPath:     "video.123456.mkv",
+			name:         "mkv container",
+			file:         "video.mkv",
+			tmpPath:      "video.123456.mkv",
 			wantMovflags: false,
 		},
 	}
