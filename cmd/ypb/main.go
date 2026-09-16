@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"os"
 
@@ -12,7 +13,8 @@ import (
 )
 
 type CLI struct {
-	Verbose int `help:"Show verbose output." short:"v" type:"counter"`
+	Verbose int  `help:"Show verbose output."                     short:"v" type:"counter"`
+	Report  bool `help:"Save an anonymized log report to a file."`
 
 	Capture  CaptureCommands   `cmd:"" help:"Capture single frame or time-lapse sequence"`
 	Download download.Download `cmd:"" help:"Download stream excerpts"`
@@ -42,13 +44,21 @@ func main() {
 		cli.Play.UI = true
 	}
 
-	setupLogging(cli.Verbose)
+	if cli.Report {
+		closeReport, err := enableReport(ctx)
+		if err != nil {
+			ctx.FatalIfErrorf(err)
+		}
+		defer closeReport()
+	}
+
+	setupLogging(cli.Verbose, cli.Report)
 
 	err := ctx.Run()
 	ctx.FatalIfErrorf(err)
 }
 
-func setupLogging(verbose int) {
+func setupLogging(verbose int, report bool) {
 	var level slog.Level
 
 	switch verbose {
@@ -61,6 +71,12 @@ func setupLogging(verbose int) {
 	default:
 		level = slog.LevelDebug
 	}
+
+	if report {
+		level = slog.LevelDebug
+	}
+
+	log.SetOutput(os.Stdout)
 
 	handler := slog.NewTextHandler(
 		os.Stdout,
