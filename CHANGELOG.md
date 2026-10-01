@@ -4,6 +4,13 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.10.1](https://github.com/xymaxim/ypb/releases/tag/v2026.10.1)
+
+### Changed
+
+- Rebuilt the container image to install Wolfi's `ffmpeg` with `libvpx` enabled, see
+  [wolfi-dev/os@e460103](https://github.com/wolfi-dev/os/commit/e46010302f5d44e0c0d535240b6a426bcb4a4adf)
+
 ## [2026.9.16](https://github.com/xymaxim/ypb/releases/tag/v2026.9.16)
 
 ### Added
