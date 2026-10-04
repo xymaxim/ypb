@@ -1,6 +1,6 @@
 [project]
 
-site_name = "Ypb Documentation"
+site_name = "Ypb documentation"
 site_url = "https://xymaxim.github.io/ypb/"
 repo_url = "https://github.com/xymaxim/ypb"
 repo_name = "xymaxim/ypb"
