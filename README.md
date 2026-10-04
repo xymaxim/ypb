@@ -12,6 +12,9 @@ MPEG-DASH access to past moments in live streams, allowing you to rewind beyond
 the web player's limits, play selected excerpts instantly in any compatible
 player, or download them as local files.
 
+See also [Rewyt](https://github.com/xymaxim/rewyt/), a desktop app for
+rewatching YouTube live streams.
+
 ## Features
 
 - Standalone CLI and proxy streaming server for playback
