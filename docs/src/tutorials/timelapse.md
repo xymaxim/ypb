@@ -175,7 +175,7 @@ With all frames captured, use `ffmpeg` to convert the frames into a
 video:
 
 ```shell
-$ ffmpeg -r 24 -i pattern_type glob -i "*.png" -c:v libsvtav1 -y output.mp4
+$ ffmpeg framerate 24 -pattern_type glob -i "*.png" -c:v libsvtav1 -y output.mp4
 Input #0, image2, from '*.png':
   Duration: 00:00:25.04, start: 0.000000, bitrate: N/A
   Stream #0:0: Video: png, rgb24(pc, gbr/unknown/unknown), 640x360, 24 fps, 24 tbr, 24 tbn
