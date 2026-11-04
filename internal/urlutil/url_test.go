@@ -56,3 +56,38 @@ func TestBuildSegmentURLFromParsed(t *testing.T) {
 		t.Fatalf("BuildSegmentURLFromParsed() = %q, want %q", out.String(), want)
 	}
 }
+
+func TestFormatServerAddress(t *testing.T) {
+	t.Parallel()
+
+	const local = "http://localhost:9000"
+
+	tests := []struct {
+		name string
+		addr string
+		want string
+	}{
+		{"all interfaces", ":9000", local},
+		{"all ipv4 interfaces", "0.0.0.0:9000", local},
+		{"all ipv6 interfaces", "[::]:9000", local},
+		{"ipv4 loopback", "127.0.0.1:9000", "http://127.0.0.1:9000"},
+		{"ipv6 loopback", "[::1]:9000", "http://[::1]:9000"},
+		{"host name", "localhost:9000", local},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := FormatServerAddress(tt.addr)
+			if got != tt.want {
+				t.Fatalf(
+					"FormatServerAddress(%q) = %q, want %q",
+					tt.addr,
+					got,
+					tt.want,
+				)
+			}
+		})
+	}
+}

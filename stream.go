@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/xymaxim/ypb/fetchers"
@@ -32,6 +31,9 @@ type Stream struct {
 type StreamConfig struct {
 	Fetcher fetchers.Fetcher
 	OnPrint func([]byte)
+	// Host is the address to listen on: empty for all interfaces, or
+	// "127.0.0.1" to only accept connections from this computer.
+	Host string
 }
 
 // NewStream creates a new playback server backed by a real YouTube stream.
@@ -53,7 +55,7 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 		return nil, fmt.Errorf("creating playback: %w", err)
 	}
 
-	return newStream(ctx, pb, port, ffprobeRunner)
+	return newStream(ctx, pb, cfg.Host, port, ffprobeRunner)
 }
 
 // NewMockStream creates a playback server backed by fixture data instead of a
@@ -71,20 +73,21 @@ func NewMockStream(
 
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
-	return newStream(ctx, pb, port, ffprobeRunner)
+	return newStream(ctx, pb, "", port, ffprobeRunner)
 }
 
 // newStream wires a Playbacker into a playback server.
 func newStream(
 	ctx context.Context,
 	pb playback.Playbacker,
+	host string,
 	port int,
 	ffprobeRunner exec.Runner,
 ) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	server := &http.Server{
-		Addr: ":" + strconv.Itoa(port),
+		Addr: apppkg.ServerAddr(host, port),
 	}
 
 	app := &apppkg.App{

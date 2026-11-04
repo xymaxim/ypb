@@ -2,8 +2,8 @@ package urlutil
 
 import (
 	"fmt"
+	"net"
 	"net/url"
-	"strings"
 )
 
 func BuildVideoURL(id string) string {
@@ -43,11 +43,16 @@ func ExtractParameter(rawURL, name string) string {
 	return u.Query().Get(name)
 }
 
+// FormatServerAddress returns the URL for reaching a server listening on addr
+// ("host:port"). A server on all interfaces is reached through localhost; an
+// IPv6 host is put in brackets.
 func FormatServerAddress(addr string) string {
-	parts := strings.Split(addr, ":")
-	host, port := parts[0], parts[1]
-	if host == "" {
-		return "http://localhost:" + port
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return "http://" + addr
 	}
-	return "http://" + addr
+	if ip := net.ParseIP(host); host == "" || (ip != nil && ip.IsUnspecified()) {
+		host = "localhost"
+	}
+	return "http://" + net.JoinHostPort(host, port)
 }

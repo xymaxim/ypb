@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -47,7 +48,13 @@ func (sw *statusWriter) Write(b []byte) (int, error) {
 	return sw.ResponseWriter.Write(b)
 }
 
-func InitApp(id string, port int, ytdlpOptions []string) (*App, error) {
+// ServerAddr returns the address for the playback server to listen on. An
+// empty host means all interfaces; "127.0.0.1" keeps it to this computer.
+func ServerAddr(host string, port int) string {
+	return net.JoinHostPort(host, strconv.Itoa(port))
+}
+
+func InitApp(id, host string, port int, ytdlpOptions []string) (*App, error) {
 	ytdlpRunner := exec.NewCommandRunner(YtdlpBinaryPath)
 	ffmpegRunner := exec.NewCommandRunner(FFmpegBinaryPath)
 	ffprobeRunner := exec.NewCommandRunner(FFprobeBinaryPath)
@@ -64,7 +71,7 @@ func InitApp(id string, port int, ytdlpOptions []string) (*App, error) {
 	}
 
 	server := &http.Server{
-		Addr:              ":" + strconv.Itoa(port),
+		Addr:              ServerAddr(host, port),
 		ReadHeaderTimeout: 20 * time.Second,
 	}
 

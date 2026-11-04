@@ -11,6 +11,7 @@ import (
 )
 
 type CommonFlags struct {
+	Host string `help:"Address to listen on"`
 	Port int    `help:"Port to start playback on"  short:"p" default:"9000"`
 	Now  string `help:"Pin now to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
 }
