@@ -32,6 +32,9 @@ type Download struct {
 }
 
 func (c *Download) Validate() error {
+	if err := c.CommonFlags.Validate(); err != nil {
+		return fmt.Errorf("%w", err)
+	}
 	return commands.ValidateLatency(c.Latency)
 }
 

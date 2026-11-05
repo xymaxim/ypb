@@ -16,6 +16,7 @@ func TestCORS(t *testing.T) {
 	s, err := ypb.NewStream(
 		context.Background(),
 		testutil.TestVideoID,
+		"",
 		0,
 		&ypb.StreamConfig{
 			Fetcher: fetcher,
@@ -55,12 +56,12 @@ func TestHost(t *testing.T) {
 			s, err := ypb.NewStream(
 				context.Background(),
 				testutil.TestVideoID,
+				tt.host,
 				0,
 				&ypb.StreamConfig{
 					Fetcher: &testutil.MockFetcher{
 						VideoID: testutil.TestVideoID,
 					},
-					Host: tt.host,
 				},
 			)
 			if err != nil {

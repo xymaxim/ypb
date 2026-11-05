@@ -2,7 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"net"
 	osexec "os/exec"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -11,9 +13,27 @@ import (
 )
 
 type CommonFlags struct {
-	Host string `help:"Address to listen on"`
-	Port int    `help:"Port to start playback on"  short:"p" default:"9000"`
-	Now  string `help:"Pin now to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
+	Host string `help:"Address to listen on (default: all interfaces)" placeholder:"ADDR"`
+	Port int    `help:"Port to start playback on"                                         short:"p" default:"9000"`
+	Now  string `help:"Pin now to a specific time"                     placeholder:"TIME"                          env:"YPB_NOW"` //nolint:lll
+}
+
+// Validate catches a port or brackets in --host. Commands with their own
+// Validate method hide this one, so they call it themselves.
+func (c *CommonFlags) Validate() error {
+	if strings.HasPrefix(c.Host, "[") && strings.HasSuffix(c.Host, "]") {
+		return fmt.Errorf(
+			"invalid --host %q: leave out the brackets, e.g. --host ::1",
+			c.Host,
+		)
+	}
+	if strings.Contains(c.Host, ":") && net.ParseIP(c.Host) == nil {
+		return fmt.Errorf(
+			"invalid --host %q: did you include a port? use --port for that",
+			c.Host,
+		)
+	}
+	return nil
 }
 
 type LatencyFlag struct {
