@@ -4,6 +4,15 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.11.6](https://github.com/xymaxim/ypb/releases/tag/v2026.11.6)
+
+### Added
+
+- `--host` flag and `YPB_HOST` environment variable to set the playback server's
+  listen address ([#11](https://github.com/xymaxim/ypb/pull/11)), by
+  **@MeditativeMoth**
+- `YPB_PORT` environment variable to set the playback server's port
+
 ## [2026.10.1](https://github.com/xymaxim/ypb/releases/tag/v2026.10.1)
 
 ### Changed
