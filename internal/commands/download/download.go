@@ -32,6 +32,9 @@ type Download struct {
 }
 
 func (c *Download) Validate() error {
+	if err := c.CommonFlags.Validate(); err != nil {
+		return fmt.Errorf("%w", err)
+	}
 	return commands.ValidateLatency(c.Latency)
 }
 
@@ -70,7 +73,7 @@ func (c *Download) Run() error {
 	}
 
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
 	if err != nil {
 		return err
 	}

@@ -39,6 +39,9 @@ type TimelapseConfig struct {
 }
 
 func (c *Timelapse) Validate() error {
+	if err := c.CommonFlags.Validate(); err != nil {
+		return fmt.Errorf("%w", err)
+	}
 	if err := commands.ValidateLatency(c.Latency); err != nil {
 		return fmt.Errorf("%w", err)
 	}
@@ -64,7 +67,7 @@ func (c *Timelapse) Run() error {
 	}
 
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
 	if err != nil {
 		return err
 	}

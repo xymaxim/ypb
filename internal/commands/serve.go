@@ -22,7 +22,7 @@ func (c *Serve) Run() error {
 	}
 
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
 	if err != nil {
 		return err
 	}

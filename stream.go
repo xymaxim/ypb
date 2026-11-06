@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/xymaxim/ypb/fetchers"
@@ -34,8 +33,15 @@ type StreamConfig struct {
 	OnPrint func([]byte)
 }
 
-// NewStream creates a new playback server backed by a real YouTube stream.
-func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig) (*Stream, error) {
+// NewStream creates a new playback server backed by a real YouTube stream. It
+// listens on host (empty for all interfaces, "127.0.0.1" for this computer
+// only) and port.
+func NewStream(
+	ctx context.Context,
+	videoID, host string,
+	port int,
+	cfg *StreamConfig,
+) (*Stream, error) {
 	ytdlpRunner := exec.NewCommandRunner(apppkg.YtdlpBinaryPath)
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
@@ -53,14 +59,14 @@ func NewStream(ctx context.Context, videoID string, port int, cfg *StreamConfig)
 		return nil, fmt.Errorf("creating playback: %w", err)
 	}
 
-	return newStream(ctx, pb, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner)
 }
 
 // NewMockStream creates a playback server backed by fixture data instead of a
 // live YouTube stream. See containers/ypb-mock on how to generate fixture data.
 func NewMockStream(
 	ctx context.Context,
-	fixtureDir string,
+	fixtureDir, host string,
 	port int,
 	actualStartTime time.Time,
 ) (*Stream, error) {
@@ -71,20 +77,21 @@ func NewMockStream(
 
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
-	return newStream(ctx, pb, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner)
 }
 
 // newStream wires a Playbacker into a playback server.
 func newStream(
 	ctx context.Context,
 	pb playback.Playbacker,
+	host string,
 	port int,
 	ffprobeRunner exec.Runner,
 ) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	server := &http.Server{
-		Addr: ":" + strconv.Itoa(port),
+		Addr: apppkg.ServerAddr(host, port),
 	}
 
 	app := &apppkg.App{

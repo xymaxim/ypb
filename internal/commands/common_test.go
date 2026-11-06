@@ -439,3 +439,44 @@ func TestFormatDifference(t *testing.T) {
 		})
 	}
 }
+
+func TestCommonFlagsValidate(t *testing.T) {
+	t.Parallel()
+
+	const (
+		portHint = "use --port"
+		ipv6     = "::1"
+	)
+
+	tests := []struct {
+		name     string
+		host     string
+		wantErr  string
+		wantHost string
+	}{
+		{"empty", "", "", ""},
+		{"ipv4", "127.0.0.1", "", "127.0.0.1"},
+		{"ipv6", ipv6, "", ipv6},
+		{"host name", "localhost", "", "localhost"},
+		{"ipv4 with port", "127.0.0.1:9000", portHint, ""},
+		{"host name with port", "localhost:9000", portHint, ""},
+		{"ipv6 with port", "[::1]:9000", portHint, ""},
+		{"ipv6 in brackets", "[::1]", "", "::1"},
+		{"invalid address", "::1::", "not a valid address", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			c := &CommonFlags{Host: tt.host}
+			err := c.Validate()
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantHost, c.Host)
+		})
+	}
+}

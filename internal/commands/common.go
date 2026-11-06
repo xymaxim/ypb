@@ -1,8 +1,12 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
+	"net"
+	"net/netip"
 	osexec "os/exec"
+	"strings"
 	"time"
 
 	"github.com/xymaxim/ypb/internal/actions"
@@ -11,8 +15,36 @@ import (
 )
 
 type CommonFlags struct {
-	Port int    `help:"Port to start playback on"  short:"p" default:"9000"`
-	Now  string `help:"Pin now to a specific time"                          placeholder:"TIME" env:"YPB_NOW"`
+	Host string `help:"Address to listen on (default: all interfaces)" placeholder:"ADDR" env:"YPB_HOST"`
+	Port int    `help:"Port to start playback on"                                                        short:"p" default:"9000"` //nolint:lll
+	Now  string `help:"Pin now to a specific time"                     placeholder:"TIME" env:"YPB_NOW"`
+}
+
+// Validate normalizes --host (accepts "[::1]" as "::1") and rejects hosts
+// that include a port or are not a valid IP address.
+func (c *CommonFlags) Validate() error {
+	host := c.Host
+	if strings.HasPrefix(host, "[") && strings.HasSuffix(host, "]") {
+		host = host[1 : len(host)-1]
+	}
+	if err := checkHost(host); err != nil {
+		return fmt.Errorf("invalid --host %q: %w", c.Host, err)
+	}
+	c.Host = host
+	return nil
+}
+
+func checkHost(host string) error {
+	if !strings.Contains(host, ":") {
+		return nil
+	}
+	if _, err := netip.ParseAddr(host); err == nil {
+		return nil
+	}
+	if _, _, err := net.SplitHostPort(host); err == nil {
+		return errors.New("did you include a port? use --port for that")
+	}
+	return errors.New("not a valid address")
 }
 
 type LatencyFlag struct {
