@@ -3,6 +3,7 @@ package urlutil
 import (
 	"fmt"
 	"net"
+	"net/netip"
 	"net/url"
 )
 
@@ -53,8 +54,8 @@ func FormatServerAddress(addr string) string {
 	if err != nil {
 		return "http://" + addr
 	}
-	ip := net.ParseIP(host)
-	if host == "" || (ip != nil && ip.IsUnspecified()) {
+	ip, parseErr := netip.ParseAddr(host)
+	if host == "" || (parseErr == nil && ip.Unmap().IsUnspecified()) {
 		host = "localhost"
 	}
 	return "http://" + net.JoinHostPort(host, port)
