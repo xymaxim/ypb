@@ -44,11 +44,9 @@ func ExtractParameter(rawURL, name string) string {
 	return u.Query().Get(name)
 }
 
-// FormatServerAddress returns the base URL of a server listening on addr
-// ("host:port"): printed for the user, and used in the URLs that yt-dlp and
-// players connect to (the manifest URL for download, BaseURL in manifests).
-// All-interfaces addresses are given as localhost, and IPv6 hosts are
-// bracketed. The server itself listens on addr as given.
+// FormatServerAddress returns the URL to print for a server listening on addr
+// ("host:port"). All-interfaces addresses are shown as localhost, and IPv6
+// hosts are bracketed. Display only: the server listens on addr as given.
 func FormatServerAddress(addr string) string {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
