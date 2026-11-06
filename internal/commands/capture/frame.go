@@ -29,12 +29,9 @@ type FrameConfig struct {
 
 func (c *Frame) Validate() error {
 	if err := c.CommonFlags.Validate(); err != nil {
-		return fmt.Errorf("%w", err)
+		return err
 	}
-	if err := commands.ValidateLatency(c.Latency); err != nil {
-		return fmt.Errorf("%w", err)
-	}
-	return nil
+	return commands.ValidateLatency(c.Latency)
 }
 
 func (c *Frame) Run() error {
