@@ -566,6 +566,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#avoid-firewall-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Avoid firewall prompts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1454,6 +1465,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#avoid-firewall-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Avoid firewall prompts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1685,9 +1707,31 @@ server elsewhere, point yt-dlp at it:</p>
 </span></code></pre></div>
 <p>See yt-dlp&rsquo;s <a href="https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide">PO Token Guide</a>
 for details.</p>
+<h3 id="avoid-firewall-prompts">Avoid firewall prompts<a class="headerlink" href="#avoid-firewall-prompts" title="Permanent link">&para;</a></h3>
+<p>By default, the playback server listens on all network interfaces. On Windows
+and macOS, this can trigger a firewall prompt about allowing network access,
+especially for unsigned binaries.</p>
+<p>To avoid it, keep the server local to your computer:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ypb<span class="w"> </span>...<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>&lt;stream&gt;
+</span></code></pre></div>
+<p>To make it the default, set the <code>YPB_HOST</code> environment variable:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">macOS</label><label for="__tabbed_1_2">Windows</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Add this line to your shell&rsquo;s startup file, then open a new terminal:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">YPB_HOST</span><span class="o">=</span><span class="m">127</span>.0.0.1
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run this in PowerShell once, then open a new terminal:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="no">[Environment]</span><span class="p">::</span><span class="n">SetEnvironmentVariable</span><span class="p">(</span><span class="s2">&quot;YPB_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="install-from-source">Install from source<a class="headerlink" href="#install-from-source" title="Permanent link">&para;</a></h2>
 <p>If you have Go installed, you can build <code>ypb</code> from source:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/xymaxim/ypb@latest
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/xymaxim/ypb@latest
 </span></code></pre></div>
 <p>This is not recommended unless you need a development version.</p>
 <h2 id="update-ypb">Update ypb<a class="headerlink" href="#update-ypb" title="Permanent link">&para;</a></h2>
