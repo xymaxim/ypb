@@ -29,6 +29,7 @@ linters:
     - exhaustruct_v5
     - forcetypeassert    
     - funlen
+    - gomodguard
     - gosec
     - mnd
     - nlreturn
