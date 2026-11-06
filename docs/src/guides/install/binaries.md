@@ -149,6 +149,36 @@ server elsewhere, point yt-dlp at it:
 See yt-dlp's [PO Token Guide](https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide)
 for details.
 
+### Avoid firewall prompts
+
+By default, the playback server listens on all network interfaces. On Windows
+and macOS, this can trigger a firewall prompt about allowing network access,
+especially for unsigned binaries.
+
+To avoid it, keep the server local to your computer:
+
+```shell
+ypb ... --host 127.0.0.1 <stream>
+```
+
+To make it the default, set the `YPB_HOST` environment variable:
+
+=== "macOS"
+
+    Add this line to your shell's startup file, then open a new terminal:
+
+    ```shell
+    export YPB_HOST=127.0.0.1
+    ```
+
+=== "Windows"
+
+    Run this in PowerShell once, then open a new terminal:
+
+    ```powershell
+    [Environment]::SetEnvironmentVariable("YPB_HOST", "127.0.0.1", "User")
+    ```
+
 ## Install from source
 
 If you have Go installed, you can build `ypb` from source:
