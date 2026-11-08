@@ -117,7 +117,7 @@ func TestResolvePinnedTime(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := ResolvePinnedTime(tc.nowFlag, startup)
+			got, err := PinnedTime(tc.nowFlag).Resolve(startup)
 			if tc.wantErr {
 				require.Error(t, err)
 				return
@@ -263,8 +263,7 @@ func TestNowFlagIntegration(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			pinnedTime, err := ResolvePinnedTime(
-				tc.nowFlag,
+			pinnedTime, err := PinnedTime(tc.nowFlag).Resolve(
 				time.Date(2026, 1, 2, 10, 20, 30, 0, time.UTC),
 			)
 			require.NoError(t, err)
@@ -388,7 +387,7 @@ func TestNowFlagIntervalIntegration(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			pinnedTime, err := ResolvePinnedTime(tc.nowFlag, startup)
+			pinnedTime, err := PinnedTime(tc.nowFlag).Resolve(startup)
 			require.NoError(t, err)
 
 			start, end, err := input.ParseInterval(tc.input, &pinnedTime)
@@ -440,7 +439,7 @@ func TestFormatDifference(t *testing.T) {
 	}
 }
 
-func TestCommonFlagsValidate(t *testing.T) {
+func TestHostUnmarshalText(t *testing.T) {
 	t.Parallel()
 
 	const (
@@ -469,14 +468,122 @@ func TestCommonFlagsValidate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			c := &CommonFlags{Host: tt.host}
-			err := c.Validate()
+			var host Host
+			err := host.UnmarshalText([]byte(tt.host))
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, tt.wantHost, c.Host)
+			assert.Equal(t, tt.wantHost, string(host))
+		})
+	}
+}
+
+func TestPortUnmarshalText(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		port    string
+		wantErr string
+		want    Port
+	}{
+		{"zero", "0", "", 0},
+		{"valid", "8080", "", 8080},
+		{"maximum", "65535", "", 65535},
+		{"negative", "-1", "must be between 0 and 65535", 0},
+		{"too large", "65536", "must be between 0 and 65535", 0},
+		{"not a number", "http", "must be a number", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var port Port
+			err := port.UnmarshalText([]byte(tt.port))
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, port)
+		})
+	}
+}
+
+func TestLatencyUnmarshalText(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		latency string
+		wantErr string
+		want    Latency
+	}{
+		{"zero", "0", "", 0},
+		{"integer", "30", "", 30},
+		{"fractional", "1.5", "", 1.5},
+		{"negative", "-1", "must not be negative", 0},
+		{"not a number", "100s", "invalid seconds", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var latency Latency
+			err := latency.UnmarshalText([]byte(tt.latency))
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.InDelta(t, float64(tt.want), float64(latency), 0)
+		})
+	}
+}
+
+func TestLatencyDuration(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, time.Duration(0), Latency(0).Duration())
+	assert.Equal(t, time.Second, Latency(1).Duration())
+	assert.Equal(t, 1500*time.Millisecond, Latency(1.5).Duration())
+}
+
+func TestPinnedTimeUnmarshalText(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		value   string
+		wantErr bool
+	}{
+		{"empty", "", false},
+		{"now keyword", "now", false},
+		{"datetime", "2026-01-02T10:20:30+00", false},
+		{"date", "2026-01-02", false},
+		{"time only", "10:20:30", false},
+		{"duration", "1h", true},
+		{"sequence number", "123", true},
+		{"earliest keyword", "earliest", true},
+		{"invalid string", "invalid", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var pinned PinnedTime
+			err := pinned.UnmarshalText([]byte(tt.value))
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.value, string(pinned))
 		})
 	}
 }

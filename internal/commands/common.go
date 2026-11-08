@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/netip"
 	osexec "os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,23 +15,20 @@ import (
 	"github.com/xymaxim/ypb/internal/input"
 )
 
-type CommonFlags struct {
-	Host string `help:"Address to listen on (default: all interfaces)" placeholder:"ADDR" env:"YPB_HOST"`
-	Port int    `help:"Port to listen on" short:"p" default:"9000" env:"YPB_PORT"`
-	Now  string `help:"Pin now to a specific time"                     placeholder:"TIME" env:"YPB_NOW"`
-}
+// Host is a listen address with no port.
+// Empty means all interfaces.
+type Host string
 
-// Validate normalizes --host (accepts "[::1]" as "::1") and rejects hosts
-// that include a port or are not a valid IP address.
-func (c *CommonFlags) Validate() error {
-	host := c.Host
+func (h *Host) UnmarshalText(text []byte) error {
+	s := string(text)
+	host := s
 	if strings.HasPrefix(host, "[") && strings.HasSuffix(host, "]") {
 		host = host[1 : len(host)-1]
 	}
 	if err := checkHost(host); err != nil {
-		return fmt.Errorf("invalid --host %q: %w", c.Host, err)
+		return fmt.Errorf("invalid host %q: %w", s, err)
 	}
-	c.Host = host
+	*h = Host(host)
 	return nil
 }
 
@@ -47,21 +45,44 @@ func checkHost(host string) error {
 	return errors.New("not a valid address")
 }
 
-type LatencyFlag struct {
-	Latency float64 `help:"Streaming latency (in seconds)" short:"l" default:"0"`
+// Port is a TCP port number.
+type Port int
+
+func (p *Port) UnmarshalText(text []byte) error {
+	n, err := strconv.Atoi(string(text))
+	if err != nil {
+		return fmt.Errorf("invalid port %q: must be a number", text)
+	}
+	if n < 0 || n > 65535 {
+		return fmt.Errorf("invalid port %d: must be between 0 and 65535", n)
+	}
+	*p = Port(n)
+	return nil
 }
 
-type YtdlpOptionsFlag struct {
-	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""` //nolint:lll
+// PinnedTime is the raw --now value. Resolve turns it into a time.
+type PinnedTime string
+
+func (t *PinnedTime) UnmarshalText(text []byte) error {
+	// Throwaway reference time, so bad input fails at parse time.
+	if _, err := resolvePinnedTime(string(text), time.Now()); err != nil {
+		return err
+	}
+	*t = PinnedTime(text)
+	return nil
 }
 
-// ResolvePinnedTime resolves the --now flag value.
-func ResolvePinnedTime(nowFlag string, startup time.Time) (time.Time, error) {
-	if nowFlag == "" {
+// Resolve returns the pinned time, or startup if --now wasn't set.
+func (t PinnedTime) Resolve(startup time.Time) (time.Time, error) {
+	return resolvePinnedTime(string(t), startup)
+}
+
+func resolvePinnedTime(s string, startup time.Time) (time.Time, error) {
+	if s == "" {
 		return startup, nil
 	}
 
-	v, err := input.ParseIntervalPart(nowFlag, &startup)
+	v, err := input.ParseIntervalPart(s, &startup)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("parsing --now value: %w", err)
 	}
@@ -75,10 +96,49 @@ func ResolvePinnedTime(nowFlag string, startup time.Time) (time.Time, error) {
 		}
 		return time.Time{}, fmt.Errorf("unsupported keyword '%s' for --now", t)
 	default:
-		return time.Time{}, fmt.Errorf(
+		return time.Time{}, errors.New(
 			"--now value must be a time, not a duration or expression",
 		)
 	}
+}
+
+// Latency is streaming latency in seconds.
+type Latency float64
+
+func (l *Latency) UnmarshalText(text []byte) error {
+	seconds, err := strconv.ParseFloat(string(text), 64)
+	if err != nil {
+		return fmt.Errorf("invalid seconds %q: %w", text, err)
+	}
+	if seconds < 0 {
+		return fmt.Errorf("invalid seconds %q: must not be negative", text)
+	}
+	*l = Latency(seconds)
+	return nil
+}
+
+// Duration returns the latency as a time.Duration.
+func (l Latency) Duration() time.Duration {
+	return time.Duration(float64(l) * float64(time.Second))
+}
+
+// ServerFlags are shared by commands that start a server.
+type ServerFlags struct {
+	Host Host `help:"Address to listen on (default: all interfaces)" placeholder:"ADDR" env:"YPB_HOST"`
+	Port Port `help:"Port to listen on"                                                 env:"YPB_PORT" short:"p" default:"9000"` //nolint:lll
+}
+
+// NowFlag is shared by commands that depend on it.
+type NowFlag struct {
+	Now PinnedTime `help:"Pin now to a specific time" placeholder:"TIME" env:"YPB_NOW"`
+}
+
+type LatencyFlag struct {
+	Latency Latency `help:"Streaming latency (in seconds)" short:"l" default:"0"`
+}
+
+type YtdlpOptionsFlag struct {
+	YtdlpOptions []string `arg:"" help:"Options to pass to yt-dlp (use after --)" optional:"" passthrough:""`
 }
 
 func NormalizeYtdlpOptions(opts []string) []string {
@@ -86,20 +146,6 @@ func NormalizeYtdlpOptions(opts []string) []string {
 		return opts[1:]
 	}
 	return opts
-}
-
-func ToLatencyDuration(latency float64) time.Duration {
-	return time.Duration(latency * float64(time.Second))
-}
-
-func ValidateLatency(latency float64) error {
-	if latency < 0 {
-		return fmt.Errorf(
-			"latency must be a non-negative number of seconds, got %g",
-			latency,
-		)
-	}
-	return nil
 }
 
 func FormatDifference(diff time.Duration, showPlus bool) string {

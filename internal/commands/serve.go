@@ -10,7 +10,7 @@ import (
 )
 
 type Serve struct {
-	CommonFlags
+	ServerFlags
 	UI     bool   `help:"Also serve the web player"`
 	Stream string `help:"YouTube video ID"          arg:"" required:""`
 	YtdlpOptionsFlag
@@ -22,12 +22,12 @@ func (c *Serve) Run() error {
 	}
 
 	ytdlpOptions := NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, string(c.Host), int(c.Port), ytdlpOptions)
 	if err != nil {
 		return err
 	}
 
-	ln, err := apppkg.Listen(c.Host, c.Port)
+	ln, err := apppkg.Listen(string(c.Host), int(c.Port))
 	if err != nil {
 		return err
 	}

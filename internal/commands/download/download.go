@@ -21,7 +21,8 @@ import (
 )
 
 type Download struct {
-	commands.CommonFlags
+	commands.ServerFlags
+	commands.NowFlag
 	Stream           string `arg:"" help:"YouTube video ID"                                             required:""`
 	Interval         string `       help:"Time or segment interval"                                     required:"" short:"i"` //nolint:lll
 	NoMetadata       bool   `       help:"Skip embedding metadata tags"`
@@ -31,16 +32,9 @@ type Download struct {
 	commands.YtdlpOptionsFlag
 }
 
-func (c *Download) Validate() error {
-	if err := c.CommonFlags.Validate(); err != nil {
-		return err
-	}
-	return commands.ValidateLatency(c.Latency)
-}
-
 func (c *Download) Run() error {
 	startupTime := time.Now().UTC()
-	pinnedTime, err := commands.ResolvePinnedTime(c.Now, startupTime)
+	pinnedTime, err := c.Now.Resolve(startupTime)
 	if err != nil {
 		return err
 	}
@@ -65,7 +59,7 @@ func (c *Download) Run() error {
 	for _, mv := range []input.MomentValue{start, end} {
 		if err := input.ValidateMoment(
 			mv,
-			commands.ToLatencyDuration(c.Latency),
+			c.Latency.Duration(),
 			startupTime,
 		); err != nil {
 			return fmt.Errorf("bad input interval: %w", err)
@@ -73,12 +67,12 @@ func (c *Download) Run() error {
 	}
 
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, string(c.Host), int(c.Port), ytdlpOptions)
 	if err != nil {
 		return err
 	}
 
-	ln, err := apppkg.Listen(c.Host, c.Port)
+	ln, err := apppkg.Listen(string(c.Host), int(c.Port))
 	if err != nil {
 		return err
 	}
@@ -91,7 +85,7 @@ func (c *Download) Run() error {
 	if err != nil {
 		return fmt.Errorf("building locate context: %w", err)
 	}
-	locateContext.Latency = commands.ToLatencyDuration(c.Latency)
+	locateContext.Latency = c.Latency.Duration()
 
 	interval, outputContext, err := actions.LocateInterval(
 		app.Playback,

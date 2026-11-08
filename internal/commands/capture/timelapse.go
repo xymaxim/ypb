@@ -21,7 +21,8 @@ import (
 )
 
 type Timelapse struct {
-	commands.CommonFlags
+	commands.ServerFlags
+	commands.NowFlag
 	CommonCaptureFlags
 	Every    string `help:"Capture frame every duration" placeholder:"DURATION" required:"" short:"e"`
 	Stream   string `help:"YouTube video ID"                                    required:""           arg:""`
@@ -38,16 +39,9 @@ type TimelapseConfig struct {
 	OutputPattern string
 }
 
-func (c *Timelapse) Validate() error {
-	if err := c.CommonFlags.Validate(); err != nil {
-		return err
-	}
-	return commands.ValidateLatency(c.Latency)
-}
-
 func (c *Timelapse) Run() error {
 	startupTime := time.Now().UTC()
-	pinnedTime, err := commands.ResolvePinnedTime(c.Now, startupTime)
+	pinnedTime, err := c.Now.Resolve(startupTime)
 	if err != nil {
 		return err
 	}
@@ -64,7 +58,7 @@ func (c *Timelapse) Run() error {
 	}
 
 	ytdlpOptions := commands.NormalizeYtdlpOptions(c.YtdlpOptions)
-	app, err := apppkg.InitApp(c.Stream, c.Host, c.Port, ytdlpOptions)
+	app, err := apppkg.InitApp(c.Stream, string(c.Host), int(c.Port), ytdlpOptions)
 	if err != nil {
 		return err
 	}
@@ -113,7 +107,7 @@ func (c *Timelapse) parseAndValidateInputs(
 	for _, mv := range []input.MomentValue{start, end} {
 		if err := input.ValidateMoment(
 			mv,
-			commands.ToLatencyDuration(c.Latency),
+			c.Latency.Duration(),
 			now,
 		); err != nil {
 			return nil, fmt.Errorf("bad input interval: %w", err)
@@ -149,7 +143,7 @@ func (c *Timelapse) locateInterval(
 	if err != nil {
 		return nil, nil, fmt.Errorf("building locate context: %w", err)
 	}
-	locateContext.Latency = commands.ToLatencyDuration(c.Latency)
+	locateContext.Latency = c.Latency.Duration()
 
 	interval, _, err := actions.LocateInterval(
 		pb,
