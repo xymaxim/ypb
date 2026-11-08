@@ -27,6 +27,12 @@ func (c *Serve) Run() error {
 		return err
 	}
 
+	ln, err := apppkg.Listen(c.Host, c.Port)
+	if err != nil {
+		return err
+	}
+	app.Server.Addr = ln.Addr().String()
+
 	fmt.Printf("(<<) Stream '%s' is alive!\n", app.Playback.Info().Title)
 
 	mux := http.NewServeMux()
@@ -51,5 +57,5 @@ func (c *Serve) Run() error {
 		)
 	}
 
-	return app.Server.ListenAndServe()
+	return app.Server.Serve(ln)
 }
