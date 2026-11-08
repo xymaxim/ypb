@@ -7,60 +7,59 @@ import (
 	"github.com/xymaxim/ypb/internal/app"
 )
 
+const testHost = "127.0.0.1"
+
 // maxPortAttempts mirrors app.maxPortAttempts.
 const maxPortAttempts = 10
+
+func portOf(ln net.Listener) int {
+	return ln.Addr().(*net.TCPAddr).Port
+}
+
+// listen calls app.Listen and closes the listener when the test ends.
+func listen(t *testing.T, port int) net.Listener {
+	t.Helper()
+
+	ln, err := app.Listen(testHost, port)
+	if err != nil {
+		t.Fatalf("Listen(%q, %d) = %v, want a listener", testHost, port, err)
+	}
+	t.Cleanup(func() { _ = ln.Close() })
+
+	return ln
+}
 
 func TestListenSkipsPortInUse(t *testing.T) {
 	t.Parallel()
 
-	busy, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("occupying a port: %v", err)
-	}
-	t.Cleanup(func() { _ = busy.Close() })
+	busyPort := portOf(listen(t, 0))
 
-	busyPort := busy.Addr().(*net.TCPAddr).Port
-
-	ln, err := app.Listen("127.0.0.1", busyPort)
-	if err != nil {
-		t.Fatalf("Listen(%q, %d) = %v, want a free port", "127.0.0.1", busyPort, err)
-	}
-	t.Cleanup(func() { _ = ln.Close() })
-
-	gotPort := ln.Addr().(*net.TCPAddr).Port
-	if gotPort <= busyPort || gotPort > busyPort+maxPortAttempts-1 {
+	if got := portOf(listen(t, busyPort)); got <= busyPort || got > busyPort+maxPortAttempts-1 {
 		t.Fatalf(
 			"Listen(%q, %d) bound port %d, want a port in (%d, %d]",
-			"127.0.0.1",
+			testHost,
 			busyPort,
-			gotPort,
+			got,
 			busyPort,
 			busyPort+maxPortAttempts-1,
 		)
 	}
 }
 
+// Not parallel, so no other test in this package can claim the port between
+// probe and Listen. It retries because another process still could.
+//
+//nolint:paralleltest // Must stay serial so this package cannot claim the probed port.
 func TestListenUsesRequestedPort(t *testing.T) {
-	t.Parallel()
-
-	// Find a port that is free by binding it and releasing it again. Retry a
-	// few times in case another process grabs the port in between.
-	for range 5 {
-		probe, err := net.Listen("tcp", "127.0.0.1:0")
+	for range 3 {
+		probe, err := net.Listen("tcp", testHost+":0")
 		if err != nil {
 			t.Fatalf("probing for a free port: %v", err)
 		}
-		port := probe.Addr().(*net.TCPAddr).Port
+		port := portOf(probe)
 		_ = probe.Close()
 
-		ln, err := app.Listen("127.0.0.1", port)
-		if err != nil {
-			t.Fatalf("Listen(%q, %d) = %v, want a listener", "127.0.0.1", port, err)
-		}
-
-		gotPort := ln.Addr().(*net.TCPAddr).Port
-		_ = ln.Close()
-		if gotPort == port {
+		if portOf(listen(t, port)) == port {
 			return
 		}
 	}
@@ -71,13 +70,7 @@ func TestListenUsesRequestedPort(t *testing.T) {
 func TestListenZeroPort(t *testing.T) {
 	t.Parallel()
 
-	ln, err := app.Listen("127.0.0.1", 0)
-	if err != nil {
-		t.Fatalf("Listen(%q, 0) = %v, want a listener", "127.0.0.1", err)
-	}
-	t.Cleanup(func() { _ = ln.Close() })
-
-	if gotPort := ln.Addr().(*net.TCPAddr).Port; gotPort == 0 {
+	if got := portOf(listen(t, 0)); got == 0 {
 		t.Fatal("Listen bound port 0, want an ephemeral port")
 	}
 }
@@ -86,9 +79,9 @@ func TestListenInvalidPort(t *testing.T) {
 	t.Parallel()
 
 	for _, port := range []int{-1, 65536} {
-		if ln, err := app.Listen("127.0.0.1", port); err == nil {
+		if ln, err := app.Listen(testHost, port); err == nil {
 			_ = ln.Close()
-			t.Fatalf("Listen(%q, %d) = nil error, want an error", "127.0.0.1", port)
+			t.Fatalf("Listen(%q, %d) = nil error, want an error", testHost, port)
 		}
 	}
 }
