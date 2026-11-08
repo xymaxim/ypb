@@ -23,6 +23,8 @@ type Streamer interface {
 // Stream is the playback server implementation.
 type Stream struct {
 	server *http.Server
+	host   string
+	port   int
 	cancel context.CancelFunc
 	done   chan struct{}
 }
@@ -108,6 +110,8 @@ func newStream(
 
 	stream := &Stream{
 		server: server,
+		host:   host,
+		port:   port,
 		cancel: cancel,
 		done:   make(chan struct{}),
 	}
@@ -128,9 +132,17 @@ func (s *Stream) Server() *http.Server {
 	return s.server
 }
 
-// Start begins serving requests. Blocks until the server is closed.
+// Start begins serving requests. Blocks until the server is closed. If the
+// configured port is in use, the next free port is used and the server address
+// is updated accordingly.
 func (s *Stream) Start() error {
-	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
+	ln, err := apppkg.Listen(s.host, s.port)
+	if err != nil {
+		return fmt.Errorf("starting stream server: %w", err)
+	}
+	s.server.Addr = ln.Addr().String()
+
+	if err := s.server.Serve(ln); err != http.ErrServerClosed {
 		return fmt.Errorf("starting stream server: %w", err)
 	}
 	return nil

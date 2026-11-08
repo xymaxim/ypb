@@ -4,6 +4,12 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## Unreleased
+
+### Added
+
+- Use the next free port if the requested port is in use
+
 ## [2026.11.6](https://github.com/xymaxim/ypb/releases/tag/v2026.11.6)
 
 ### Added
