@@ -55,7 +55,7 @@ func (c *Play) Run() error {
 	),
 	)
 
-	app.Server.Handler = apppkg.WithCORS(mux)
+	app.Server.Handler = apppkg.WithHostCheck(string(c.Host), apppkg.WithCORS(mux))
 
 	fmt.Printf(
 		"(<<) Player started and listening on %s...\n",

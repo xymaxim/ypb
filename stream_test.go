@@ -75,3 +75,30 @@ func TestHost(t *testing.T) {
 		})
 	}
 }
+
+func TestHostCheck(t *testing.T) {
+	t.Parallel()
+
+	s, err := ypb.NewStream(
+		context.Background(),
+		testutil.TestVideoID,
+		"127.0.0.1",
+		0,
+		&ypb.StreamConfig{
+			Fetcher: &testutil.MockFetcher{VideoID: testutil.TestVideoID},
+		},
+	)
+	if err != nil {
+		t.Fatalf("creating stream: %v", err)
+	}
+	defer s.Stop()
+
+	req := httptest.NewRequest(http.MethodGet, "/info", nil)
+	req.Host = "rebind.example:9000"
+	w := httptest.NewRecorder()
+	s.Server().Handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusForbidden {
+		t.Fatalf("status %d for another Host, want %d", w.Code, http.StatusForbidden)
+	}
+}

@@ -106,7 +106,7 @@ func newStream(
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)
-	server.Handler = apppkg.WithCORS(mux)
+	server.Handler = apppkg.WithHostCheck(host, apppkg.WithCORS(mux))
 
 	stream := &Stream{
 		server: server,
