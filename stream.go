@@ -77,12 +77,20 @@ func NewStream(
 
 // NewMockStream creates a playback server backed by fixture data instead of a
 // live YouTube stream. See containers/ypb-mock on how to generate fixture data.
+// allowedOrigins has the same meaning as StreamConfig.AllowedOrigins; an empty
+// list disables CORS.
 func NewMockStream(
 	ctx context.Context,
 	fixtureDir, host string,
 	port int,
 	actualStartTime time.Time,
+	allowedOrigins []string,
 ) (*Stream, error) {
+	allowed, err := apppkg.NewOriginSet(allowedOrigins)
+	if err != nil {
+		return nil, fmt.Errorf("validating allowed origins: %w", err)
+	}
+
 	pb, err := playback.NewMockPlayback(fixtureDir, actualStartTime)
 	if err != nil {
 		return nil, fmt.Errorf("creating mock playback: %w", err)
@@ -90,7 +98,7 @@ func NewMockStream(
 
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
-	return newStream(ctx, pb, host, port, ffprobeRunner, nil)
+	return newStream(ctx, pb, host, port, ffprobeRunner, allowed)
 }
 
 // newStream wires a Playbacker into a playback server.
