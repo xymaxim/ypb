@@ -112,7 +112,7 @@ func (c *Download) Run() error {
 	),
 	)
 
-	app.Server.Handler = apppkg.WithHostCheck(string(c.Host), mux)
+	app.Server.Handler = apppkg.WithHostCheck(app.Server.Addr, mux)
 
 	go func() {
 		slog.Debug("starting server", "addr", app.Server.Addr)

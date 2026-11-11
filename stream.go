@@ -106,7 +106,7 @@ func newStream(
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)
-	server.Handler = apppkg.WithHostCheck(host, apppkg.WithCORS(mux))
+	server.Handler = apppkg.WithCORS(mux)
 
 	stream := &Stream{
 		server: server,
@@ -141,6 +141,7 @@ func (s *Stream) Start() error {
 		return fmt.Errorf("starting stream server: %w", err)
 	}
 	s.server.Addr = ln.Addr().String()
+	s.server.Handler = apppkg.WithHostCheck(s.server.Addr, s.server.Handler)
 
 	if err := s.server.Serve(ln); err != http.ErrServerClosed {
 		return fmt.Errorf("starting stream server: %w", err)
