@@ -1,6 +1,7 @@
 package app
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -48,6 +49,72 @@ func TestParseLatencyParam(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.Equal(t, tc.expected, got)
+		})
+	}
+}
+
+func TestRequestBaseURL(t *testing.T) {
+	t.Parallel()
+
+	const loopbackAddr = "127.0.0.1:9000"
+
+	tests := []struct {
+		name     string
+		host     string
+		fallback string
+		tls      bool
+		want     string
+	}{
+		{
+			name:     "localhost",
+			host:     "localhost:9000",
+			fallback: loopbackAddr,
+			want:     "http://localhost:9000",
+		},
+		{
+			name:     "LAN address",
+			host:     "192.168.1.10:9000",
+			fallback: "0.0.0.0:9000",
+			want:     "http://192.168.1.10:9000",
+		},
+		{
+			name:     "IPv6",
+			host:     "[::1]:9000",
+			fallback: "[::1]:9000",
+			want:     "http://[::1]:9000",
+		},
+		{
+			name:     "TLS",
+			host:     "ypb.example.com",
+			fallback: loopbackAddr,
+			tls:      true,
+			want:     "https://ypb.example.com",
+		},
+		{
+			name:     "empty Host falls back",
+			fallback: loopbackAddr,
+			want:     "http://" + loopbackAddr,
+		},
+		{
+			name:     "empty Host and all-interfaces fallback",
+			fallback: "0.0.0.0:9000",
+			want:     "http://localhost:9000",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			req := httptest.NewRequest(http.MethodGet, "/mpd/now", nil)
+			req.Host = tt.host
+			if tt.tls {
+				req.TLS = &tls.ConnectionState{}
+			}
+
+			if got := requestBaseURL(req, tt.fallback); got != tt.want {
+				t.Fatalf("requestBaseURL() = %q, want %q", got, tt.want)
+			}
 		})
 	}
 }
