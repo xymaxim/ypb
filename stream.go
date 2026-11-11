@@ -33,6 +33,11 @@ type Stream struct {
 type StreamConfig struct {
 	Fetcher fetchers.Fetcher
 	OnPrint func([]byte)
+
+	// AllowedOrigins lists the browser origins allowed to read responses,
+        // e.g. "http://localhost:9000". Matching is exact, so "localhost" and
+	// "127.0.0.1" are different origins. Empty disables CORS.
+	AllowedOrigins []string
 }
 
 // NewStream creates a new playback server backed by a real YouTube stream. It
@@ -61,7 +66,7 @@ func NewStream(
 		return nil, fmt.Errorf("creating playback: %w", err)
 	}
 
-	return newStream(ctx, pb, host, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner, cfg.AllowedOrigins)
 }
 
 // NewMockStream creates a playback server backed by fixture data instead of a
@@ -79,7 +84,7 @@ func NewMockStream(
 
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
-	return newStream(ctx, pb, host, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner, nil)
 }
 
 // newStream wires a Playbacker into a playback server.
@@ -89,6 +94,7 @@ func newStream(
 	host string,
 	port int,
 	ffprobeRunner exec.Runner,
+	allowedOrigins []string,
 ) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -106,7 +112,14 @@ func newStream(
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)
-	server.Handler = apppkg.WithCORS(mux)
+
+	allowed := make(map[string]bool, len(allowedOrigins))
+	for _, origin := range allowedOrigins {
+		if origin != "" {
+			allowed[origin] = true
+		}
+	}
+	server.Handler = apppkg.WithCORS(allowed, mux)
 
 	stream := &Stream{
 		server: server,
