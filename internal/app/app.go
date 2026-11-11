@@ -99,15 +99,20 @@ func WithCORS(next http.Handler) http.Handler {
 	})
 }
 
-// WithHostCheck rejects requests not addressed to a loopback host when the
-// server listens on a loopback address, which blocks DNS rebinding. On other
-// addresses it lets every request through.
-func WithHostCheck(listenAddr string, next http.Handler) http.Handler {
-	if !isLoopback(listenAddr) {
+// WithHostCheck rejects requests not addressed to a loopback host or to
+// allowedHost when the server listens on a loopback address, which blocks DNS
+// rebinding. On other addresses it lets every request through.
+func WithHostCheck(listenAddr, allowedHost string, next http.Handler) http.Handler {
+	if !isLoopback(requestHost(listenAddr)) {
 		return next
 	}
+
+	allowedHost = requestHost(allowedHost)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !isLoopback(r.Host) {
+		host := requestHost(r.Host)
+		allowedHostMatch := allowedHost != "" && strings.EqualFold(host, allowedHost)
+		if !isLoopback(host) && !allowedHostMatch {
 			msg := fmt.Sprintf("unexpected Host %q", r.Host)
 			http.Error(w, msg, http.StatusForbidden)
 			return
@@ -128,6 +133,14 @@ func isLoopback(addr string) bool {
 	}
 	ip, err := netip.ParseAddr(host)
 	return err == nil && ip.Unmap().IsLoopback()
+}
+
+// requestHost returns the host of a Host header, without the port or IPv6 brackets.
+func requestHost(hostport string) string {
+	if host, _, err := net.SplitHostPort(hostport); err == nil {
+		return host
+	}
+	return strings.TrimSuffix(strings.TrimPrefix(hostport, "["), "]")
 }
 
 func WithError(fn func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
