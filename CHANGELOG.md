@@ -4,6 +4,16 @@ The format of this changelog is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [Calendar
 Versioning](https://calver.org).
 
+## [2026.11.12](https://github.com/xymaxim/ypb/releases/tag/v2026.11.12)
+
+### Security
+
+- Check the `Host` header when listening on a loopback address to prevent DNS
+  rebinding ([#14](https://github.com/xymaxim/ypb/pull/14))
+- Remove wildcard CORS from `play` and `serve`, allow explicit browser origins,
+  and derive `MPD@BaseURL` from the request origin
+  ([#15](https://github.com/xymaxim/ypb/pull/15))
+
 ## [2026.11.8](https://github.com/xymaxim/ypb/releases/tag/v2026.11.8)
 
 ### Added
