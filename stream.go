@@ -34,6 +34,12 @@ type Stream struct {
 type StreamConfig struct {
 	Fetcher fetchers.Fetcher
 	OnPrint func([]byte)
+
+	// AllowedOrigins lists the browser origins allowed to read responses,
+	// e.g. "http://localhost:9000". Origins are matched exactly after
+	// normalizing case and a trailing slash; "localhost" and "127.0.0.1" are
+	// different origins. Empty disables CORS.
+	AllowedOrigins []string
 }
 
 // NewStream creates a new playback server backed by a real YouTube stream. It
@@ -45,6 +51,11 @@ func NewStream(
 	port int,
 	cfg *StreamConfig,
 ) (*Stream, error) {
+	allowed, err := apppkg.NewOriginSet(cfg.AllowedOrigins)
+	if err != nil {
+		return nil, fmt.Errorf("validating allowed origins: %w", err)
+	}
+
 	ytdlpRunner := exec.NewCommandRunner(apppkg.YtdlpBinaryPath)
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
@@ -62,17 +73,25 @@ func NewStream(
 		return nil, fmt.Errorf("creating playback: %w", err)
 	}
 
-	return newStream(ctx, pb, host, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner, allowed)
 }
 
 // NewMockStream creates a playback server backed by fixture data instead of a
 // live YouTube stream. See containers/ypb-mock on how to generate fixture data.
+// allowedOrigins has the same meaning as StreamConfig.AllowedOrigins; an empty
+// list disables CORS.
 func NewMockStream(
 	ctx context.Context,
 	fixtureDir, host string,
 	port int,
 	actualStartTime time.Time,
+	allowedOrigins []string,
 ) (*Stream, error) {
+	allowed, err := apppkg.NewOriginSet(allowedOrigins)
+	if err != nil {
+		return nil, fmt.Errorf("validating allowed origins: %w", err)
+	}
+
 	pb, err := playback.NewMockPlayback(fixtureDir, actualStartTime)
 	if err != nil {
 		return nil, fmt.Errorf("creating mock playback: %w", err)
@@ -80,7 +99,7 @@ func NewMockStream(
 
 	ffprobeRunner := exec.NewCommandRunner(apppkg.FFprobeBinaryPath)
 
-	return newStream(ctx, pb, host, port, ffprobeRunner)
+	return newStream(ctx, pb, host, port, ffprobeRunner, allowed)
 }
 
 // newStream wires a Playbacker into a playback server.
@@ -90,6 +109,7 @@ func newStream(
 	host string,
 	port int,
 	ffprobeRunner exec.Runner,
+	allowed map[string]bool,
 ) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -107,7 +127,8 @@ func newStream(
 	apppkg.RegisterInfoRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)
-	server.Handler = apppkg.WithCORS(mux)
+
+	server.Handler = apppkg.WithCORS(allowed, mux)
 
 	stream := &Stream{
 		server: server,

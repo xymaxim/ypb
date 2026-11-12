@@ -11,6 +11,8 @@ import (
 )
 
 func TestCORS(t *testing.T) {
+	const origin = "http://localhost:9000"
+
 	fetcher := &testutil.MockFetcher{VideoID: testutil.TestVideoID}
 
 	s, err := ypb.NewStream(
@@ -19,7 +21,8 @@ func TestCORS(t *testing.T) {
 		"",
 		0,
 		&ypb.StreamConfig{
-			Fetcher: fetcher,
+			Fetcher:        fetcher,
+			AllowedOrigins: []string{origin},
 		},
 	)
 	if err != nil {
@@ -29,11 +32,12 @@ func TestCORS(t *testing.T) {
 	handler := s.Server().Handler
 
 	req := httptest.NewRequest(http.MethodGet, "/info", nil)
+	req.Header.Set("Origin", origin)
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 
-	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
-		t.Fatalf("missing Access-Control-Allow-Origin header")
+	if got := w.Header().Get("Access-Control-Allow-Origin"); got != origin {
+		t.Fatalf("Access-Control-Allow-Origin = %q, want %q", got, origin)
 	}
 }
 

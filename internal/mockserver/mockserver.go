@@ -32,5 +32,5 @@ func New(fixtureDir string, actualStartTime time.Time, addr string, ui bool) (ht
 	apppkg.RegisterMPDRoute(mux, app)
 	apppkg.RegisterSegmentRoute(mux, app)
 
-	return apppkg.WithCORS(mux), nil
+	return mux, nil
 }

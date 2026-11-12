@@ -86,19 +86,6 @@ func InitApp(id, host string, port int, ytdlpOptions []string) (*App, error) {
 	}, nil
 }
 
-func WithCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type")
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
 // WithHostCheck rejects requests not addressed to a loopback host or to
 // allowedHost when the server listens on a loopback address, which blocks DNS
 // rebinding. On other addresses it lets every request through.

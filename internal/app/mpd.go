@@ -79,6 +79,22 @@ func (h *MPDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	return h.serveStaticMPD(w, r, param)
 }
 
+// requestBaseURL returns the absolute URL the client used to reach the server.
+// The MPD resolves media URLs against it, so it must match the request origin,
+// not the listen address, to avoid cross-origin segment requests.
+func requestBaseURL(r *http.Request, fallback string) string {
+	if r.Host == "" {
+		return urlutil.FormatServerAddress(fallback)
+	}
+
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+
+	return scheme + "://" + r.Host
+}
+
 func (h *MPDHandler) serveStaticMPD(w http.ResponseWriter, r *http.Request, param string) error {
 	nowTime := time.Now().UTC()
 
@@ -120,7 +136,7 @@ func (h *MPDHandler) serveStaticMPD(w http.ResponseWriter, r *http.Request, para
 	mpd, err := actions.ComposeStatic(
 		h.Playback,
 		rewindInterval,
-		urlutil.FormatServerAddress(h.ServerAddr),
+		requestBaseURL(r, h.ServerAddr),
 		h.FFprobeRunner,
 	)
 	if err != nil {
@@ -146,7 +162,7 @@ func (h *MPDHandler) serveDynamicMPD(w http.ResponseWriter, r *http.Request, par
 		return err
 	}
 
-	baseURL := urlutil.FormatServerAddress(h.ServerAddr)
+	baseURL := requestBaseURL(r, h.ServerAddr)
 
 	if !isRelativeMoment(parsed) {
 		key, err := dynamicCacheKey(parsed, latency)

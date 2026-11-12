@@ -58,7 +58,7 @@ func (c *Play) Run() error {
 	app.Server.Handler = apppkg.WithHostCheck(
 		app.Server.Addr,
 		string(c.Host),
-		apppkg.WithCORS(mux),
+		mux,
 	)
 
 	fmt.Printf(
