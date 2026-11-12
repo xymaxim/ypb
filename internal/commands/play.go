@@ -55,7 +55,11 @@ func (c *Play) Run() error {
 	),
 	)
 
-	app.Server.Handler = mux
+	app.Server.Handler = apppkg.WithHostCheck(
+		app.Server.Addr,
+		string(c.Host),
+		mux,
+	)
 
 	fmt.Printf(
 		"(<<) Player started and listening on %s...\n",

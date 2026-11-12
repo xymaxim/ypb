@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -161,16 +162,26 @@ func (s *Stream) Start() error {
 	if err != nil {
 		return fmt.Errorf("starting stream server: %w", err)
 	}
-	s.server.Addr = ln.Addr().String()
 
-	if err := s.server.Serve(ln); err != http.ErrServerClosed {
-		return fmt.Errorf("starting stream server: %w", err)
-	}
-	return nil
+	return s.serve(ln)
 }
 
 // Stop gracefully shuts down the server.
 func (s *Stream) Stop() {
 	s.cancel()
 	<-s.done
+}
+
+func (s *Stream) serve(ln net.Listener) error {
+	s.server.Addr = ln.Addr().String()
+	s.server.Handler = apppkg.WithHostCheck(
+		s.server.Addr,
+		s.host,
+		s.server.Handler,
+	)
+
+	if err := s.server.Serve(ln); err != http.ErrServerClosed {
+		return fmt.Errorf("starting stream server: %w", err)
+	}
+	return nil
 }
