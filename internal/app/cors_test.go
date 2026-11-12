@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	testAllowed = "http://localhost:9000"
-	testEvil    = "http://evil.example"
+	testAllowedOrigin    = "http://localhost:9000"
+	testDisallowedOrigin = "http://evil.example"
+	testInvalidOrigin    = "localhost:9000"
 )
 
 func TestNewOriginSet(t *testing.T) {
@@ -31,7 +32,7 @@ func TestNewOriginSet(t *testing.T) {
 		{
 			name:    "normalized",
 			origins: []string{" HTTP://LOCALHOST:9000/ ", ""},
-			want:    map[string]bool{"http://localhost:9000": true},
+			want:    map[string]bool{testAllowedOrigin: true},
 		},
 		{
 			name:    "ipv6",
@@ -66,7 +67,7 @@ func TestNewOriginSetRejectsInvalid(t *testing.T) {
 	tests := []string{
 		"*",
 		"null",
-		"localhost:9000",
+		testInvalidOrigin,
 		"http://",
 		"http://example.com/path",
 		"http://example.com?x",
@@ -95,8 +96,8 @@ func TestWithCORS(t *testing.T) {
 		origin     string
 		wantOrigin string
 	}{
-		{"allowed", testAllowed, testAllowed},
-		{"disallowed", testEvil, ""},
+		{"allowed", testAllowedOrigin, testAllowedOrigin},
+		{"disallowed", testDisallowedOrigin, ""},
 		{"no origin", "", ""},
 	}
 
@@ -108,7 +109,7 @@ func TestWithCORS(t *testing.T) {
 			next := http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 				nextCalled = true
 			})
-			handler := app.WithCORS(map[string]bool{testAllowed: true}, next)
+			handler := app.WithCORS(map[string]bool{testAllowedOrigin: true}, next)
 
 			req := httptest.NewRequest(http.MethodGet, "/info", nil)
 			if tt.origin != "" {
@@ -138,10 +139,10 @@ func TestWithCORSPreflight(t *testing.T) {
 	next := http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 		nextCalled = true
 	})
-	handler := app.WithCORS(map[string]bool{testAllowed: true}, next)
+	handler := app.WithCORS(map[string]bool{testAllowedOrigin: true}, next)
 
 	req := httptest.NewRequest(http.MethodOptions, "/info", nil)
-	req.Header.Set("Origin", testAllowed)
+	req.Header.Set("Origin", testAllowedOrigin)
 	req.Header.Set("Access-Control-Request-Method", http.MethodGet)
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
@@ -152,8 +153,8 @@ func TestWithCORSPreflight(t *testing.T) {
 	if w.Code != http.StatusNoContent {
 		t.Errorf("status = %d, want %d", w.Code, http.StatusNoContent)
 	}
-	if got := w.Header().Get("Access-Control-Allow-Origin"); got != testAllowed {
-		t.Errorf("Allow-Origin = %q, want %q", got, testAllowed)
+	if got := w.Header().Get("Access-Control-Allow-Origin"); got != testAllowedOrigin {
+		t.Errorf("Allow-Origin = %q, want %q", got, testAllowedOrigin)
 	}
 	if !strings.Contains(w.Header().Get("Access-Control-Allow-Methods"), "GET") {
 		t.Errorf(
@@ -173,7 +174,7 @@ func TestWithCORSDisabled(t *testing.T) {
 	handler := app.WithCORS(nil, next)
 
 	req := httptest.NewRequest(http.MethodGet, "/info", nil)
-	req.Header.Set("Origin", testAllowed)
+	req.Header.Set("Origin", testAllowedOrigin)
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 
