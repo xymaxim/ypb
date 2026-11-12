@@ -43,7 +43,11 @@ func (c *Serve) Run() error {
 	apppkg.RegisterSegmentRoute(mux, app)
 	apppkg.RegisterMPDRoute(mux, app)
 
-	app.Server.Handler = apppkg.WithCORS(mux)
+	app.Server.Handler = apppkg.WithHostCheck(
+		app.Server.Addr,
+		string(c.Host),
+		apppkg.WithCORS(mux),
+	)
 
 	fmt.Printf(
 		"(<<) Playback started and listening on %s...\n",
