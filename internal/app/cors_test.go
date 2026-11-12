@@ -40,6 +40,11 @@ func TestNewOriginSet(t *testing.T) {
 			want:    map[string]bool{"http://[::1]:9000": true},
 		},
 		{
+			name:    "custom scheme",
+			origins: []string{"wails://localhost"},
+			want:    map[string]bool{"wails://localhost": true},
+		},
+		{
 			name:    "default port left as-is",
 			origins: []string{"https://example.com:443"},
 			want:    map[string]bool{"https://example.com:443": true},
@@ -74,7 +79,7 @@ func TestNewOriginSetRejectsInvalid(t *testing.T) {
 		"http://example.com#x",
 		"http://user:pass@example.com",
 		"http://example.com//",
-		"ftp://example.com",
+		"example.com",
 	}
 
 	for _, origin := range tests {

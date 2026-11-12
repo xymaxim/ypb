@@ -53,8 +53,8 @@ func WithCORS(allowed map[string]bool, next http.Handler) http.Handler {
 }
 
 // NewOriginSet builds the allowlist for WithCORS from scheme://host[:port]
-// origins (http or https). Case and a trailing slash are normalized, and
-// blank entries are skipped.
+// origins. Case and a trailing slash are normalized, and blank entries are
+// skipped.
 func NewOriginSet(origins []string) (map[string]bool, error) {
 	allowed := make(map[string]bool, len(origins))
 
@@ -65,7 +65,7 @@ func NewOriginSet(origins []string) (map[string]bool, error) {
 		}
 
 		u, err := url.Parse(o)
-		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		if err != nil || u.Scheme == "" || u.Host == "" {
 			return nil, fmt.Errorf("invalid CORS origin %q", o)
 		}
 
