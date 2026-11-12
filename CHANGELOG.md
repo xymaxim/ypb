@@ -9,7 +9,8 @@ Versioning](https://calver.org).
 ### Security
 
 - Check the `Host` header when listening on a loopback address to prevent DNS
-  rebinding ([#14](https://github.com/xymaxim/ypb/pull/14))
+  rebinding ([#14](https://github.com/xymaxim/ypb/pull/14)), by
+  **@MeditativeMoth**
 - Remove wildcard CORS from `play` and `serve`, allow explicit browser origins,
   and derive `MPD@BaseURL` from the request origin
   ([#15](https://github.com/xymaxim/ypb/pull/15))
